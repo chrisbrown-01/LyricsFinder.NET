@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LyricsFinder.NET.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateIdentitySchema : Migration
+    public partial class CreateIdentityAndSongTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -220,8 +220,8 @@ namespace LyricsFinder.NET.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DOB", "Email", "EmailConfirmed", "IsAdmin", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePicture", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "89fbfe2a-8d42-4278-b1dd-532129efe57c", 0, "47e5c5a1-6ffd-4b01-9ff9-aa2032d2fd46", new DateTime(2023, 7, 19, 0, 0, 0, 0, DateTimeKind.Local), "moderator@mod.com", true, false, false, null, "Moderator", "MODERATOR@MOD.COM", "MODERATOR@MOD.COM", "AQAAAAIAAYagAAAAEP+nxhgp+ZCZCCTwD+powBlNsDwAABrjz96s+an7D7DSHxrLN8j6tJ4alFzAvQJorg==", null, true, null, "c3573d66-72d5-4001-9f44-e3dad9207159", false, "moderator@mod.com" },
-                    { "c9b742cc-844e-4a4c-b812-752e8d5524f9", 0, "554b1b60-0361-48c7-b204-74964c9bd545", new DateTime(2023, 7, 19, 0, 0, 0, 0, DateTimeKind.Local), "admin@admin.com", true, true, false, null, "Admin", "ADMIN@ADMIN.COM", "ADMIN@ADMIN.COM", "AQAAAAIAAYagAAAAELT+XaKpZu0xJz68WJyDRcyDEYiu++pBb9bTXmg9zJSDnsIOYq7ZVmfJx64Ziu4R7w==", null, true, null, "3dd4dd37-fce3-4de6-8e2e-d7bc8682bfee", false, "admin@admin.com" }
+                    { "00023983-9f16-4a6c-91b8-940283954fc6", 0, "ddaca77b-e770-4ac5-b5f3-37b1bf793ac9", new DateTime(2023, 7, 19, 0, 0, 0, 0, DateTimeKind.Local), "moderator@mod.com", true, false, false, null, "Moderator", "MODERATOR@MOD.COM", "MODERATOR@MOD.COM", "AQAAAAIAAYagAAAAENr/c8qMYqYeTNxQFX81yI8P1Rfzn5e3uEqtG3HOZMZndBfXq4SR4fySbaFi5lEgNA==", null, true, null, "8c341813-c8b0-468b-b171-d3e46afecaee", false, "moderator@mod.com" },
+                    { "aab9c560-3441-40d1-b479-9bb75990ac08", 0, "a099a126-7718-4063-8f12-5a80db4bf4be", new DateTime(2023, 7, 19, 0, 0, 0, 0, DateTimeKind.Local), "admin@admin.com", true, true, false, null, "Admin", "ADMIN@ADMIN.COM", "ADMIN@ADMIN.COM", "AQAAAAIAAYagAAAAEJFvkAw0lHaTl5s+V5KZoe8tq6MfzTQRdP8hb5RnqTz15a8LqzNRwAXxfKeuz7bjvQ==", null, true, null, "a7cafba4-73ba-482f-bf12-008e09ae2f4c", false, "admin@admin.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -229,8 +229,8 @@ namespace LyricsFinder.NET.Migrations
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[,]
                 {
-                    { "c7b013f0-5201-4317-abd8-c211f91b7330", "89fbfe2a-8d42-4278-b1dd-532129efe57c" },
-                    { "fab4fac1-c546-41de-aebc-a14da6895711", "c9b742cc-844e-4a4c-b812-752e8d5524f9" }
+                    { "c7b013f0-5201-4317-abd8-c211f91b7330", "00023983-9f16-4a6c-91b8-940283954fc6" },
+                    { "fab4fac1-c546-41de-aebc-a14da6895711", "aab9c560-3441-40d1-b479-9bb75990ac08" }
                 });
 
             migrationBuilder.CreateIndex(

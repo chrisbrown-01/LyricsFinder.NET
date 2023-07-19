@@ -102,9 +102,9 @@ namespace LyricsFinder.NET.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c9b742cc-844e-4a4c-b812-752e8d5524f9",
+                            Id = "aab9c560-3441-40d1-b479-9bb75990ac08",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "554b1b60-0361-48c7-b204-74964c9bd545",
+                            ConcurrencyStamp = "a099a126-7718-4063-8f12-5a80db4bf4be",
                             DOB = new DateTime(2023, 7, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
@@ -113,17 +113,17 @@ namespace LyricsFinder.NET.Migrations
                             Name = "Admin",
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELT+XaKpZu0xJz68WJyDRcyDEYiu++pBb9bTXmg9zJSDnsIOYq7ZVmfJx64Ziu4R7w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJFvkAw0lHaTl5s+V5KZoe8tq6MfzTQRdP8hb5RnqTz15a8LqzNRwAXxfKeuz7bjvQ==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "3dd4dd37-fce3-4de6-8e2e-d7bc8682bfee",
+                            SecurityStamp = "a7cafba4-73ba-482f-bf12-008e09ae2f4c",
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.com"
                         },
                         new
                         {
-                            Id = "89fbfe2a-8d42-4278-b1dd-532129efe57c",
+                            Id = "00023983-9f16-4a6c-91b8-940283954fc6",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "47e5c5a1-6ffd-4b01-9ff9-aa2032d2fd46",
+                            ConcurrencyStamp = "ddaca77b-e770-4ac5-b5f3-37b1bf793ac9",
                             DOB = new DateTime(2023, 7, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "moderator@mod.com",
                             EmailConfirmed = true,
@@ -132,9 +132,9 @@ namespace LyricsFinder.NET.Migrations
                             Name = "Moderator",
                             NormalizedEmail = "MODERATOR@MOD.COM",
                             NormalizedUserName = "MODERATOR@MOD.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEP+nxhgp+ZCZCCTwD+powBlNsDwAABrjz96s+an7D7DSHxrLN8j6tJ4alFzAvQJorg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENr/c8qMYqYeTNxQFX81yI8P1Rfzn5e3uEqtG3HOZMZndBfXq4SR4fySbaFi5lEgNA==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "c3573d66-72d5-4001-9f44-e3dad9207159",
+                            SecurityStamp = "8c341813-c8b0-468b-b171-d3e46afecaee",
                             TwoFactorEnabled = false,
                             UserName = "moderator@mod.com"
                         });
@@ -185,7 +185,7 @@ namespace LyricsFinder.NET.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SongDatabase");
+                    b.ToTable("SongDatabase", (string)null);
                 });
 
             modelBuilder.Entity("LyricsFinder.NET.Models.UserFavouriteSongs", b =>
@@ -207,7 +207,7 @@ namespace LyricsFinder.NET.Migrations
 
                     b.HasIndex("SongId");
 
-                    b.ToTable("UserFavouriteSongs");
+                    b.ToTable("UserFavouriteSongs", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -351,12 +351,12 @@ namespace LyricsFinder.NET.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "c9b742cc-844e-4a4c-b812-752e8d5524f9",
+                            UserId = "aab9c560-3441-40d1-b479-9bb75990ac08",
                             RoleId = "fab4fac1-c546-41de-aebc-a14da6895711"
                         },
                         new
                         {
-                            UserId = "89fbfe2a-8d42-4278-b1dd-532129efe57c",
+                            UserId = "00023983-9f16-4a6c-91b8-940283954fc6",
                             RoleId = "c7b013f0-5201-4317-abd8-c211f91b7330"
                         });
                 });

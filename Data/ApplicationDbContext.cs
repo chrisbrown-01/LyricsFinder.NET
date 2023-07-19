@@ -31,13 +31,16 @@ namespace LyricsFinder.NET.Data
         private const string AdminRoleId = "fab4fac1-c546-41de-aebc-a14da6895711";
         private const string ModeratorRoleId = "c7b013f0-5201-4317-abd8-c211f91b7330";
         private const string BasicRoleId = "c7d013f0-5201-4317-abd8-c846f91b9946";
+        
+        private const string AdminUserId = "aab9c560-3441-40d1-b479-9bb75990ac08";
+        private const string ModeratorUserId = "00023983-9f16-4a6c-91b8-940283954fc6";
 
         private void SeedAdmin(ModelBuilder builder)
         {
             // Create default admin user
             CustomAppUserData admin = new CustomAppUserData()
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = AdminUserId,
                 UserName = "admin@admin.com",
                 Email = "admin@admin.com",
                 NormalizedEmail = "admin@admin.com".ToUpper(),
@@ -68,7 +71,7 @@ namespace LyricsFinder.NET.Data
             // create default moderator
             CustomAppUserData moderator = new CustomAppUserData()
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = ModeratorUserId,
                 UserName = "moderator@mod.com",
                 Email = "moderator@mod.com",
                 NormalizedEmail = "moderator@mod.com".ToUpper(),
