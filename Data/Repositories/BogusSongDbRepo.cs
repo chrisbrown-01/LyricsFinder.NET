@@ -9,7 +9,8 @@ namespace LyricsFinder.NET.Data.Repositories
     {
         // TODO: lightshot backups list
         private readonly Faker<Song> _songFaker;
-        private readonly List<Song> _db;
+        private readonly List<Song> _songsTable;
+        private readonly List<UserFavouriteSongs> _favouritesTable;
 
         public BogusSongDbRepo()
         {
@@ -27,36 +28,38 @@ namespace LyricsFinder.NET.Data.Repositories
                 .RuleFor(s => s.CreatedBy, f => f.Random.Uuid().ToString())
                 .RuleFor(s => s.EditedBy, f => f.Random.Uuid().ToString());
 
-            _db = _songFaker.Generate(16);
+            _songsTable = _songFaker.Generate(16);
+
+            _favouritesTable = new();
         }
 
         public bool IsSongDuplicate(Song song)
         {
-            if (_db.Any(s => s.Name == song.Name && s.Artist == song.Artist)) return true;
+            if (_songsTable.Any(s => s.Name == song.Name && s.Artist == song.Artist)) return true;
             return false;
         }
 
         public async Task AddSongToDb(Song song)
         {
-            song.Id = _db.Count() + 1;
-            _db.Add(song);
+            song.Id = _songsTable.Count() + 1;
+            _songsTable.Add(song);
             await Task.CompletedTask;
         }
 
         public async Task DeleteSongFromDb(Song song)
         {
-            _db.Remove(song);
+            _songsTable.Remove(song);
             await Task.CompletedTask;
         }
 
         public IEnumerable<Song> GetAllSongsInDb()
         {
-            return _db;
+            return _songsTable;
         }
 
         public Task<Song?> GetDbSongByIdAsync(int id)
         {
-            var song = _db.Where(s => s.Id == id).FirstOrDefault();
+            var song = _songsTable.Where(s => s.Id == id).FirstOrDefault();
             return Task.FromResult(song);
         }
 
@@ -72,14 +75,14 @@ namespace LyricsFinder.NET.Data.Repositories
 
         public async Task UpdateSongInDb(Song song)
         {
-            var songIndex = _db.FindIndex(s => s.Id == song.Id);
-            _db[songIndex] = song;
+            var songIndex = _songsTable.FindIndex(s => s.Id == song.Id);
+            _songsTable[songIndex] = song;
             await Task.CompletedTask;
         }
 
         public IEnumerable<UserFavouriteSongs> GetAllFavouriteSongs()
         {
-            throw new NotImplementedException();
+            return _favouritesTable;
         }
 
         public DbSet<UserFavouriteSongs> GetFavouriteSongDb()
@@ -89,17 +92,22 @@ namespace LyricsFinder.NET.Data.Repositories
 
         public IEnumerable<UserFavouriteSongs> GetUserFavouriteSongs(CustomAppUserData loggedInUser)
         {
-            throw new NotImplementedException();
+            // return _db.UserFavouriteSongs.Where(x => x.UserId == loggedInUser.Id);
+
+            return _favouritesTable.Where(x => x.UserId == loggedInUser.Id);
         }
 
-        public void AddFavSongToDb(UserFavouriteSongs obj)
+        public void AddFavSongToDb(UserFavouriteSongs favSong) // TODO: change to async
         {
-            throw new NotImplementedException();
+            favSong.Id = _favouritesTable.Count() + 1;
+            _favouritesTable.Add(favSong);
+            //await Task.CompletedTask;
         }
 
         public void RemoveFavSongFromDb(UserFavouriteSongs obj)
         {
-            throw new NotImplementedException();
+            _favouritesTable.Remove(obj);
+            //await Task.CompletedTask;
         }
 
         public Song GetSongById(int id)

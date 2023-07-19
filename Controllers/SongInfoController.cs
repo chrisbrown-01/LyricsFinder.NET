@@ -121,10 +121,9 @@ namespace LyricsFinder.NET.Controllers
             var newFavouriteSong = new UserFavouriteSongs { UserId = loggedInUser.Id, SongId = songDbObject };
 
             // Check if user has already added song to favourites before updating database (ie. prevent duplicates)
-            if (_db.GetUserFavouriteSongs(loggedInUser).Where(x => x.SongId == songDbObject).FirstOrDefault() == null)
+            if (!_db.GetUserFavouriteSongs(loggedInUser).Any(x => x.SongId == songDbObject))
             {
                 _db.AddFavSongToDb(newFavouriteSong);
-                await _db.SaveChangesToDbAsync();
             }
 
             //return RedirectToAction("Index", "SongInfo", new SpotifyUserInput { Id = songDbObject });
@@ -143,15 +142,13 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         public async Task<IActionResult> RemoveFromFavourites(int songDbObject, string redirectUrl)
         {
-            CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
 
             var favouritedSong = _db.GetUserFavouriteSongs(loggedInUser).Where(x => x.SongId == songDbObject).FirstOrDefault();
 
-            // Check if user has already added song to favourites before updating database (ie. prevent duplicates)
             if (favouritedSong != null)
             {
                 _db.RemoveFavSongFromDb(favouritedSong);
-                await _db.SaveChangesToDbAsync();
             }
 
             //return RedirectToAction("Index", "SongInfo", new SpotifyUserInput { Id = songDbObject });

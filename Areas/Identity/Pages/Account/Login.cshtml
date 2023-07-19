@@ -67,7 +67,35 @@
                             <p>
                                 @foreach (var provider in Model.ExternalLogins!)
                                 {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                    // TODO: ensure this external login stuff renders
+                                    //<button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                    if (@provider.Name == "Google")
+                                    {
+                                    <p>
+                                        <button type="submit" class="btn btn-link fab fa-google btn-lg" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">   @provider.DisplayName</button>
+                                    </p>
+                                    }
+
+                                    else if (@provider.Name == "Facebook")
+                                    {
+                                    <p>
+                                        <button type="submit" class="btn btn-link fab fa-facebook btn-lg" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">   @provider.DisplayName</button>
+                                    </p>
+                                    }
+
+                                    else if (@provider.Name == "Microsoft")
+                                    {
+                                    <p>
+                                        <button type="submit" class="btn btn-link fab fa-microsoft btn-lg" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">   @provider.DisplayName</button>
+                                    </p>
+                                    }
+
+                                    else
+                                    {
+                                    <p>
+                                        <button type="submit" class="btn btn-link btn-lg" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">   @provider.DisplayName</button>
+                                    </p>
+                                    }
                                 }
                             </p>
                         </div>
@@ -80,4 +108,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="https://kit.fontawesome.com/63288dd016.js" crossorigin="anonymous"></script>
 }

@@ -12,6 +12,6 @@ namespace LyricsFinder.NET.Models
         public int SongId { get; set; }
 
         [ForeignKey("SongId")]
-        public Song SpotifyUserInput { get; set; } // TODO: rename
+        public Song? SpotifyUserInput { get; set; } // TODO: rename, null allows?
     }
 }

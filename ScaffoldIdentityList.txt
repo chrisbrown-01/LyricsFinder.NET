@@ -1,0 +1,24 @@
+ConfirmEmail
+Register
+ConfirmEmailChange
+ExternalLogin
+ForgotPassword
+Login
+Logout
+RegisterConfirmation
+ResetPassword
+
+
+
+Manage --> 
+_Layout
+_ManageNav
+ChangePassword
+DeletePersonalData
+DownloadPersonalData
+Email
+ExternalLogins
+Index
+ManageNavPages
+PersonalData
+SetPassword
