@@ -7,6 +7,7 @@ using System.Reflection.Metadata;
 
 namespace LyricsFinder.NET.Data
 {
+    // ***Secrets/key vaults should be used in practice but will simply hard-code credentials for demonstration.***
     public class ApplicationDbContext : IdentityDbContext<CustomAppUserData>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
@@ -21,7 +22,6 @@ namespace LyricsFinder.NET.Data
         {
             base.OnModelCreating(builder);
 
-            // ***Secrets/key vaults should be used in practice but will simply hard-code credentials for demonstration.***
             // source: https://www.c-sharpcorner.com/article/seed-data-in-net-core-identity/
             this.SeedRoles(builder);
             this.SeedAdmin(builder);

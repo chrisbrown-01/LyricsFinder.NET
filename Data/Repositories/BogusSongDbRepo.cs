@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -73,6 +74,51 @@ namespace LyricsFinder.NET.Data.Repositories
             var songIndex = _db.FindIndex(s => s.Id == song.Id);
             _db[songIndex] = song;
             await Task.CompletedTask;
+        }
+
+        public IEnumerable<UserFavouriteSongs> GetAllFavouriteSongs()
+        {
+            throw new NotImplementedException();
+        }
+
+        public DbSet<UserFavouriteSongs> GetFavouriteSongDb()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<UserFavouriteSongs> GetUserFavouriteSongs(CustomAppUserData loggedInUser)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddFavSongToDb(UserFavouriteSongs obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveFavSongFromDb(UserFavouriteSongs obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Song GetSongById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Song> GetSongsByName(string songName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Song> GetSongsByArtist(string artistName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Song> GetSongsBySongNameArtist(string songName, string artistName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

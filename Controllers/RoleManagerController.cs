@@ -21,7 +21,6 @@ namespace LyricsFinder.NET.Controllers
             _logger = logger;
         }
 
-
         public IActionResult Index()
         {
             return View();

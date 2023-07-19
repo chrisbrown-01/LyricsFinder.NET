@@ -1,10 +1,12 @@
-﻿using LyricsFinder.NET.Data.Repositories;
+﻿using LyricsFinder.NET.Areas.Identity.Models;
+using LyricsFinder.NET.Data.Repositories;
 using LyricsFinder.NET.Models;
 using LyricsFinder.NET.Services;
 using LyricsFinder.NET.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace LyricsFinder.NET.Controllers
@@ -12,17 +14,17 @@ namespace LyricsFinder.NET.Controllers
     public class SpotifyUserInputController : Controller
     {
         private readonly ISongDbRepo _db;
-        //private readonly UserManager<CustomAppUserData> _userManager;
+        private readonly UserManager<CustomAppUserData> _userManager;
         private readonly ILogger<SpotifyUserInputController> _logger;
         private readonly IMemoryCache _cache;
 
         public SpotifyUserInputController(ISongDbRepo db,
-            //UserManager<CustomAppUserData> userManager,
+            UserManager<CustomAppUserData> userManager,
             ILogger<SpotifyUserInputController> logger,
             IMemoryCache memoryCache)
         {
             _db = db;
-            //_userManager = userManager;
+            _userManager = userManager;
             _logger = logger;
             _cache = memoryCache;
         }
@@ -52,26 +54,26 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="searchString"></param>
         /// <param name="pageNumber"></param>
         /// <returns></returns>
-        //[Authorize]
-        //public async Task<ActionResult> IndexFavourites(string sortOrder, string currentFilter, string searchString, int? pageNumber)
-        //{
-        //    CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+        [Authorize]
+        public async Task<ActionResult> IndexFavourites(string sortOrder, string currentFilter, string searchString, int? pageNumber)
+        {
+            CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
 
-        //    // Find all songs that user has favourited from UserFavouriteSongs db. Foreign key forces inclusion of corresponding SpotifyUserInput song object
-        //    var usersFavouriteSongs = _db.GetFavouriteSongDb().Where(x => x.UserId == loggedInUser.Id).Include(s => s.SpotifyUserInput);
+            // Find all songs that user has favourited from UserFavouriteSongs db. Foreign key forces inclusion of corresponding SpotifyUserInput song object
+            var usersFavouriteSongs = _db.GetFavouriteSongDb().Where(x => x.UserId == loggedInUser.Id).Include(s => s.SpotifyUserInput);
 
-        //    List<Song> spotifySearchListFavs = new List<SpotifyUserInput>();
+            List<Song> spotifySearchListFavs = new List<Song>();
 
-        //    // Add each of the SpotifyUserInput objects from the favourite songs db query result to the spotifySearchListFavs list
-        //    foreach (var song in usersFavouriteSongs)
-        //    {
-        //        spotifySearchListFavs.Add(song.SpotifyUserInput);
-        //    }
+            // Add each of the SpotifyUserInput objects from the favourite songs db query result to the spotifySearchListFavs list
+            foreach (var song in usersFavouriteSongs)
+            {
+                spotifySearchListFavs.Add(song.SpotifyUserInput);
+            }
 
-        //    PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, spotifySearchListFavs);
+            PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, spotifySearchListFavs);
 
-        //    return View(paginatedList);
-        //}
+            return View(paginatedList);
+        }
 
 
         private PaginatedList<Song> CreatePaginatedList(string sortOrder, string currentFilter, string searchString, int? pageNumber, IEnumerable<Song> spotifySearchList)
@@ -171,10 +173,10 @@ namespace LyricsFinder.NET.Controllers
 
             song.QueryDate = DateTime.Now;
 
-            //CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
-            //song.CreatedBy = loggedInUser.Id;
+            CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+            song.CreatedBy = loggedInUser.Id;
 
-            _db.AddSongToDb(song);
+            await _db.AddSongToDb(song);
 
             _logger.LogInformation($"Song created: Name=\"{song.Name}\"    Artist=\"{song.Artist}\"");
 
@@ -182,7 +184,7 @@ namespace LyricsFinder.NET.Controllers
             {
                 song = await RetrieveLyricsAndSongInfo.ScrapeSongInfoFromWebAsync(song);
 
-                _db.UpdateSongInDb(song);
+                await _db.UpdateSongInDb(song);
             }
             catch (Exception ex)
             {
@@ -229,10 +231,10 @@ namespace LyricsFinder.NET.Controllers
 
             song.QueryDate = DateTime.Now;
 
-            //CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
-            //song.EditedBy = loggedInUser.Id;
+            CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+            song.EditedBy = loggedInUser.Id;
 
-            _db.UpdateSongInDb(song);
+            await _db.UpdateSongInDb(song);
             _cache.Remove(song.Id);
 
             _logger.LogInformation("Song edited: {@Song}", song);
@@ -241,7 +243,7 @@ namespace LyricsFinder.NET.Controllers
             {
                 song = await RetrieveLyricsAndSongInfo.ScrapeSongInfoFromWebAsync(song);
 
-                _db.UpdateSongInDb(song);
+                await _db.UpdateSongInDb(song);
             }
             catch (Exception ex)
             {
@@ -281,7 +283,7 @@ namespace LyricsFinder.NET.Controllers
             // TODO: replace try-catch with filter?
             try
             {
-                //CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+                CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
 
                 var song = await _db.GetDbSongByIdAsync(id);
 
@@ -289,9 +291,9 @@ namespace LyricsFinder.NET.Controllers
 
                 var logDeletedSong = song;
 
-                _db.DeleteSongFromDb(song);
+                await _db.DeleteSongFromDb(song);
 
-                //_logger.LogInformation("Song deleted: {@DeletedSong} by user {@User}", song, loggedInUser);
+                _logger.LogInformation("Song deleted: {@DeletedSong} by user {@User}", song, loggedInUser);
 
                 return RedirectToAction("Index");
             }

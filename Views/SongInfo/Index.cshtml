@@ -1,10 +1,10 @@
-﻿@using Microsoft.AspNetCore.Html
+﻿@using LyricsFinder.NET.Areas.Identity.Models;
+@using Microsoft.AspNetCore.Html
 @using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Http.Extensions
 @using Microsoft.AspNetCore.Identity
-@*@using _12042021_SpotifyApp.Areas.Identity.Data*@
 @model LyricsFinder.NET.Models.Song
-@*@inject SignInManager<CustomAppUserData> SignInManager*@
+@inject SignInManager<CustomAppUserData> SignInManager
 
 @{
     var currentUrl = UriHelper.GetDisplayUrl(Context.Request);

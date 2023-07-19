@@ -1,4 +1,5 @@
-﻿using LyricsFinder.NET.Models;
+﻿using LyricsFinder.NET.Areas.Identity.Models;
+using LyricsFinder.NET.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LyricsFinder.NET.Data.Repositories
@@ -19,15 +20,15 @@ namespace LyricsFinder.NET.Data.Repositories
 
 
         // UserFavouriteSongs table methods
-        //IEnumerable<UserFavouriteSongs> GetAllFavouriteSongs(); // TODO: convert to async
+        IEnumerable<UserFavouriteSongs> GetAllFavouriteSongs(); // TODO: convert to async
 
-        //DbSet<UserFavouriteSongs> GetFavouriteSongDb();
+        DbSet<UserFavouriteSongs> GetFavouriteSongDb();
 
-        //IEnumerable<UserFavouriteSongs> GetUserFavouriteSongs(CustomAppUserData loggedInUser);
+        IEnumerable<UserFavouriteSongs> GetUserFavouriteSongs(CustomAppUserData loggedInUser);
 
-        //void AddFavSongToDb(UserFavouriteSongs obj);
+        void AddFavSongToDb(UserFavouriteSongs obj);
 
-        //void RemoveFavSongFromDb(UserFavouriteSongs obj);
+        void RemoveFavSongFromDb(UserFavouriteSongs obj);
 
 
 
@@ -36,12 +37,12 @@ namespace LyricsFinder.NET.Data.Repositories
         DbSet<Song> GetSongDb();
         bool IsSongDuplicate(Song song);
 
-        //SpotifyUserInput GetSongById(int id);
+        Song GetSongById(int id);
 
-        //IEnumerable<SpotifyUserInput> GetSongsByName(string songName);
+        IEnumerable<Song> GetSongsByName(string songName);
 
-        //IEnumerable<SpotifyUserInput> GetSongsByArtist(string artistName);
+        IEnumerable<Song> GetSongsByArtist(string artistName);
 
-        //IEnumerable<SpotifyUserInput> GetSongsBySongNameArtist(string songName, string artistName);
+        IEnumerable<Song> GetSongsBySongNameArtist(string songName, string artistName);
     }
 }

@@ -1,6 +1,6 @@
-﻿@model PaginatedList<Song>
-
-@*@inject SignInManager<CustomAppUserData> SignInManager*@
+﻿@using LyricsFinder.NET.Areas.Identity.Models;
+@model PaginatedList<Song>
+@inject SignInManager<CustomAppUserData> SignInManager
 
 @{
     var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
@@ -123,14 +123,14 @@
 
             <div class="float-right">
 
-@*                @if (SignInManager.IsSignedIn(User))
+                @if (SignInManager.IsSignedIn(User))
                 {
                     <a asp-action="IndexFavourites"
                        asp-controller="SpotifyUserInput"
                        class="btn btn-default btn-outline-primary">
                         Filter by Favourites List
                     </a>
-                }*@
+                }
 
                 <a asp-action="ExportFavouritesToExcel"
                    asp-controller="ExportToExcel"
