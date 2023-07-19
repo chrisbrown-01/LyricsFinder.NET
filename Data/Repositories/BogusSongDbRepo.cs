@@ -7,6 +7,7 @@ namespace LyricsFinder.NET.Data.Repositories
 {
     public class BogusSongDbRepo : ISongDbRepo
     {
+        // TODO: lightshot backups list
         private readonly Faker<Song> _songFaker;
         private readonly List<Song> _db;
 

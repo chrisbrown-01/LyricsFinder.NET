@@ -72,7 +72,7 @@ namespace LyricsFinder.NET.Controllers
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                ViewBag.ErrorMessage = $"User with Id = {userId} cannot be found"; // TODO: security?
+                ViewBag.ErrorMessage = $"User with Id = {userId} cannot be found";
                 return View("NotFound");
             }
             ViewBag.UserName = user.UserName;
@@ -84,14 +84,12 @@ namespace LyricsFinder.NET.Controllers
                     RoleId = role.Id,
                     RoleName = role.Name,
                 };
+
                 if (await _userManager.IsInRoleAsync(user, role.Name))
-                {
                     userRolesViewModel.Selected = true;
-                }
-                else
-                {
+                else 
                     userRolesViewModel.Selected = false;
-                }
+
                 model.Add(userRolesViewModel);
             }
             return View(model);
@@ -111,11 +109,8 @@ namespace LyricsFinder.NET.Controllers
             var user = await _userManager.FindByIdAsync(userId);
             var admin = await _userManager.FindByEmailAsync(User.Identity.Name);
 
-            if (user == null || admin == null)
-            {
-                return View();
-            }
-
+            if (user == null || admin == null) return View();
+          
             var roles = await _userManager.GetRolesAsync(user);
 
             // Prevent admin from removing their own admin status
@@ -175,10 +170,7 @@ namespace LyricsFinder.NET.Controllers
             var user = await _userManager.FindByIdAsync(userId);
             var admin = await _userManager.FindByEmailAsync(User.Identity.Name);
 
-            if (user == null || admin == null)
-            {
-                return NotFound();
-            }
+            if (user == null || admin == null) return NotFound();
 
             await _userManager.DeleteAsync(user);
             _logger.LogInformation("Admin {@Admin} deleted user {@User} via role manager.", admin, user);
