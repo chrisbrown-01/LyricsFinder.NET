@@ -1,0 +1,205 @@
+﻿@using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Extensions
+@using Microsoft.AspNetCore.Identity
+@*@using _12042021_SpotifyApp.Areas.Identity.Data*@
+@model LyricsFinder.NET.Models.Song
+@*@inject SignInManager<CustomAppUserData> SignInManager*@
+
+@{
+    var currentUrl = UriHelper.GetDisplayUrl(Context.Request);
+}
+
+<div>
+    <center>
+        <h1>
+            <b>@Model.Name.ToUpper() - <i>@Model.Artist.ToUpper()</i></b>
+        </h1>
+    </center>
+
+    @if (@Model.DeezerId != null)
+    {
+        var deezerIdString = @Model.DeezerId.ToString();
+        var deezerWidgetLink = "https://widget.deezer.com/widget/light/track/" + deezerIdString + "?tracklist=false";
+        <iframe title="deezer-widget" src=@deezerWidgetLink width="100%" height="450" frameborder="0" allowtransparency="true" allow="encrypted-media; clipboard-write"></iframe>
+    }
+
+    @if (TempData.ContainsKey("SongAddedToFavourites"))
+    {
+        <br />
+        var resetTempData = TempData["SongAddedToFavourites"].ToString();
+
+        <div class="alert alert-success alert-dismissible" role="alert">
+            Song added to favourites list!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData.ContainsKey("SongRemovedFromFavourites"))
+    {
+        <br />
+        var resetTempData = TempData["SongRemovedFromFavourites"].ToString();
+
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            Song removed from favourites list!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData.ContainsKey("WrongSongInfoReported"))
+    {
+        <br />
+        var resetTempData = TempData["WrongSongInfoReported"].ToString();
+
+        <div class="alert alert-success alert-dismissible" role="alert" id="emailSuccessAlert">
+            Wrong info successfully reported to site admin - email has been sent!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData.ContainsKey("EmailNotificationServiceFailed"))
+    {
+        <br />
+        var resetTempData = TempData["EmailNotificationServiceFailed"].ToString();
+
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            Wrong song info notification email failed to send.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <div class="text-center my-3">
+        <div class="btn-group">
+
+            <a asp-controller="SongInfo" asp-action="AddToFavourites" asp-route-songDbObject="@Model.Id" asp-route-redirectUrl="@currentUrl"
+               class="btn btn-outline-secondary text-secondary">
+                Add Song to Favourites
+            </a>
+
+            <a asp-controller="SongInfo" asp-action="RemoveFromFavourites" asp-route-songDbObject="@Model.Id" asp-route-redirectUrl="@currentUrl"
+               class="btn btn-outline-secondary text-secondary">
+                Remove Song from Favourites
+            </a>
+
+            <button class="btn btn-outline-secondary text-secondary" data-toggle="collapse" data-target="#collapseSongInfo">
+                Toggle Song Info
+            </button>
+
+            <button class="btn btn-outline-danger text-danger" data-toggle="modal" data-target="#wrongSongInfoModal">Wrong Song Info</button>
+
+        </div>
+    </div>
+
+    <div id="collapseSongInfo">
+        <center>
+            <span style="white-space:pre-line">@Model.Lyrics</span>
+
+            <br />
+            <br />
+
+            <b>Song duration: @Model.SongDuration seconds</b>
+
+            <br />
+            <br />
+        </center>
+
+        <div id="images">
+            <center>
+                <img class="mr-5" data-toggle="modal" data-target="#expandArtistImage"
+                     src=@Model.ArtistArtLink alt="Artist Art" width="200" height="200">
+
+                <img class="ml-5" data-toggle="modal" data-target="#expandAlbumImage"
+                     src=@Model.AlbumArtLink alt="Album Art" width="200" height="200">
+            </center>
+        </div>
+
+    </div>
+
+
+
+</div>
+
+<br />
+
+<div class="btn-block text-center">
+
+    <a href='javascript:history.go(-1)' class="btn btn-outline-dark text-dark">Previous Page</a>
+    <a asp-controller="SpotifyUserInput" asp-action="Index" class="btn btn-secondary">Back To Main Menu</a>
+
+</div>
+
+<br />
+
+<div class="modal fade" id="wrongSongInfoModal" tabindex="-1" role="dialog" aria-labelledby="wrongSongInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="wrongSongInfoModalLabel">Wrong Song Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                @*
+                    <button type="button" class="btn btn-warning"
+                    onclick="$('#emailSuccessAlert').show();" data-dismiss="modal">
+                    Report Wrong Song Info
+                    </button>
+                *@
+                <a asp-controller="SongInfo" asp-route-Id="@Model.Id" asp-route-redirectUrl="@currentUrl" asp-action="NotifyWrongSongInfoViaEmail" class="btn btn-warning">Report Wrong Song Info</a>
+                <a asp-controller="SongInfo" asp-route-Id="@Model.Id" asp-route-slug="@Model.Slug" asp-action="UpdateWrongSongInfo" class="btn btn-primary">Update Wrong Song Info</a>
+                <a asp-controller="SpotifyUserInput" asp-route-Id="@Model.Id" asp-route-slug="@Model.Slug" asp-action="Delete" class="btn btn-danger">Delete Song</a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="expandArtistImage" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Artist Art</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <center>
+                    <img src=@Model.ArtistArtLink alt="Artist Art" width="75%" height="75%">
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="expandAlbumImage" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Album Art</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <center>
+                    <img src=@Model.AlbumArtLink alt="Album Art" width="75%" height="75%">
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+

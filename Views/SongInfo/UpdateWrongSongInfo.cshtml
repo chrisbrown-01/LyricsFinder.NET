@@ -1,0 +1,113 @@
+﻿@model LyricsFinder.NET.Models.Song
+
+<form method="post">
+    @*<input asp-for="Id" asp-for="Name" asp-for="Artist" hidden />*@
+    <div class="border p-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+
+        <div class="form-group row">
+            <h2 class="pl-3">Edit Song Information</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                @Html.HiddenFor(x => x.Id)
+                @Html.HiddenFor(x => x.Name)
+                @Html.HiddenFor(x => x.Artist)
+                @Html.HiddenFor(x => x.CreatedBy)
+
+                <div class="form-group row">
+                    <div class="col-md-2">
+                        <label asp-for="Name"></label>
+                    </div>
+                    <div class="col-md-10">
+                        <input asp-for="Name" disabled class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-2">
+                        <label asp-for="Artist"></label>
+                    </div>
+                    <div class="col-md-10">
+                        <input asp-for="Artist" disabled class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-2">
+                        <label asp-for="DeezerId"></label>
+                    </div>
+                    <div class="col-md-10">
+                        <input asp-for="DeezerId" class="form-control" />
+                        <span asp-validation-for="DeezerId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-2">
+                        <label asp-for="SongDuration"></label>
+                    </div>
+                    <div class="col-md-10">
+                        <input asp-for="SongDuration" class="form-control" />
+                        <span asp-validation-for="SongDuration" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-2">
+                        <label asp-for="ArtistArtLink"></label>
+                    </div>
+                    <div class="col-md-10">
+                        <input asp-for="ArtistArtLink" class="form-control" />
+                        <span asp-validation-for="ArtistArtLink" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-2">
+                        <label asp-for="AlbumArtLink"></label>
+                    </div>
+                    <div class="col-md-10">
+                        <input asp-for="AlbumArtLink" class="form-control" />
+                        <span asp-validation-for="AlbumArtLink" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-2">
+                        <label asp-for="Lyrics"></label>
+                    </div>
+                    <div class="col-md-10">
+                        @*<input asp-for="Lyrics" class="form-control" /> *@
+                        <textarea asp-for="Lyrics" class="form-control" rows="15"></textarea>
+                        <span asp-validation-for="Lyrics" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="btn-block text-center">
+
+                    <input type="submit" class="btn btn-primary" value="Update" />
+                    <a href='javascript:history.go(-1)' class="btn btn-outline-dark text-dark">Previous Page</a>
+                    <a asp-controller="SpotifyUserInput" asp-action="Index" class="btn btn-secondary">Back To Main Menu</a>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+</form>
+
+@section Scripts{
+
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+
+}

@@ -1,0 +1,156 @@
+﻿@model PaginatedList<Song>
+
+@*@inject SignInManager<CustomAppUserData> SignInManager*@
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div>
+    <div class="row pt-4">
+        <div class="col-9">
+            <h2>Song Database</h2>
+        </div>
+
+        <div class="col-3 test-right">
+            <a asp-controller="SpotifyUserInput" asp-action="Create" class="btn btn-primary btn-lg">
+                Search New Song
+            </a>
+        </div>
+    </div>
+
+    <br />
+
+    @if (Model.Count() > 0)
+    {
+        @using (Html.BeginForm())
+        {
+            <p>
+                Find by song name or artist: @Html.TextBox("searchString")
+                <input type="submit" value="Search" />
+            </p>
+        }
+
+        <table class="table table-bordered table-striped">
+
+            <thead>
+                <tr>
+                    <th>
+                        @Html.ActionLink("Id", "Index", new {sortOrder = ViewBag.IdSortParm, currentFilter=ViewBag.CurrentFilter })
+                    </th>
+
+                    <th>
+                        @Html.ActionLink("Name", "Index", new {sortOrder = ViewBag.NameSortParm, currentFilter=ViewBag.CurrentFilter})
+                    </th>
+
+                    <th>
+                        @Html.ActionLink("Artist", "Index", new {sortOrder = ViewBag.ArtistSortParm, currentFilter=ViewBag.CurrentFilter})
+                    </th>
+
+                    <th>
+                        @Html.ActionLink("Query Date", "Index", new {sortOrder = ViewBag.DateSortParm, currentFilter=ViewBag.CurrentFilter})
+                    </th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var obj in Model)
+                {
+                    <tr>
+
+                        <td width="5%">@obj.Id</td>
+                        <td width="20%">@obj.Name</td>
+                        <td width="20%">@obj.Artist</td>
+                        <td width="20%">@obj.QueryDate</td>
+                        <td class="text-center">
+                            <div class="w-100 btn-group" role="group">
+
+                                <a asp-controller="SongInfo" asp-route-Id="@obj.Id" asp-route-slug="@obj.Slug" asp-action="Index" class="btn btn-primary mx-1">
+                                    Get Song Info
+                                </a>
+
+                                <a asp-controller="SpotifyUserInput" asp-route-Id="@obj.Id" asp-route-slug="@obj.Slug" asp-action="Edit" class="btn btn-secondary mx-1">
+                                    Edit
+                                </a>
+
+                                <a asp-controller="SpotifyUserInput" asp-route-Id="@obj.Id" asp-route-slug="@obj.Slug" asp-action="Delete" class="btn btn-danger mx-1">
+                                    Delete
+                                </a>
+
+                            </div>
+
+
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between">
+
+            <div class="float-left">
+
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="btn btn-default btn-outline-dark @prevDisabled">
+                    Previous Page
+                </a>
+
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="btn btn-default btn-outline-dark @nextDisabled">
+                    Next Page
+                </a>
+
+            </div>
+
+            @using (Html.BeginForm())
+            {
+                <p>Jump to page: @Html.TextBox("pageNumber", "",  new {type="number", min="1", max=@Model.TotalPages, placeholder=@Model.TotalPages}) <input type="submit" value="Go" /></p>
+            }
+
+            <div class="float-right">
+
+                
+@*              @if (SignInManager.IsSignedIn(User))
+                {
+                    <a asp-action="IndexFavourites"
+                       asp-controller="SpotifyUserInput"
+                       class="btn btn-default btn-outline-primary">
+                        Filter by Favourites List
+                    </a>
+                }*@
+
+                <a asp-action="ExportToExcel"
+                   asp-controller="ExportToExcel"
+                   asp-route-sortOrder="@ViewBag.CurrentSort"
+                   asp-route-currentFilter="@ViewBag.CurrentFilter"
+                   class="btn btn-default btn-outline-primary">
+                    Export as Excel File
+                </a>
+
+            </div>
+
+        </div>
+    }
+
+    else
+    {
+        <h3 class="text-center text-danger">No song database items exist.</h3>
+
+        <br />
+
+        <div class="form-group btn-block text-center row">
+            <a href='javascript:history.go(-1)' class="btn btn-outline-dark text-dark">Previous Page</a>
+            <a asp-controller="SpotifyUserInput" asp-action="Index" class="btn btn-secondary">Back To Main Menu</a>
+        </div>
+    }
+
+</div>

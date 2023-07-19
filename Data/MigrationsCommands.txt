@@ -1,0 +1,25 @@
+﻿Add-Migration CreateIdentitySchema -Context _12042021_SpotifyAppContext
+
+Update-Database -Context _12042021_SpotifyAppContext
+
+Remove-Migration -Context _12042021_SpotifyAppContext
+
+
+
+
+
+
+Add-Migration CreateSongDatabase -Context ApplicationDbContext
+
+Update-Database -Context ApplicationDbContext
+
+Remove-Migration -Context ApplicationDbContext
+
+
+
+Add-Migration CreateIdentityAndSongTables
+
+
+
+Get-Migration
+

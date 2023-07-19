@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div>
+    <center><h3>LyricsFinder.NET</h3></center>
+
+    <br />
+
+    <center><a asp-controller="SpotifyUserInput" asp-action="Index">View all songs in the song database!</a></center>
+
+    <br />
+
+    <center><a asp-controller="SongInfo" asp-action="Index" asp-route-id=@ViewBag.randomSongId>Click here to check out a random song!</a></center>
+
+    <br />
+
+    <center><a asp-controller="SongInfo" asp-action="Index" asp-route-id=@ViewBag.mostPopularSongId>Click here to check out the most popular song amongst our users!</a></center>
+
+    <br />
+
+    <center><a href=https://localhost:44345/swagger/index.html>Swagger API link</a></center>
+</div>
+
