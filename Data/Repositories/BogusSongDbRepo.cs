@@ -11,6 +11,7 @@ namespace LyricsFinder.NET.Data.Repositories
         private readonly Faker<Song> _songFaker;
         private readonly List<Song> _songsTable;
         private readonly List<UserFavouriteSongs> _favouritesTable;
+        private static int _favouritesTableIdCounter;
 
         public BogusSongDbRepo()
         {
@@ -31,6 +32,8 @@ namespace LyricsFinder.NET.Data.Repositories
             _songsTable = _songFaker.Generate(16);
 
             _favouritesTable = new();
+
+            _favouritesTableIdCounter = 0;
         }
 
         public bool IsSongDuplicate(Song song)
@@ -52,25 +55,17 @@ namespace LyricsFinder.NET.Data.Repositories
             await Task.CompletedTask;
         }
 
+        // TODO: rename to GetAllSongs()
         public IEnumerable<Song> GetAllSongsInDb()
         {
             return _songsTable;
         }
 
-        public Task<Song?> GetDbSongByIdAsync(int id)
+        // TODO: rename to remove db in method name, consolidate with API method
+        public Task<Song?> GetDbSongByIdAsync(int songId)
         {
-            var song = _songsTable.Where(s => s.Id == id).FirstOrDefault();
+            var song = _songsTable.Where(s => s.Id == songId).FirstOrDefault();
             return Task.FromResult(song);
-        }
-
-        public DbSet<Song> GetSongDb()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SaveChangesToDbAsync()
-        {
-            throw new NotImplementedException();
         }
 
         public async Task UpdateSongInDb(Song song)
@@ -85,12 +80,8 @@ namespace LyricsFinder.NET.Data.Repositories
             return _favouritesTable;
         }
 
-        public DbSet<UserFavouriteSongs> GetFavouriteSongDb()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<UserFavouriteSongs> GetUserFavouriteSongs(CustomAppUserData loggedInUser)
+        // TODO: perform empty check inside repo methods and return null if they are empty
+        public IEnumerable<UserFavouriteSongs> GetUserFavouriteSongsIds(CustomAppUserData loggedInUser)
         {
             // return _db.UserFavouriteSongs.Where(x => x.UserId == loggedInUser.Id);
 
@@ -104,28 +95,55 @@ namespace LyricsFinder.NET.Data.Repositories
             //await Task.CompletedTask;
         }
 
-        public void RemoveFavSongFromDb(UserFavouriteSongs obj)
+        public async Task AddFavSongToDb(int songId, string userId) // TODO: rename
         {
-            _favouritesTable.Remove(obj);
-            //await Task.CompletedTask;
+            if (_favouritesTable.Any(s => s.SongId == songId && s.UserId == userId)) return;
+
+            var favSong = new UserFavouriteSongs()
+            {
+                Id = ++_favouritesTableIdCounter,
+                UserId = userId,
+                SongId = songId
+            };
+
+            _favouritesTable.Add(favSong);
+            await Task.CompletedTask;
         }
 
-        public Song GetSongById(int id)
+        public async Task RemoveFavSongFromDb(int songId, string userId) // TODO: rename to removeSongFromFavs
         {
-            throw new NotImplementedException();
+            _favouritesTable.RemoveAll(x => x.SongId == songId && x.UserId == userId);
+            await Task.CompletedTask;
+        }
+
+        public Song? GetSongById(int songId)
+        {
+            return _songsTable.FirstOrDefault(s => s.Id == songId);
         }
 
         public IEnumerable<Song> GetSongsByName(string songName)
         {
-            throw new NotImplementedException();
+            return _songsTable.Where(s => s.Name == songName);
         }
 
         public IEnumerable<Song> GetSongsByArtist(string artistName)
         {
-            throw new NotImplementedException();
+            return _songsTable.Where(s => s.Artist == artistName);
         }
 
         public IEnumerable<Song> GetSongsBySongNameArtist(string songName, string artistName)
+        {
+            return _songsTable.Where(s => s.Name == songName && s.Artist == artistName);
+        }
+
+        public IEnumerable<Song> GetUserFavSongs(string userId)
+        {
+            var userFavSongIds = _favouritesTable.Where(u => u.UserId == userId).Select(s => s.SongId);
+
+            return _songsTable.Where(s => userFavSongIds.Contains(s.Id));
+        }
+
+        public void RemoveFavSongFromDb(UserFavouriteSongs obj)
         {
             throw new NotImplementedException();
         }

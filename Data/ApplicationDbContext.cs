@@ -16,7 +16,7 @@ namespace LyricsFinder.NET.Data
 
         public DbSet<Song> SongDatabase { get; set; }
 
-        public DbSet<UserFavouriteSongs> UserFavouriteSongs { get; set; }
+        public DbSet<UserFavouriteSongs> UserFavouriteSongs { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

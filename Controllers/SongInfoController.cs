@@ -33,24 +33,24 @@ namespace LyricsFinder.NET.Controllers
             _cache = memoryCache;
         }
 
-        public async Task<ActionResult> Index(int id)
+        public async Task<ActionResult> Index(int songId)
         {
             Song? song;
 
-            if (!_cache.TryGetValue(id, out song))
+            if (!_cache.TryGetValue(songId, out song))
             {
-                song = await _db.GetDbSongByIdAsync(id);
+                song = await _db.GetDbSongByIdAsync(songId);
 
                 if (song == null) return NotFound();
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                var cacheEntryOptions = new MemoryCacheEntryOptions() // TODO: move as static variable declared in constructor
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
                     SlidingExpiration = TimeSpan.FromMinutes(1),
                     Size = 1
                 };
 
-                _cache.Set(id, song, cacheEntryOptions);
+                _cache.Set(songId, song, cacheEntryOptions);
             }
 
             return View(song);
@@ -89,7 +89,7 @@ namespace LyricsFinder.NET.Controllers
                 song.QueryDate = DateTime.Now;
                 song.LyricsSet = true;
 
-                CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+                var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
                 song.EditedBy = loggedInUser.Id;
 
                 await _db.UpdateSongInDb(song);
@@ -110,23 +110,17 @@ namespace LyricsFinder.NET.Controllers
         /// <summary>
         /// Add song to favourite song database
         /// </summary>
-        /// <param name="songDbObject">Database song id</param>
+        /// <param name="songId">Database song id</param>
         /// <param name="redirectUrl">Redirect user back to SongInfo index page via url</param>
         /// <returns></returns>
         [Authorize]
-        public async Task<IActionResult> AddToFavourites(int songDbObject, string redirectUrl)
+        public async Task<IActionResult> AddToFavourites(int songId, string redirectUrl)
         {
+            if (songId <= 0) return BadRequest();
+
             var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
 
-            var newFavouriteSong = new UserFavouriteSongs { UserId = loggedInUser.Id, SongId = songDbObject };
-
-            // Check if user has already added song to favourites before updating database (ie. prevent duplicates)
-            if (!_db.GetUserFavouriteSongs(loggedInUser).Any(x => x.SongId == songDbObject))
-            {
-                _db.AddFavSongToDb(newFavouriteSong);
-            }
-
-            //return RedirectToAction("Index", "SongInfo", new SpotifyUserInput { Id = songDbObject });
+            await _db.AddFavSongToDb(songId, loggedInUser.Id);
 
             TempData["SongAddedToFavourites"] = "Favourite song added";
 
@@ -136,22 +130,17 @@ namespace LyricsFinder.NET.Controllers
         /// <summary>
         /// Remove song from favourite song database
         /// </summary>
-        /// <param name="songDbObject">Database song id</param>
+        /// <param name="songId">Database song id</param>
         /// <param name="redirectUrl">Redirect user back to SongInfo index page via url</param>
         /// <returns></returns>
         [Authorize]
-        public async Task<IActionResult> RemoveFromFavourites(int songDbObject, string redirectUrl)
+        public async Task<IActionResult> RemoveFromFavourites(int songId, string redirectUrl)
         {
+            if (songId <= 0) return BadRequest();
+
             var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
 
-            var favouritedSong = _db.GetUserFavouriteSongs(loggedInUser).Where(x => x.SongId == songDbObject).FirstOrDefault();
-
-            if (favouritedSong != null)
-            {
-                _db.RemoveFavSongFromDb(favouritedSong);
-            }
-
-            //return RedirectToAction("Index", "SongInfo", new SpotifyUserInput { Id = songDbObject });
+            await _db.RemoveFavSongFromDb(songId, loggedInUser.Id);
 
             TempData["SongRemovedFromFavourites"] = "Favourite song removed";
 
@@ -161,24 +150,21 @@ namespace LyricsFinder.NET.Controllers
         /// <summary>
         /// Send email to site admin to notify that wrong song info has been entered
         /// </summary>
-        /// <param name="id">Database song id</param>
+        /// <param name="songId">Database song id</param>
         /// <param name="redirectUrl">Redirect user back to SongInfo index page via url</param>
         /// <returns></returns>
         [Authorize]
-        public async Task<IActionResult> NotifyWrongSongInfoViaEmailAsync(int? id, string redirectUrl)
+        public async Task<IActionResult> NotifyWrongSongInfoViaEmailAsync(int songId, string redirectUrl)
         {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
+            if (songId <= 0) return BadRequest();
 
-            CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
 
             try
             {
                 await _emailSender.SendEmailAsync("NOTIFY_SITE_ADMIN",
                                     "Wrong song info report",
-                                    $"Wrong song info reported by user with email: {loggedInUser.Email} for song ID: {id}" +
+                                    $"Wrong song info reported by user with email: {loggedInUser.Email} for song ID: {songId}" +
                                     $"<br>" +
                                     $"<br>" +
                                     $"<a href={redirectUrl}>Link to song info page</a>");

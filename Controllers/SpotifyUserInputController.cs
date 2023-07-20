@@ -1,4 +1,5 @@
-﻿using LyricsFinder.NET.Areas.Identity.Models;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data.Repositories;
 using LyricsFinder.NET.Models;
 using LyricsFinder.NET.Services;
@@ -37,9 +38,13 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="searchString"></param>
         /// <param name="pageNumber"></param>
         /// <returns></returns>
-        public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
+        public ActionResult Index(
+            string sortOrder, 
+            string currentFilter, 
+            string searchString, 
+            int? pageNumber)
         {
-            IEnumerable<Song> spotifySearchList = _db.GetAllSongsInDb();
+            var spotifySearchList = _db.GetAllSongsInDb();
 
             PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, spotifySearchList);
 
@@ -55,28 +60,39 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [Authorize]
-        public async Task<ActionResult> IndexFavourites(string sortOrder, string currentFilter, string searchString, int? pageNumber)
+        public async Task<ActionResult> IndexFavourites(
+            string sortOrder, 
+            string currentFilter, 
+            string searchString, 
+            int? pageNumber)
         {
-            CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
 
-            // Find all songs that user has favourited from UserFavouriteSongs db. Foreign key forces inclusion of corresponding SpotifyUserInput song object
-            var usersFavouriteSongs = _db.GetFavouriteSongDb().Where(x => x.UserId == loggedInUser.Id).Include(s => s.SpotifyUserInput);
+            //// Find all songs that user has favourited from UserFavouriteSongs db. Foreign key forces inclusion of corresponding SpotifyUserInput song object
+            //var usersFavouriteSongs = _db.GetFavouriteSongDb().Where(x => x.UserId == loggedInUser.Id).Include(s => s.SpotifyUserInput);
 
-            List<Song> spotifySearchListFavs = new List<Song>();
+            //List<Song> spotifySearchListFavs = new List<Song>();
 
-            // Add each of the SpotifyUserInput objects from the favourite songs db query result to the spotifySearchListFavs list
-            foreach (var song in usersFavouriteSongs)
-            {
-                spotifySearchListFavs.Add(song.SpotifyUserInput);
-            }
+            //// Add each of the SpotifyUserInput objects from the favourite songs db query result to the spotifySearchListFavs list
+            //foreach (var song in usersFavouriteSongs)
+            //{
+            //    spotifySearchListFavs.Add(song.SpotifyUserInput);
+            //}
+
+            var spotifySearchListFavs = _db.GetUserFavSongs(loggedInUser.Id);
 
             PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, spotifySearchListFavs);
 
             return View(paginatedList);
         }
 
-
-        private PaginatedList<Song> CreatePaginatedList(string sortOrder, string currentFilter, string searchString, int? pageNumber, IEnumerable<Song> spotifySearchList)
+        // TODO: test
+        private PaginatedList<Song> CreatePaginatedList(
+            string sortOrder, 
+            string currentFilter, 
+            string searchString, 
+            int? pageNumber, 
+            IEnumerable<Song> spotifySearchList)
         {
             // filter/sort code taken from https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/sort-filter-page?view=aspnetcore-6.0
             // and https://docs.microsoft.com/en-us/aspnet/mvc/overview/getting-started/getting-started-with-ef-using-mvc/sorting-filtering-and-paging-with-the-entity-framework-in-an-asp-net-mvc-application
@@ -138,7 +154,7 @@ namespace LyricsFinder.NET.Controllers
 
             int pageSize = 10;
 
-            PaginatedList<Song> paginatedList = PaginatedList<Song>.Create(spotifySearchList, pageNumber ?? 1, pageSize);
+            var paginatedList = PaginatedList<Song>.Create(spotifySearchList, pageNumber ?? 1, pageSize);
             return paginatedList;
         }
 

@@ -13,8 +13,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
-using LyricsFinder.NET.Helpers;
 
 namespace LyricsFinder.NET.Areas.Identity.Pages.Account
 {
@@ -98,7 +96,7 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User {@User} created a new account with password.", user.Email);
-                    await _userManager.AddToRoleAsync(user, UserRoleId.BasicNormalizedName);
+                    await _userManager.AddToRoleAsync(user, "BASIC");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

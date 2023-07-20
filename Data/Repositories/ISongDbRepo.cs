@@ -6,9 +6,8 @@ namespace LyricsFinder.NET.Data.Repositories
 {
     public interface ISongDbRepo
     {
-        Task SaveChangesToDbAsync();
-
         IEnumerable<Song> GetAllSongsInDb();
+        IEnumerable<Song> GetUserFavSongs(string userId);
         Task AddSongToDb(Song song); // TODO: rename to async
 
         Task UpdateSongInDb(Song song);
@@ -20,11 +19,9 @@ namespace LyricsFinder.NET.Data.Repositories
 
 
         // UserFavouriteSongs table methods
-        IEnumerable<UserFavouriteSongs> GetAllFavouriteSongs(); // TODO: convert to async
+        IEnumerable<UserFavouriteSongs> GetAllFavouriteSongs(); // TODO: convert to async, or even necessary?
 
-        DbSet<UserFavouriteSongs> GetFavouriteSongDb();
-
-        IEnumerable<UserFavouriteSongs> GetUserFavouriteSongs(CustomAppUserData loggedInUser);
+        IEnumerable<UserFavouriteSongs> GetUserFavouriteSongsIds(CustomAppUserData loggedInUser);
 
         void AddFavSongToDb(UserFavouriteSongs obj);
 
@@ -33,16 +30,16 @@ namespace LyricsFinder.NET.Data.Repositories
 
 
         // API methods
-
-        DbSet<Song> GetSongDb();
         bool IsSongDuplicate(Song song);
 
-        Song GetSongById(int id);
+        Song? GetSongById(int id);
 
         IEnumerable<Song> GetSongsByName(string songName);
 
         IEnumerable<Song> GetSongsByArtist(string artistName);
 
         IEnumerable<Song> GetSongsBySongNameArtist(string songName, string artistName);
+        Task RemoveFavSongFromDb(int songId, string userId);
+        Task AddFavSongToDb(int songId, string userId);
     }
 }
