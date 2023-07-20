@@ -1,5 +1,6 @@
 ﻿namespace LyricsFinder.NET.Helpers
 {
+    // TODO: necessary?
     public static class UserRoleId
     {
         public static string Admin = "Admin";

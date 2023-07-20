@@ -167,7 +167,6 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         public async Task<IActionResult> NotifyWrongSongInfoViaEmailAsync(int? id, string redirectUrl)
         {
-            // TODO: rework into a utility class method call
             if (id == null || id == 0)
             {
                 return NotFound();
@@ -175,13 +174,9 @@ namespace LyricsFinder.NET.Controllers
 
             CustomAppUserData loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
 
-            //var emailRecipient = _appSettings.EmailFrom;
-            var emailRecipient = "placeholder@email.com";
-
             try
             {
-                await _emailSender.SendEmailAsync(
-                                    emailRecipient,
+                await _emailSender.SendEmailAsync("NOTIFY_SITE_ADMIN",
                                     "Wrong song info report",
                                     $"Wrong song info reported by user with email: {loggedInUser.Email} for song ID: {id}" +
                                     $"<br>" +
