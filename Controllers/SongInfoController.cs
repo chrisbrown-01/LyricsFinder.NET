@@ -18,6 +18,7 @@ namespace LyricsFinder.NET.Controllers
         private readonly ILogger<SongInfoController> _logger;
         private readonly IEmailSender _emailSender;
         private readonly IMemoryCache _cache;
+        private readonly MemoryCacheEntryOptions _memoryCacheEntryOptions;
 
         public SongInfoController(
             ISongDbRepo db,
@@ -31,6 +32,13 @@ namespace LyricsFinder.NET.Controllers
             _logger = logger;
             _emailSender = emailSender;
             _cache = memoryCache;
+
+            _memoryCacheEntryOptions = new MemoryCacheEntryOptions()
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
+                SlidingExpiration = TimeSpan.FromMinutes(1),
+                Size = 1
+            };
         }
 
         public async Task<ActionResult> Index(int songId)
@@ -43,14 +51,7 @@ namespace LyricsFinder.NET.Controllers
 
                 if (song == null) return NotFound();
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions() // TODO: move as static variable declared in constructor
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
-                    SlidingExpiration = TimeSpan.FromMinutes(1),
-                    Size = 1
-                };
-
-                _cache.Set(songId, song, cacheEntryOptions);
+                _cache.Set(songId, song, _memoryCacheEntryOptions);
             }
 
             return View(song);
