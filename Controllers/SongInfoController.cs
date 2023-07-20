@@ -60,12 +60,12 @@ namespace LyricsFinder.NET.Controllers
         /// <summary>
         /// Edit song information and manually input lyrics
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="songId"></param>
         /// <returns></returns>
         [Authorize]
-        public async Task<ActionResult> UpdateWrongSongInfo(int id)
+        public async Task<ActionResult> UpdateWrongSongInfo(int songId)
         {
-            var song = await _db.GetDbSongByIdAsync(id);
+            var song = await _db.GetDbSongByIdAsync(songId);
 
             if (song == null) return NotFound();
 
