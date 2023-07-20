@@ -1,7 +1,10 @@
 using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data;
 using LyricsFinder.NET.Data.Repositories;
+using LyricsFinder.NET.Services;
+using LyricsFinder.NET.Services.Email;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Configuration;
@@ -18,6 +21,7 @@ namespace LyricsFinder.NET
             var Configuration = builder.Configuration;
 
             // Add services to the container.
+            // TODO: change to use Configuration?
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -89,6 +93,9 @@ namespace LyricsFinder.NET
 
             builder.Services.AddSingleton<ISongDbRepo, BogusSongDbRepo>();
             //builder.Services.AddScoped<ISongDbRepo, SqlSongDbRepo>();
+
+            //builder.Services.AddSingleton<IEmailSender, MailkitEmailSender>();
+            builder.Services.AddSingleton<IEmailSender, FakeEmailSender>();
 
             var app = builder.Build();
 
