@@ -137,27 +137,22 @@ namespace LyricsFinder.NET.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Create song post request did not pass ModelState validation. Object passed in had following details: {@Exception}", song);
+                _logger.LogWarning("Create song post request did not pass ModelState validation. Object passed in had following details: {@Exception}", song);
                 return View(song);
             }
 
             if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
 
-            song.QueryDate = DateTime.Now;
-
             var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
             song.CreatedBy = loggedInUser.Id;
+            song.QueryDate = DateTime.Now;
 
             await _db.AddSongToDb(song);
-
-            _logger.LogInformation($"Song created: Name=\"{song.Name}\"    Artist=\"{song.Artist}\"");
+            _logger.LogInformation($"Song created: Name=\"{song.Name}\"    Artist=\"{song.Artist}\""); // TODO: improve logging, investigate simple dashboard logging providers
 
             try
             {
-                //song = await RetrieveLyricsAndSongInfo.ScrapeSongInfoFromWebAsync(song);
-                
-                song = await _songRetriever.RetrieveSongContentsAsync(song);
-
+                song = await _songRetriever.RetrieveSongContentsAsync(song); // TODO: try catch block not necessary here, just add filter to return Error view?
                 await _db.UpdateSongInDb(song);
             }
             catch (Exception ex)
@@ -199,16 +194,15 @@ namespace LyricsFinder.NET.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Create song post request did not pass ModelState validation. Object passed in had following details: {@Exception}", song);
+                _logger.LogWarning("Edit song post request did not pass ModelState validation. Object passed in had following details: {@Exception}", song);
                 return View(song);
             }
 
             if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
 
-            song.QueryDate = DateTime.Now;
-
             var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
             song.EditedBy = loggedInUser.Id;
+            song.QueryDate = DateTime.Now;
 
             await _db.UpdateSongInDb(song);
             _cache.Remove(song.Id);
@@ -217,8 +211,7 @@ namespace LyricsFinder.NET.Controllers
 
             try
             {
-                song = await RetrieveLyricsAndSongInfo.ScrapeSongInfoFromWebAsync(song);
-
+                song = await _songRetriever.RetrieveSongContentsAsync(song); // TODO: try catch block not necessary here, just add filter to return Error view?
                 await _db.UpdateSongInDb(song);
             }
             catch (Exception ex)

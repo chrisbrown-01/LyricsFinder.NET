@@ -2,14 +2,23 @@
 {
     public class DeezerApiSongContents
     {
-        public class Rootobject
+        public class DeezerApiResponse
         {
-            public SongContents[]? data { get; set; }
+            public AllDeezerSongInfo[]? data { get; set; }
             public int? total { get; set; }
             public string? next { get; set; }
         }
 
-        public class SongContents
+        public class DeezerSongInfo
+        {
+            public int? Id { get; set; }
+            public int? SongDuration { get; set; }
+            public string? ArtistArtLink { get; set; } // TODO: safe to place image links in page?
+            public string? AlbumArtLink { get; set; }
+
+        }
+
+        public class AllDeezerSongInfo
         {
             public int? id { get; set; }
             public bool? readable { get; set; }
@@ -24,12 +33,12 @@
             public int? explicit_content_cover { get; set; }
             public string? preview { get; set; }
             public string? md5_image { get; set; }
-            public Artist? artist { get; set; }
-            public Album? album { get; set; }
+            public DeezerArtist? artist { get; set; }
+            public DeezerAlbum? album { get; set; }
             public string? type { get; set; }
         }
 
-        public class Artist
+        public class DeezerArtist
         {
             public int? id { get; set; }
             public string? name { get; set; }
@@ -43,7 +52,7 @@
             public string? type { get; set; }
         }
 
-        public class Album
+        public class DeezerAlbum
         {
             public int? id { get; set; }
             public string? title { get; set; }
