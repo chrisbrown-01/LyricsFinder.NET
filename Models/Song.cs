@@ -7,7 +7,7 @@ namespace LyricsFinder.NET.Models
     public class Song
     {
         [Key]
-        public int Id { get; set; }
+        public int Id { get; set; } // TODO: change to init? or get only?
 
         [Required]
         public string Name { get; set; } // TODO: how to handle non-null validity?

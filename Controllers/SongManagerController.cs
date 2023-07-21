@@ -4,6 +4,7 @@ using LyricsFinder.NET.Data.Repositories;
 using LyricsFinder.NET.Helpers;
 using LyricsFinder.NET.Models;
 using LyricsFinder.NET.Services;
+using LyricsFinder.NET.Services.SongRetrieval;
 using LyricsFinder.NET.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,16 +18,20 @@ namespace LyricsFinder.NET.Controllers
     public class SongManagerController : Controller
     {
         private readonly ISongDbRepo _db;
+        private readonly ISongRetrieval _songRetriever;
         private readonly UserManager<CustomAppUserData> _userManager;
         private readonly ILogger<SongManagerController> _logger;
         private readonly IMemoryCache _cache;
 
-        public SongManagerController(ISongDbRepo db,
+        public SongManagerController(
+            ISongDbRepo db,
+            ISongRetrieval songRetriever,
             UserManager<CustomAppUserData> userManager,
             ILogger<SongManagerController> logger,
             IMemoryCache memoryCache)
         {
             _db = db;
+            _songRetriever = songRetriever;
             _userManager = userManager;
             _logger = logger;
             _cache = memoryCache;
@@ -149,7 +154,9 @@ namespace LyricsFinder.NET.Controllers
 
             try
             {
-                song = await RetrieveLyricsAndSongInfo.ScrapeSongInfoFromWebAsync(song);
+                //song = await RetrieveLyricsAndSongInfo.ScrapeSongInfoFromWebAsync(song);
+                
+                song = await _songRetriever.RetrieveSongContentsAsync(song);
 
                 await _db.UpdateSongInDb(song);
             }

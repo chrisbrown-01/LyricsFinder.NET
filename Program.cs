@@ -3,6 +3,7 @@ using LyricsFinder.NET.Data;
 using LyricsFinder.NET.Data.Repositories;
 using LyricsFinder.NET.Services;
 using LyricsFinder.NET.Services.Email;
+using LyricsFinder.NET.Services.SongRetrieval;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -88,6 +89,8 @@ namespace LyricsFinder.NET
                     };
                 });
 
+            builder.Services.AddHttpClient();
+
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddSingleton<ISongDbRepo, BogusSongDbRepo>();
@@ -95,6 +98,8 @@ namespace LyricsFinder.NET
 
             //builder.Services.AddSingleton<IEmailSender, MailkitEmailSender>();
             builder.Services.AddSingleton<IEmailSender, FakeEmailSender>();
+
+            builder.Services.AddSingleton<ISongRetrieval, DeezerSongRetrieval>(); // TODO: chatgpt use singleton or scoped?
 
             var app = builder.Build();
 
