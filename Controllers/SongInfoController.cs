@@ -80,7 +80,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateWrongSongInfo([FromForm] Song song) // TODO: formerly obj, slug or routing issues?
+        public async Task<IActionResult> UpdateWrongSongInfo([FromForm] Song song)
         {
             // TODO: replace try-catch with filter
             try

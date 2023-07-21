@@ -53,10 +53,7 @@ namespace LyricsFinder.NET.Controllers
         /// <returns></returns>
         public int GetMostPopularSong()
         {
-            return 1;
-
-            // TODO: uncomment
-            /*
+            // TODO: seed favourited songs in test database
             try
             {
                 int mostPopularSongId;
@@ -88,7 +85,6 @@ namespace LyricsFinder.NET.Controllers
                 _logger.LogError("Error - GetMostPopularSong() in HomeController Index view could not obtain a song id. Exception: {@Exception}", ex.Message);
                 return 0;
             }
-            */
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
