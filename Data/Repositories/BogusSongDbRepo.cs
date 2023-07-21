@@ -7,7 +7,6 @@ namespace LyricsFinder.NET.Data.Repositories
 {
     public class BogusSongDbRepo : ISongDbRepo
     {
-        // TODO: lightshot backups list
         private readonly Faker<Song> _songFaker;
         private readonly List<Song> _songsTable;
         private readonly List<UserFavouriteSongs> _favouritesTable;
@@ -80,11 +79,8 @@ namespace LyricsFinder.NET.Data.Repositories
             return _favouritesTable;
         }
 
-        // TODO: perform empty check inside repo methods and return null if they are empty
         public IEnumerable<UserFavouriteSongs> GetUserFavouriteSongsIds(CustomAppUserData loggedInUser)
         {
-            // return _db.UserFavouriteSongs.Where(x => x.UserId == loggedInUser.Id);
-
             return _favouritesTable.Where(x => x.UserId == loggedInUser.Id);
         }
 

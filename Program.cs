@@ -21,7 +21,6 @@ namespace LyricsFinder.NET
             var Configuration = builder.Configuration;
 
             // Add services to the container.
-            // TODO: change to use Configuration?
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));

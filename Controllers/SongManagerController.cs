@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data.Repositories;
+using LyricsFinder.NET.Helpers;
 using LyricsFinder.NET.Models;
 using LyricsFinder.NET.Services;
 using LyricsFinder.NET.Utility;
@@ -76,7 +77,6 @@ namespace LyricsFinder.NET.Controllers
             return View(paginatedList);
         }
 
-        // TODO: move to Helpers folder
         private PaginatedList<Song> CreatePaginatedList(
             string sortOrder, 
             string currentFilter, 
@@ -84,9 +84,6 @@ namespace LyricsFinder.NET.Controllers
             int? pageNumber, 
             IEnumerable<Song> spotifySearchList)
         {
-            // filter/sort code taken from https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/sort-filter-page?view=aspnetcore-6.0
-            // and https://docs.microsoft.com/en-us/aspnet/mvc/overview/getting-started/getting-started-with-ef-using-mvc/sorting-filtering-and-paging-with-the-entity-framework-in-an-asp-net-mvc-application
-
             if (searchString != null)
             {
                 pageNumber = 1;
@@ -104,44 +101,7 @@ namespace LyricsFinder.NET.Controllers
             ViewBag.ArtistSortParm = sortOrder == "artist_asc" ? "artist_desc" : "artist_asc";
             ViewBag.DateSortParm = sortOrder == "date_asc" ? "date_desc" : "date_asc";
 
-            // TODO: consolidate with excel export controller
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                spotifySearchList = spotifySearchList.Where(s =>
-                    s.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
-                    s.Artist.Contains(searchString, StringComparison.CurrentCultureIgnoreCase));
-            }
-
-            switch (sortOrder)
-            {
-                case "id_desc":
-                    spotifySearchList = spotifySearchList.OrderByDescending(s => s.Id);
-                    break;
-                case "id_asc":
-                    spotifySearchList = spotifySearchList.OrderBy(s => s.Id);
-                    break;
-                case "name_desc":
-                    spotifySearchList = spotifySearchList.OrderByDescending(s => s.Name);
-                    break;
-                case "name_asc":
-                    spotifySearchList = spotifySearchList.OrderBy(s => s.Name);
-                    break;
-                case "artist_desc":
-                    spotifySearchList = spotifySearchList.OrderByDescending(s => s.Artist);
-                    break;
-                case "artist_asc":
-                    spotifySearchList = spotifySearchList.OrderBy(s => s.Artist);
-                    break;
-                case "date_desc":
-                    spotifySearchList = spotifySearchList.OrderByDescending(s => s.QueryDate);
-                    break;
-                case "date_asc":
-                    spotifySearchList = spotifySearchList.OrderBy(s => s.QueryDate);
-                    break;
-                default:
-                    spotifySearchList = spotifySearchList.OrderBy(s => s.Id);
-                    break;
-            }
+            spotifySearchList = SortingHelpers.SortSongsList(spotifySearchList, searchString, sortOrder);
 
             int pageSize = 10;
 

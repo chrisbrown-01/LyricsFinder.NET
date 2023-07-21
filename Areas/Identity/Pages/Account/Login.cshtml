@@ -67,8 +67,6 @@
                             <p>
                                 @foreach (var provider in Model.ExternalLogins!)
                                 {
-                                    // TODO: ensure this external login stuff renders
-                                    //<button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
                                     if (@provider.Name == "Google")
                                     {
                                     <p>

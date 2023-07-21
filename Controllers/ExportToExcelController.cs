@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data.Repositories;
+using LyricsFinder.NET.Helpers;
 using LyricsFinder.NET.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -35,9 +36,6 @@ namespace LyricsFinder.NET.Controllers
 
         private FileContentResult GenerateExcelFile(string sortOrder, string currentFilter, IEnumerable<Song> spotifySearchList, bool isExportForFavourites)
         {
-            // filter/sort code taken from https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/sort-filter-page?view=aspnetcore-6.0
-            // and https://docs.microsoft.com/en-us/aspnet/mvc/overview/getting-started/getting-started-with-ef-using-mvc/sorting-filtering-and-paging-with-the-entity-framework-in-an-asp-net-mvc-application
-
             string worksheetName;
             string fileName;
             
@@ -52,44 +50,7 @@ namespace LyricsFinder.NET.Controllers
                 fileName = "song_database.xlsx";
             }
 
-
-            if (!String.IsNullOrEmpty(currentFilter))
-            {
-                spotifySearchList = spotifySearchList.Where(s => s.Name.Contains(currentFilter, StringComparison.CurrentCultureIgnoreCase)
-                                                            || s.Artist.Contains(currentFilter, StringComparison.CurrentCultureIgnoreCase)
-                                                            );
-            }
-
-            switch (sortOrder)
-            {
-                case "id_desc":
-                    spotifySearchList = spotifySearchList.OrderByDescending(s => s.Id);
-                    break;
-                case "id_asc":
-                    spotifySearchList = spotifySearchList.OrderBy(s => s.Id);
-                    break;
-                case "name_desc":
-                    spotifySearchList = spotifySearchList.OrderByDescending(s => s.Name);
-                    break;
-                case "name_asc":
-                    spotifySearchList = spotifySearchList.OrderBy(s => s.Name);
-                    break;
-                case "artist_desc":
-                    spotifySearchList = spotifySearchList.OrderByDescending(s => s.Artist);
-                    break;
-                case "artist_asc":
-                    spotifySearchList = spotifySearchList.OrderBy(s => s.Artist);
-                    break;
-                case "date_desc":
-                    spotifySearchList = spotifySearchList.OrderByDescending(s => s.QueryDate);
-                    break;
-                case "date_asc":
-                    spotifySearchList = spotifySearchList.OrderBy(s => s.QueryDate);
-                    break;
-                default:
-                    spotifySearchList = spotifySearchList.OrderBy(s => s.Id);
-                    break;
-            }
+            spotifySearchList = SortingHelpers.SortSongsList(spotifySearchList, currentFilter, sortOrder);
 
             using (var workbook = new XLWorkbook())
             {
