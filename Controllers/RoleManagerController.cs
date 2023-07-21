@@ -11,10 +11,10 @@ namespace LyricsFinder.NET.Controllers
     {
         private readonly UserManager<CustomAppUserData> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ILogger<SpotifyUserInputController> _logger;
+        private readonly ILogger<SongManagerController> _logger;
         public RoleManagerController(UserManager<CustomAppUserData> userManager,
             RoleManager<IdentityRole> roleManager,
-            ILogger<SpotifyUserInputController> logger)
+            ILogger<SongManagerController> logger)
         {
             _roleManager = roleManager;
             _userManager = userManager;

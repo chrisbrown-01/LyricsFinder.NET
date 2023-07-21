@@ -8,7 +8,7 @@ namespace LyricsFinder.NET.Services
     public static class RetrieveLyricsAndSongInfo
     {
         /// <summary>
-        /// Calls Deezer API using song details supplied by user during SpotifyUserInput Create action
+        /// Calls Deezer API using song details supplied by user during SongManager Create action
         /// </summary>
         /// <param name="title">Song title</param>
         /// <param name="artist">Artist name</param>

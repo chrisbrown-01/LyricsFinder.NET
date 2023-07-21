@@ -12,16 +12,17 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace LyricsFinder.NET.Controllers
 {
-    public class SpotifyUserInputController : Controller
+    // SpotifyUserInputController
+    public class SongManagerController : Controller
     {
         private readonly ISongDbRepo _db;
         private readonly UserManager<CustomAppUserData> _userManager;
-        private readonly ILogger<SpotifyUserInputController> _logger;
+        private readonly ILogger<SongManagerController> _logger;
         private readonly IMemoryCache _cache;
 
-        public SpotifyUserInputController(ISongDbRepo db,
+        public SongManagerController(ISongDbRepo db,
             UserManager<CustomAppUserData> userManager,
-            ILogger<SpotifyUserInputController> logger,
+            ILogger<SongManagerController> logger,
             IMemoryCache memoryCache)
         {
             _db = db;
@@ -75,7 +76,7 @@ namespace LyricsFinder.NET.Controllers
             return View(paginatedList);
         }
 
-        // TODO: test
+        // TODO: move to Helpers folder
         private PaginatedList<Song> CreatePaginatedList(
             string sortOrder, 
             string currentFilter, 
@@ -103,6 +104,7 @@ namespace LyricsFinder.NET.Controllers
             ViewBag.ArtistSortParm = sortOrder == "artist_asc" ? "artist_desc" : "artist_asc";
             ViewBag.DateSortParm = sortOrder == "date_asc" ? "date_desc" : "date_asc";
 
+            // TODO: consolidate with excel export controller
             if (!String.IsNullOrEmpty(searchString))
             {
                 spotifySearchList = spotifySearchList.Where(s =>

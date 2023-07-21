@@ -4,7 +4,6 @@ using LyricsFinder.NET.Validators;
 
 namespace LyricsFinder.NET.Models
 {
-    // TODO: formerly SpotifyUserInput
     public class Song
     {
         [Key]

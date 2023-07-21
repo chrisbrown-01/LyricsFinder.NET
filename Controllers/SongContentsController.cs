@@ -10,7 +10,6 @@ using LyricsFinder.NET.Areas.Identity.Models;
 
 namespace LyricsFinder.NET.Controllers
 {
-    // TODO: rename other MVC entity to SongSearch
     public class SongContentsController : Controller
     {
         private readonly ISongDbRepo _db;

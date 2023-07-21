@@ -132,7 +132,7 @@
 <div class="btn-block text-center">
 
     <a href='javascript:history.go(-1)' class="btn btn-outline-dark text-dark">Previous Page</a>
-    <a asp-controller="SpotifyUserInput" asp-action="Index" class="btn btn-secondary">Back To Main Menu</a>
+    <a asp-controller="SongManager" asp-action="Index" class="btn btn-secondary">Back To Main Menu</a>
 
 </div>
 
@@ -156,7 +156,7 @@
                 *@
                 <a asp-controller="SongContents" asp-route-Id="@Model.Id" asp-route-redirectUrl="@currentUrl" asp-action="NotifyWrongSongInfoViaEmail" class="btn btn-warning">Report Wrong Song Info</a>
                 <a asp-controller="SongContents" asp-route-Id="@Model.Id" asp-route-slug="@Model.Slug" asp-action="UpdateWrongSongInfo" class="btn btn-primary">Update Wrong Song Info</a>
-                <a asp-controller="SpotifyUserInput" asp-route-Id="@Model.Id" asp-route-slug="@Model.Slug" asp-action="Delete" class="btn btn-danger">Delete Song</a>
+                <a asp-controller="SongManager" asp-route-Id="@Model.Id" asp-route-slug="@Model.Slug" asp-action="Delete" class="btn btn-danger">Delete Song</a>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
 
