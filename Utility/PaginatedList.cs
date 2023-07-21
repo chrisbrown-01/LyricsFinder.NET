@@ -15,18 +15,12 @@
 
         public bool HasPreviousPage
         {
-            get
-            {
-                return (PageIndex > 1);
-            }
+            get { return (PageIndex > 1); }
         }
 
         public bool HasNextPage
         {
-            get
-            {
-                return (PageIndex < TotalPages);
-            }
+            get { return (PageIndex < TotalPages); }
         }
 
         public static PaginatedList<T> Create(IEnumerable<T> source, int pageIndex, int pageSize)
