@@ -197,7 +197,7 @@ namespace LyricsFinder.NET.Controllers
                 return View("Error", song);
             }
 
-            return RedirectToAction("Index", "SongInfo", new { id = song.Id });
+            return RedirectToAction("Index", "SongContents", new { id = song.Id });
         }
 
 
@@ -258,7 +258,7 @@ namespace LyricsFinder.NET.Controllers
                 return View("Error", song);
             }
 
-            return RedirectToAction("Index", "SongInfo", new { id = song.Id });
+            return RedirectToAction("Index", "SongContents", new { id = song.Id });
         }
 
 

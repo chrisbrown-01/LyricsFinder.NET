@@ -10,20 +10,20 @@ using LyricsFinder.NET.Areas.Identity.Models;
 
 namespace LyricsFinder.NET.Controllers
 {
-    // TODO: rename to SongContents. rename other MVC entity to SongSearch
-    public class SongInfoController : Controller
+    // TODO: rename other MVC entity to SongSearch
+    public class SongContentsController : Controller
     {
         private readonly ISongDbRepo _db;
         private readonly UserManager<CustomAppUserData> _userManager;
-        private readonly ILogger<SongInfoController> _logger;
+        private readonly ILogger<SongContentsController> _logger;
         private readonly IEmailSender _emailSender;
         private readonly IMemoryCache _cache;
         private readonly MemoryCacheEntryOptions _memoryCacheEntryOptions;
 
-        public SongInfoController(
+        public SongContentsController(
             ISongDbRepo db,
             UserManager<CustomAppUserData> userManager,
-            ILogger<SongInfoController> logger,
+            ILogger<SongContentsController> logger,
             IEmailSender emailSender,
             IMemoryCache memoryCache)
         {
@@ -112,7 +112,7 @@ namespace LyricsFinder.NET.Controllers
         /// Add song to favourite song database
         /// </summary>
         /// <param name="id">Database song id</param>
-        /// <param name="redirectUrl">Redirect user back to SongInfo index page via url</param>
+        /// <param name="redirectUrl">Redirect user back to SongContents index page via url</param>
         /// <returns></returns>
         [Authorize]
         public async Task<IActionResult> AddToFavourites(int id, string redirectUrl)
@@ -132,7 +132,7 @@ namespace LyricsFinder.NET.Controllers
         /// Remove song from favourite song database
         /// </summary>
         /// <param name="id">Database song id</param>
-        /// <param name="redirectUrl">Redirect user back to SongInfo index page via url</param>
+        /// <param name="redirectUrl">Redirect user back to SongContents index page via url</param>
         /// <returns></returns>
         [Authorize]
         public async Task<IActionResult> RemoveFromFavourites(int id, string redirectUrl)
@@ -152,7 +152,7 @@ namespace LyricsFinder.NET.Controllers
         /// Send email to site admin to notify that wrong song info has been entered
         /// </summary>
         /// <param name="id">Database song id</param>
-        /// <param name="redirectUrl">Redirect user back to SongInfo index page via url</param>
+        /// <param name="redirectUrl">Redirect user back to SongContents index page via url</param>
         /// <returns></returns>
         [Authorize]
         public async Task<IActionResult> NotifyWrongSongInfoViaEmailAsync(int id, string redirectUrl)
