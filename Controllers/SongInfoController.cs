@@ -41,17 +41,17 @@ namespace LyricsFinder.NET.Controllers
             };
         }
 
-        public async Task<ActionResult> Index(int songId)
+        public async Task<ActionResult> Index(int id)
         {
             Song? song;
 
-            if (!_cache.TryGetValue(songId, out song))
+            if (!_cache.TryGetValue(id, out song))
             {
-                song = await _db.GetDbSongByIdAsync(songId);
+                song = await _db.GetDbSongByIdAsync(id);
 
                 if (song == null) return NotFound();
 
-                _cache.Set(songId, song, _memoryCacheEntryOptions);
+                _cache.Set(id, song, _memoryCacheEntryOptions);
             }
 
             return View(song);
@@ -60,12 +60,12 @@ namespace LyricsFinder.NET.Controllers
         /// <summary>
         /// Edit song information and manually input lyrics
         /// </summary>
-        /// <param name="songId"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public async Task<ActionResult> UpdateWrongSongInfo(int songId)
+        public async Task<ActionResult> UpdateWrongSongInfo(int id)
         {
-            var song = await _db.GetDbSongByIdAsync(songId);
+            var song = await _db.GetDbSongByIdAsync(id);
 
             if (song == null) return NotFound();
 
@@ -80,7 +80,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateWrongSongInfo([FromForm] Song song)
+        public async Task<IActionResult> UpdateWrongSongInfo([FromForm] Song song) // TODO: formerly obj, slug or routing issues?
         {
             // TODO: replace try-catch with filter
             try
@@ -111,17 +111,17 @@ namespace LyricsFinder.NET.Controllers
         /// <summary>
         /// Add song to favourite song database
         /// </summary>
-        /// <param name="songId">Database song id</param>
+        /// <param name="id">Database song id</param>
         /// <param name="redirectUrl">Redirect user back to SongInfo index page via url</param>
         /// <returns></returns>
         [Authorize]
-        public async Task<IActionResult> AddToFavourites(int songId, string redirectUrl)
+        public async Task<IActionResult> AddToFavourites(int id, string redirectUrl)
         {
-            if (songId <= 0) return BadRequest();
+            if (id <= 0) return BadRequest();
 
             var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
 
-            await _db.AddFavSongToDb(songId, loggedInUser.Id);
+            await _db.AddFavSongToDb(id, loggedInUser.Id);
 
             TempData["SongAddedToFavourites"] = "Favourite song added";
 
@@ -131,17 +131,17 @@ namespace LyricsFinder.NET.Controllers
         /// <summary>
         /// Remove song from favourite song database
         /// </summary>
-        /// <param name="songId">Database song id</param>
+        /// <param name="id">Database song id</param>
         /// <param name="redirectUrl">Redirect user back to SongInfo index page via url</param>
         /// <returns></returns>
         [Authorize]
-        public async Task<IActionResult> RemoveFromFavourites(int songId, string redirectUrl)
+        public async Task<IActionResult> RemoveFromFavourites(int id, string redirectUrl)
         {
-            if (songId <= 0) return BadRequest();
+            if (id <= 0) return BadRequest();
 
             var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
 
-            await _db.RemoveFavSongFromDb(songId, loggedInUser.Id);
+            await _db.RemoveFavSongFromDb(id, loggedInUser.Id);
 
             TempData["SongRemovedFromFavourites"] = "Favourite song removed";
 
@@ -151,13 +151,13 @@ namespace LyricsFinder.NET.Controllers
         /// <summary>
         /// Send email to site admin to notify that wrong song info has been entered
         /// </summary>
-        /// <param name="songId">Database song id</param>
+        /// <param name="id">Database song id</param>
         /// <param name="redirectUrl">Redirect user back to SongInfo index page via url</param>
         /// <returns></returns>
         [Authorize]
-        public async Task<IActionResult> NotifyWrongSongInfoViaEmailAsync(int songId, string redirectUrl)
+        public async Task<IActionResult> NotifyWrongSongInfoViaEmailAsync(int id, string redirectUrl)
         {
-            if (songId <= 0) return BadRequest();
+            if (id <= 0) return BadRequest();
 
             var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
 
@@ -165,7 +165,7 @@ namespace LyricsFinder.NET.Controllers
             {
                 await _emailSender.SendEmailAsync("NOTIFY_SITE_ADMIN",
                                     "Wrong song info report",
-                                    $"Wrong song info reported by user with email: {loggedInUser.Email} for song ID: {songId}" +
+                                    $"Wrong song info reported by user with email: {loggedInUser.Email} for song ID: {id}" +
                                     $"<br>" +
                                     $"<br>" +
                                     $"<a href={redirectUrl}>Link to song info page</a>");

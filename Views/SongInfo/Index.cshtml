@@ -79,12 +79,12 @@
     <div class="text-center my-3">
         <div class="btn-group">
 
-            <a asp-controller="SongInfo" asp-action="AddToFavourites" asp-route-songId="@Model.Id" asp-route-redirectUrl="@currentUrl"
+            <a asp-controller="SongInfo" asp-action="AddToFavourites" asp-route-Id="@Model.Id" asp-route-redirectUrl="@currentUrl"
                class="btn btn-outline-secondary text-secondary">
                 Add Song to Favourites
             </a>
 
-            <a asp-controller="SongInfo" asp-action="RemoveFromFavourites" asp-route-songId="@Model.Id" asp-route-redirectUrl="@currentUrl"
+            <a asp-controller="SongInfo" asp-action="RemoveFromFavourites" asp-route-Id="@Model.Id" asp-route-redirectUrl="@currentUrl"
                class="btn btn-outline-secondary text-secondary">
                 Remove Song from Favourites
             </a>
@@ -154,8 +154,8 @@
                     Report Wrong Song Info
                     </button>
                 *@
-                <a asp-controller="SongInfo" asp-route-songId="@Model.Id" asp-route-redirectUrl="@currentUrl" asp-action="NotifyWrongSongInfoViaEmail" class="btn btn-warning">Report Wrong Song Info</a>
-                <a asp-controller="SongInfo" asp-route-songId="@Model.Id" asp-route-slug="@Model.Slug" asp-action="UpdateWrongSongInfo" class="btn btn-primary">Update Wrong Song Info</a>
+                <a asp-controller="SongInfo" asp-route-Id="@Model.Id" asp-route-redirectUrl="@currentUrl" asp-action="NotifyWrongSongInfoViaEmail" class="btn btn-warning">Report Wrong Song Info</a>
+                <a asp-controller="SongInfo" asp-route-Id="@Model.Id" asp-route-slug="@Model.Slug" asp-action="UpdateWrongSongInfo" class="btn btn-primary">Update Wrong Song Info</a>
                 <a asp-controller="SpotifyUserInput" asp-route-Id="@Model.Id" asp-route-slug="@Model.Slug" asp-action="Delete" class="btn btn-danger">Delete Song</a>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>

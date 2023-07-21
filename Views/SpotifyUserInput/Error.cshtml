@@ -9,8 +9,8 @@
 
 <div class="btn-block text-center">
 
-    <a asp-controller="SpotifyUserInput" asp-route-songId="@Model.Id" asp-route-slug="@Model.Slug" asp-action="Edit" class="btn btn-warning">Edit Song Name or Artist</a>
-    <a asp-controller="SongInfo" asp-route-songId="@Model.Id" asp-route-slug="@Model.Slug" asp-action="UpdateWrongSongInfo" class="btn btn-primary">Manually Input Song Information</a>
+    <a asp-controller="SpotifyUserInput" asp-route-Id="@Model.Id" asp-route-slug="@Model.Slug" asp-action="Edit" class="btn btn-warning">Edit Song Name or Artist</a>
+    <a asp-controller="SongInfo" asp-route-Id="@Model.Id" asp-route-slug="@Model.Slug" asp-action="UpdateWrongSongInfo" class="btn btn-primary">Manually Input Song Information</a>
     <a asp-controller="SpotifyUserInput" asp-route-Id="@Model.Id" asp-route-slug="@Model.Slug" asp-action="Delete" class="btn btn-danger">Delete Song</a>
     <a asp-controller="SpotifyUserInput" asp-action="Index" class="btn btn-secondary">Back To Main Menu</a>
 

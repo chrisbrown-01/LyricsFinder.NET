@@ -46,7 +46,5 @@ namespace LyricsFinder.NET.Models
 
         [DisplayName("Edited By (UserId)")]
         public string? EditedBy { get; set; }
-
-        public ICollection<UserFavouriteSongs> UserFavouriteSongs { get; set; } // TODO: necessary?
     }
 }
