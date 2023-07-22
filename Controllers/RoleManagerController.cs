@@ -12,7 +12,8 @@ namespace LyricsFinder.NET.Controllers
         private readonly UserManager<CustomAppUserData> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<SongManagerController> _logger;
-        public RoleManagerController(UserManager<CustomAppUserData> userManager,
+        public RoleManagerController(
+            UserManager<CustomAppUserData> userManager,
             RoleManager<IdentityRole> roleManager,
             ILogger<SongManagerController> logger)
         {

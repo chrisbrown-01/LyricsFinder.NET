@@ -1,4 +1,4 @@
-using LyricsFinder.NET.Areas.Identity.Models;
+﻿using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data;
 using LyricsFinder.NET.Data.Repositories;
 using LyricsFinder.NET.Services;
@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Configuration;
 using System.Text;
+using LyricsFinder.NET.ControllersAPI;
 
 namespace LyricsFinder.NET
 {
@@ -25,7 +26,8 @@ namespace LyricsFinder.NET
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter(); // TODO: comment out
 
             builder.Services.AddDefaultIdentity<CustomAppUserData>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
@@ -89,6 +91,8 @@ namespace LyricsFinder.NET
                     };
                 });
 
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             builder.Services.AddHttpClient();
 
             builder.Services.AddControllersWithViews();
@@ -100,6 +104,8 @@ namespace LyricsFinder.NET
             builder.Services.AddSingleton<IEmailSender, FakeEmailSender>();
 
             builder.Services.AddSingleton<ISongRetrieval, DeezerSongRetrieval>(); // TODO: chatgpt use singleton or scoped?
+
+            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
@@ -127,6 +133,9 @@ namespace LyricsFinder.NET
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.MapRazorPages();
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.Run();
         }

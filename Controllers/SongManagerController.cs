@@ -89,14 +89,8 @@ namespace LyricsFinder.NET.Controllers
             int? pageNumber, 
             IEnumerable<Song> spotifySearchList)
         {
-            if (searchString != null)
-            {
-                pageNumber = 1;
-            }
-            else
-            {
-                searchString = currentFilter;
-            }
+            if (searchString != null) pageNumber = 1;
+            else searchString = currentFilter;
 
             ViewBag.CurrentFilter = searchString;
 

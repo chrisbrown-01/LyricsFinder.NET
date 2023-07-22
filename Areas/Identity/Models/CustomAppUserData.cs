@@ -5,7 +5,7 @@ namespace LyricsFinder.NET.Areas.Identity.Models
     public class CustomAppUserData : IdentityUser
     {
         [PersonalData]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         [PersonalData]
         public DateTime DOB { get; set; }
 

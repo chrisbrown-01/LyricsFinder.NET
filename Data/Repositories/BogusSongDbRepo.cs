@@ -37,7 +37,12 @@ namespace LyricsFinder.NET.Data.Repositories
 
         public bool IsSongDuplicate(Song song)
         {
-            if (_songsTable.Any(s => s.Name == song.Name && s.Artist == song.Artist)) return true;
+            if (_songsTable.Any(
+                s => 
+                s.Name.ToLower() == song.Name.ToLower() && 
+                s.Artist.ToLower() == song.Artist.ToLower())) 
+                return true;
+
             return false;
         }
 
@@ -119,17 +124,20 @@ namespace LyricsFinder.NET.Data.Repositories
 
         public IEnumerable<Song> GetSongsByName(string songName)
         {
-            return _songsTable.Where(s => s.Name == songName);
+            return _songsTable.Where(s => s.Name.ToLower() == songName.ToLower());
         }
 
         public IEnumerable<Song> GetSongsByArtist(string artistName)
         {
-            return _songsTable.Where(s => s.Artist == artistName);
+            return _songsTable.Where(s => s.Artist.ToLower() == artistName.ToLower());
         }
 
         public IEnumerable<Song> GetSongsBySongNameArtist(string songName, string artistName)
         {
-            return _songsTable.Where(s => s.Name == songName && s.Artist == artistName);
+            return _songsTable.Where(
+                s => 
+                s.Name.ToLower() == songName.ToLower() && 
+                s.Artist.ToLower() == artistName.ToLower());
         }
 
         public IEnumerable<Song> GetUserFavSongs(string userId)

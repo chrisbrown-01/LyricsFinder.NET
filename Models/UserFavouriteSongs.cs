@@ -7,7 +7,7 @@ namespace LyricsFinder.NET.Models
     {
         [Key]
         public int Id { get; set; }
-        public string UserId { get; set; }
+        public string UserId { get; set; } // TODO: required keyword?
 
         public int SongId { get; set; }
     }

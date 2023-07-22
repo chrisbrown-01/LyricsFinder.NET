@@ -15,7 +15,9 @@ namespace LyricsFinder.NET.Controllers
         private readonly ISongDbRepo _db;
         private readonly UserManager<CustomAppUserData> _userManager;
 
-        public ExportToExcelController(ISongDbRepo db, UserManager<CustomAppUserData> userManager)
+        public ExportToExcelController(
+            ISongDbRepo db, 
+            UserManager<CustomAppUserData> userManager)
         {
             _db = db;
             _userManager = userManager;
