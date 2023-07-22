@@ -110,7 +110,7 @@ namespace LyricsFinder.NET.ControllersAPI
             //if (email == null) return StatusCode(500, "Authenticated user could not be identified");
             //var loggedInUser = await _userManager.FindByEmailAsync(email);
 
-            var song = _mapper.Map<Song>(createSongDTO);
+            var song = _mapper.Map<Song>(createSongDTO); // TODO: song id 0?
 
             if (_db.IsSongDuplicate(song)) return BadRequest("Song already exists in database.");
 
@@ -133,7 +133,6 @@ namespace LyricsFinder.NET.ControllersAPI
             try
             {
                 song = await _songRetriever.RetrieveSongContentsAsync(song);
-
                 await _db.UpdateSongInDb(song);
             }
             catch (Exception ex)
@@ -144,6 +143,57 @@ namespace LyricsFinder.NET.ControllersAPI
             var songDto = _mapper.Map<SongReadDTO>(song);
 
             return CreatedAtRoute(nameof(GetSongById), new { songDto.Id }, songDto);
+        }
+
+        /// <summary>
+        /// Edit existing database song object and retrieve song info & lyrics again. Return edited song via API.
+        /// </summary>
+        /// <param name="editSongDTO"></param>
+        /// <returns></returns>
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("editSong")]
+        public async Task<ActionResult<SongReadDTO>> EditSongAsync(SongEditDTO editSongDTO)
+        {
+            var song = _db.GetSongById(editSongDTO.Id);
+
+            if (song == null) return NotFound();
+
+            if (_db.IsSongDuplicate(_mapper.Map<Song>(editSongDTO))) return BadRequest("Song already exists in database.");
+
+            //var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
+            //if (email == null) return StatusCode(500, "Authenticated user could not be identified");
+            //var loggedInUser = await _userManager.FindByEmailAsync(email);
+
+            //_logger.LogInformation("Song edit request received via API. Song info: {@Song}. User info: {@User}", editSongDTO, loggedInUser);
+
+            song.Name = editSongDTO.Name;
+            song.Artist = editSongDTO.Artist;
+            song.QueryDate = DateTime.Now;
+            //song.EditedBy = loggedInUser.Id;
+
+            try
+            {
+                await _db.UpdateSongInDb(song);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("API song edit request could not be added to database: {@Exception}", ex.Message);
+                return StatusCode(500, "Song could not be edited.");
+            }
+
+            try
+            {
+                song = await _songRetriever.RetrieveSongContentsAsync(song);
+                await _db.UpdateSongInDb(song);
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogWarning("Could not retrieve lyrics for song: {@Song}. Exception: \"{@Exception}\"", song, ex.Message);
+            }
+
+            var editedSongDTO = _mapper.Map<SongReadDTO>(song);
+
+            return CreatedAtRoute(nameof(GetSongById), new { editedSongDTO.Id }, editedSongDTO);
         }
     }
 }
