@@ -259,7 +259,7 @@ namespace LyricsFinder.NET.ControllersAPI
 
             var songDTO = _mapper.Map<SongReadDTO>(song);
 
-            return Ok(songDTO)
+            return Ok(songDTO);
         }
     }
 }
