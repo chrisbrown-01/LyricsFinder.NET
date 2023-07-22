@@ -195,5 +195,71 @@ namespace LyricsFinder.NET.ControllersAPI
 
             return CreatedAtRoute(nameof(GetSongById), new { editedSongDTO.Id }, editedSongDTO);
         }
+
+
+        /* Sample patch request body:
+         [{
+         "op":"replace",
+         "path":"/SongDuration",
+         "value":1
+      },
+      {
+         "op":"replace",
+         "path":"/ArtistArtLink",
+         "value":"https://en.wikipedia.org/wiki/File:Felis_silvestris_silvestris_small_gradual_decrease_of_quality.png"
+      },
+      {
+       "op":"replace",
+         "path":"/Lyrics",
+         "value":"abc123"
+      }]
+        */
+        /// <summary>
+        /// Update song details and lyrics via patch document. 
+        /// </summary>
+        /// <param name="id">Database song id</param>
+        /// <param name="patchDoc">Json patch document with "op, path, value" parameters specified</param>
+        /// <returns></returns>
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPatch("updateSong/{id}")]
+        public async Task<ActionResult<SongReadDTO>> PartialUpdateSongInfoAsync(
+            int id, 
+            [FromBody] Microsoft.AspNetCore.JsonPatch.JsonPatchDocument<SongUpdateDTO> patchDoc)
+        {
+            var song = _db.GetSongById(id);
+
+            if (song == null) return NotFound();
+
+            var songToUpdate = _mapper.Map<SongUpdateDTO>(song);
+
+            patchDoc.ApplyTo(songToUpdate, ModelState);
+
+            if (!TryValidateModel(songToUpdate)) return ValidationProblem(ModelState);
+
+            song = _mapper.Map(songToUpdate, song);
+
+            //var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
+            //if (email == null) return StatusCode(500, "Authenticated user could not be identified"); // TODO: change to 403
+            //var loggedInUser = await _userManager.FindByEmailAsync(email);
+
+            //_logger.LogInformation("Song information partial edit request received via API. Song id: {@id}. Song info: {@Song}. User info: {@User}", id, patchDoc, loggedInUser);
+
+            song.QueryDate = DateTime.Now;
+            //song.EditedBy = loggedInUser.Id;
+
+            try
+            {
+                await _db.UpdateSongInDb(song);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("API song partial edit request could not be added to database: {@Exception}", ex.Message);
+                return StatusCode(500, "Song could not be updated.");
+            }
+
+            var songDTO = _mapper.Map<SongReadDTO>(song);
+
+            return Ok(songDTO)
+        }
     }
 }

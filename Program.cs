@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Configuration;
 using System.Text;
 using LyricsFinder.NET.ControllersAPI;
+using LyricsFinder.NET.Utility;
 
 namespace LyricsFinder.NET
 {
@@ -95,7 +96,10 @@ namespace LyricsFinder.NET
 
             builder.Services.AddHttpClient();
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.InputFormatters.Insert(0, MyJPIF.GetJsonPatchInputFormatter());
+            });
 
             builder.Services.AddSingleton<ISongDbRepo, BogusSongDbRepo>();
             //builder.Services.AddScoped<ISongDbRepo, SqlSongDbRepo>();
