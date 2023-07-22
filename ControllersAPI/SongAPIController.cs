@@ -37,9 +37,7 @@ namespace LyricsFinder.NET.ControllersAPI
             _logger = logger;
         }
 
-        // GET api/songs
         [HttpGet]
-        [HttpHead] // TODO: how to use this?
         //[ResponseCache(Duration = 60)]
         public ActionResult<IEnumerable<SongReadDTO>> GetAllSongs()
         {
@@ -50,7 +48,6 @@ namespace LyricsFinder.NET.ControllersAPI
             return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
         }
 
-        // GET api/songs/{id}
         [HttpGet("{id}", Name = "GetSongById")]
         public ActionResult<SongReadDTO> GetSongById(int id)
         {
@@ -63,7 +60,6 @@ namespace LyricsFinder.NET.ControllersAPI
             return Ok(_mapper.Map<SongReadDTO>(song));
         }
 
-        // GET api/songs/songName/{songName}
         [HttpGet("songName/{songName}")]
         public ActionResult<IEnumerable<SongReadDTO>> GetSongsBySongName(string songName)
         {
@@ -74,7 +70,6 @@ namespace LyricsFinder.NET.ControllersAPI
             return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
         }
 
-        // GET api/songs/artistName/{artistName}
         [HttpGet("artistName/{artistName}")]
         public ActionResult<IEnumerable<SongReadDTO>> GetSongsByArtist(string artistName)
         {
@@ -103,7 +98,7 @@ namespace LyricsFinder.NET.ControllersAPI
         }
 
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("createSong")]
+        [HttpPost("create")]
         public async Task<ActionResult<SongReadDTO>> CreateSongAsync(SongCreateDTO createSongDTO)
         {
             //var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
@@ -151,7 +146,7 @@ namespace LyricsFinder.NET.ControllersAPI
         /// <param name="editSongDTO"></param>
         /// <returns></returns>
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("editSong")]
+        [HttpPost("edit")]
         public async Task<ActionResult<SongReadDTO>> EditSongAsync(SongEditDTO editSongDTO)
         {
             var song = _db.GetSongById(editSongDTO.Id);
@@ -221,9 +216,9 @@ namespace LyricsFinder.NET.ControllersAPI
         /// <param name="patchDoc">Json patch document with "op, path, value" parameters specified</param>
         /// <returns></returns>
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPatch("updateSong/{id}")]
+        [HttpPatch("update/{id}")]
         public async Task<ActionResult<SongReadDTO>> PartialUpdateSongInfoAsync(
-            int id, 
+            int id,
             [FromBody] Microsoft.AspNetCore.JsonPatch.JsonPatchDocument<SongUpdateDTO> patchDoc)
         {
             var song = _db.GetSongById(id);
@@ -260,6 +255,30 @@ namespace LyricsFinder.NET.ControllersAPI
             var songDTO = _mapper.Map<SongReadDTO>(song);
 
             return Ok(songDTO);
+        }
+
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteSongAsync(int id)
+        {
+            // _logger.LogInformation("Song delete request received via API. Song id: {@id}. User info: {@User}", id, HttpContext.User.Claims.FirstOrDefault()?.Value);
+
+            var song = _db.GetSongById(id);
+
+            if (song == null) return NotFound();
+
+            await _db.DeleteSongFromDb(song);
+
+            //_logger.LogInformation("Song deleted via API. Song id: {@id}. User info: {@User}", id, HttpContext.User.Claims.FirstOrDefault()?.Value);
+
+            return NoContent();
+        }
+
+        [HttpOptions]
+        public IActionResult GetApiOptions()
+        {
+            Response.Headers.Add("Allow", "GET, POST, PATCH, DELETE");
+            return NoContent();
         }
     }
 }
