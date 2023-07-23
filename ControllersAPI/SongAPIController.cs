@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LyricsFinder.NET.ControllersAPI
@@ -21,27 +22,22 @@ namespace LyricsFinder.NET.ControllersAPI
         private readonly ISongRetrieval _songRetriever;
         private readonly IMapper _mapper;
         private readonly UserManager<CustomAppUserData> _userManager;
-        private readonly ILogger<SongAPIController> _logger;
 
         public SongAPIController(
             ISongDbRepo db,
             ISongRetrieval songRetriever,
             IMapper mapper,
-            UserManager<CustomAppUserData> userManager,
-            ILogger<SongAPIController> logger)
+            UserManager<CustomAppUserData> userManager)
         {
             _db = db;
             _songRetriever = songRetriever;
             _mapper = mapper;
             _userManager = userManager;
-            _logger = logger;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<SongReadDTO>> GetAllSongs()
         {
-            _logger.LogInformation("All songs info requested via API");
-
             var songs = _db.GetAllSongsInDb();
 
             return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
@@ -50,8 +46,6 @@ namespace LyricsFinder.NET.ControllersAPI
         [HttpGet("{id}", Name = "GetSongById")]
         public ActionResult<SongReadDTO> GetSongById(int id)
         {
-            _logger.LogInformation($"Song with id:{id} requested via API");
-
             var song = _db.GetSongById(id);
 
             if (song == null) return NotFound();
@@ -62,8 +56,6 @@ namespace LyricsFinder.NET.ControllersAPI
         [HttpGet("songName/{songName}")]
         public ActionResult<IEnumerable<SongReadDTO>> GetSongsBySongName(string songName)
         {
-            _logger.LogInformation($"Songs with name \"{songName}\" requested via API");
-
             var songs = _db.GetSongsByName(songName);
 
             return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
@@ -72,8 +64,6 @@ namespace LyricsFinder.NET.ControllersAPI
         [HttpGet("artistName/{artistName}")]
         public ActionResult<IEnumerable<SongReadDTO>> GetSongsByArtist(string artistName)
         {
-            _logger.LogInformation($"Songs with artist \"{artistName}\" requested via API");
-
             var songs = _db.GetSongsByArtist(artistName);
 
             return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
@@ -88,8 +78,6 @@ namespace LyricsFinder.NET.ControllersAPI
         [HttpGet("songNameArtistName/{songName}/{artistName}")]
         public ActionResult<IEnumerable<SongReadDTO>> GetSongsBySongArtist(string songName, string artistName)
         {
-            _logger.LogInformation($"Songs with name \"{songName}\" and artist \"{artistName}\" requested via API");
-
             var songs = _db.GetSongsBySongNameArtist(songName, artistName);
 
             return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
@@ -99,38 +87,29 @@ namespace LyricsFinder.NET.ControllersAPI
         [HttpPost("create")]
         public async Task<ActionResult<SongReadDTO>> CreateSongAsync(SongCreateDTO createSongDTO)
         {
-            //var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
-            //if (email == null) return StatusCode(500, "Authenticated user could not be identified");
-            //var loggedInUser = await _userManager.FindByEmailAsync(email);
+            var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
+            if (email == null) return StatusCode(500, "Authenticated user could not be identified");
+            var loggedInUser = await _userManager.FindByEmailAsync(email);
 
-            var song = _mapper.Map<Song>(createSongDTO); // TODO: song id 0?
+            var song = _mapper.Map<Song>(createSongDTO);
 
             if (_db.IsSongDuplicate(song)) return BadRequest("Song already exists in database.");
 
-            //_logger.LogInformation("Song creation request received via API. Song info: {@Song}. User info: {@User}", createSongDTO, loggedInUser);
-
             song.QueryDate = DateTime.Now;
-            //song.CreatedBy = loggedInUser.Id;
+            song.CreatedBy = loggedInUser!.Id;
 
             // TODO: *****consolidate CRUD actions with normal controller and leave all exception handling for filters?
-            try
-            {
-                await _db.AddSongToDb(song);
-            }
-            catch (Exception ex) // TODO: replace all try catches in this controller with filter
-            {
-                _logger.LogError("API song creation request could not be added to database: {@Exception}", ex.Message);
-                return StatusCode(500);
-            }
+            await _db.AddSongToDb(song);
+
 
             try
             {
                 song = await _songRetriever.RetrieveSongContentsAsync(song);
                 await _db.UpdateSongInDb(song);
             }
-            catch (Exception ex)
+            catch (Exception) // TODO: replace all try catches in this controller with filter
             {
-                _logger.LogWarning("Could not retrieve lyrics for song: {@Song}. Exception: \"{@Exception}\"", song, ex.Message);
+                return StatusCode(500);
             }
 
             var songDto = _mapper.Map<SongReadDTO>(song);
@@ -153,35 +132,26 @@ namespace LyricsFinder.NET.ControllersAPI
 
             if (_db.IsSongDuplicate(_mapper.Map<Song>(editSongDTO))) return BadRequest("Song already exists in database.");
 
-            //var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
-            //if (email == null) return StatusCode(500, "Authenticated user could not be identified");
-            //var loggedInUser = await _userManager.FindByEmailAsync(email);
-
-            //_logger.LogInformation("Song edit request received via API. Song info: {@Song}. User info: {@User}", editSongDTO, loggedInUser);
+            var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
+            if (email == null) return StatusCode(500, "Authenticated user could not be identified");
+            var loggedInUser = await _userManager.FindByEmailAsync(email);
 
             song.Name = editSongDTO.Name;
             song.Artist = editSongDTO.Artist;
             song.QueryDate = DateTime.Now;
-            //song.EditedBy = loggedInUser.Id;
+            song.EditedBy = loggedInUser.Id;
 
-            try
-            {
-                await _db.UpdateSongInDb(song);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("API song edit request could not be added to database: {@Exception}", ex.Message);
-                return StatusCode(500, "Song could not be edited.");
-            }
+            await _db.UpdateSongInDb(song);
+
 
             try
             {
                 song = await _songRetriever.RetrieveSongContentsAsync(song);
                 await _db.UpdateSongInDb(song);
             }
-            catch (System.Exception ex)
+            catch (Exception)
             {
-                _logger.LogWarning("Could not retrieve lyrics for song: {@Song}. Exception: \"{@Exception}\"", song, ex.Message);
+                return StatusCode(500);
             }
 
             var editedSongDTO = _mapper.Map<SongReadDTO>(song);
@@ -217,7 +187,7 @@ namespace LyricsFinder.NET.ControllersAPI
         [HttpPatch("update/{id}")]
         public async Task<ActionResult<SongReadDTO>> PartialUpdateSongInfoAsync(
             int id,
-            [FromBody] Microsoft.AspNetCore.JsonPatch.JsonPatchDocument<SongUpdateDTO> patchDoc)
+            [FromBody] JsonPatchDocument<SongUpdateDTO> patchDoc)
         {
             var song = _db.GetSongById(id);
 
@@ -231,24 +201,14 @@ namespace LyricsFinder.NET.ControllersAPI
 
             song = _mapper.Map(songToUpdate, song);
 
-            //var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
-            //if (email == null) return StatusCode(500, "Authenticated user could not be identified"); // TODO: change to 403
-            //var loggedInUser = await _userManager.FindByEmailAsync(email);
-
-            //_logger.LogInformation("Song information partial edit request received via API. Song id: {@id}. Song info: {@Song}. User info: {@User}", id, patchDoc, loggedInUser);
+            var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
+            if (email == null) return StatusCode(500, "Authenticated user could not be identified");
+            var loggedInUser = await _userManager.FindByEmailAsync(email);
 
             song.QueryDate = DateTime.Now;
-            //song.EditedBy = loggedInUser.Id;
+            song.EditedBy = loggedInUser!.Id;
 
-            try
-            {
-                await _db.UpdateSongInDb(song);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("API song partial edit request could not be added to database: {@Exception}", ex.Message);
-                return StatusCode(500, "Song could not be updated.");
-            }
+            await _db.UpdateSongInDb(song);
 
             var songDTO = _mapper.Map<SongReadDTO>(song);
 
@@ -259,15 +219,11 @@ namespace LyricsFinder.NET.ControllersAPI
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteSongAsync(int id)
         {
-            // _logger.LogInformation("Song delete request received via API. Song id: {@id}. User info: {@User}", id, HttpContext.User.Claims.FirstOrDefault()?.Value);
-
             var song = _db.GetSongById(id);
 
             if (song == null) return NotFound();
 
             await _db.DeleteSongFromDb(song);
-
-            //_logger.LogInformation("Song deleted via API. Song id: {@id}. User info: {@User}", id, HttpContext.User.Claims.FirstOrDefault()?.Value);
 
             return NoContent();
         }

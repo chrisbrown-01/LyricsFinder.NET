@@ -14,7 +14,6 @@ namespace LyricsFinder.NET.Controllers
     {
         private readonly ISongDbRepo _db;
         private readonly UserManager<CustomAppUserData> _userManager;
-        private readonly ILogger<SongContentsController> _logger;
         private readonly IEmailSender _emailSender;
         private readonly IMemoryCache _cache;
         private readonly MemoryCacheEntryOptions _memoryCacheEntryOptions;
@@ -22,13 +21,11 @@ namespace LyricsFinder.NET.Controllers
         public SongContentsController(
             ISongDbRepo db,
             UserManager<CustomAppUserData> userManager,
-            ILogger<SongContentsController> logger,
             IEmailSender emailSender,
             IMemoryCache memoryCache)
         {
             _db = db;
             _userManager = userManager;
-            _logger = logger;
             _emailSender = emailSender;
             _cache = memoryCache;
 
@@ -89,20 +86,17 @@ namespace LyricsFinder.NET.Controllers
                 song.QueryDate = DateTime.Now;
                 song.LyricsSet = true;
 
-                var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
-                song.EditedBy = loggedInUser.Id;
+                var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
+                song.EditedBy = loggedInUser!.Id;
 
                 await _db.UpdateSongInDb(song);
-
-                _logger.LogInformation("Song details information edited: {@Song}", song);
 
                 _cache.Remove(song.Id);
 
                 return View("Index", song);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError("Error when attempting to edit song details information: {@Exception}", ex.Message);
                 return StatusCode(500);
             }
         }
@@ -118,9 +112,9 @@ namespace LyricsFinder.NET.Controllers
         {
             if (id <= 0) return BadRequest();
 
-            var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            await _db.AddFavSongToDb(id, loggedInUser.Id);
+            await _db.AddFavSongToDb(id, loggedInUser!.Id);
 
             TempData["SongAddedToFavourites"] = "Favourite song added";
 
@@ -138,9 +132,9 @@ namespace LyricsFinder.NET.Controllers
         {
             if (id <= 0) return BadRequest();
 
-            var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            await _db.RemoveFavSongFromDb(id, loggedInUser.Id);
+            await _db.RemoveFavSongFromDb(id, loggedInUser!.Id);
 
             TempData["SongRemovedFromFavourites"] = "Favourite song removed";
 
@@ -158,20 +152,19 @@ namespace LyricsFinder.NET.Controllers
         {
             if (id <= 0) return BadRequest();
 
-            var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
             try
             {
                 await _emailSender.SendEmailAsync("NOTIFY_SITE_ADMIN",
                                     "Wrong song info report",
-                                    $"Wrong song info reported by user with email: {loggedInUser.Email} for song ID: {id}" +
+                                    $"Wrong song info reported by user with email: {loggedInUser!.Email} for song ID: {id}" +
                                     $"<br>" +
                                     $"<br>" +
                                     $"<a href={redirectUrl}>Link to song info page</a>");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError("Wrong song info was reported by user, but email service failed to deliver notification email. Exception: {@Exception}", ex.Message);
                 TempData["EmailNotificationServiceFailed"] = "Email notification service failed";
                 return Redirect(redirectUrl);
             }

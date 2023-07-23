@@ -20,20 +20,17 @@ namespace LyricsFinder.NET.Controllers
         private readonly ISongDbRepo _db;
         private readonly ISongRetrieval _songRetriever;
         private readonly UserManager<CustomAppUserData> _userManager;
-        private readonly ILogger<SongManagerController> _logger;
         private readonly IMemoryCache _cache;
 
         public SongManagerController(
             ISongDbRepo db,
             ISongRetrieval songRetriever,
             UserManager<CustomAppUserData> userManager,
-            ILogger<SongManagerController> logger,
             IMemoryCache memoryCache)
         {
             _db = db;
             _songRetriever = songRetriever;
             _userManager = userManager;
-            _logger = logger;
             _cache = memoryCache;
         }
 
@@ -46,9 +43,9 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         public ActionResult Index(
-            string sortOrder, 
-            string currentFilter, 
-            string searchString, 
+            string sortOrder,
+            string currentFilter,
+            string searchString,
             int? pageNumber)
         {
             var spotifySearchList = _db.GetAllSongsInDb();
@@ -68,14 +65,14 @@ namespace LyricsFinder.NET.Controllers
         /// <returns></returns>
         [Authorize]
         public async Task<ActionResult> IndexFavourites(
-            string sortOrder, 
-            string currentFilter, 
-            string searchString, 
+            string sortOrder,
+            string currentFilter,
+            string searchString,
             int? pageNumber)
         {
-            var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            var spotifySearchListFavs = _db.GetUserFavSongs(loggedInUser.Id);
+            var spotifySearchListFavs = _db.GetUserFavSongs(loggedInUser!.Id);
 
             PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, spotifySearchListFavs);
 
@@ -83,10 +80,10 @@ namespace LyricsFinder.NET.Controllers
         }
 
         private PaginatedList<Song> CreatePaginatedList(
-            string sortOrder, 
-            string currentFilter, 
-            string searchString, 
-            int? pageNumber, 
+            string sortOrder,
+            string currentFilter,
+            string searchString,
+            int? pageNumber,
             IEnumerable<Song> spotifySearchList)
         {
             if (searchString != null) pageNumber = 1;
@@ -129,31 +126,18 @@ namespace LyricsFinder.NET.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Song song)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Create song post request did not pass ModelState validation. Object passed in had following details: {@Exception}", song);
-                return View(song);
-            }
+            if (!ModelState.IsValid) return View(song);
 
             if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
 
-            var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
-            song.CreatedBy = loggedInUser.Id;
+            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
+            song.CreatedBy = loggedInUser!.Id;
             song.QueryDate = DateTime.Now;
 
-            await _db.AddSongToDb(song);
-            _logger.LogInformation($"Song created: Name=\"{song.Name}\"    Artist=\"{song.Artist}\""); // TODO: improve logging, investigate simple dashboard logging providers
+            await _db.AddSongToDb(song); // TODO: reformat so that song is added to db after all methods have run, rather than updating song that was just added to db
 
-            try
-            {
-                song = await _songRetriever.RetrieveSongContentsAsync(song); // TODO: try catch block not necessary here, just add filter to return Error view?
-                await _db.UpdateSongInDb(song);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning("Could not retrieve lyrics for song: {@Song}. Exception: \"{@Exception}\"", song, ex.Message);
-                return View("Error", song);
-            }
+            song = await _songRetriever.RetrieveSongContentsAsync(song); // TODO: try catch block not necessary here, just add filter to return Error view? return View("Error", song);
+            await _db.UpdateSongInDb(song);
 
             return RedirectToAction("Index", "SongContents", new { id = song.Id });
         }
@@ -186,33 +170,19 @@ namespace LyricsFinder.NET.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(Song song)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Edit song post request did not pass ModelState validation. Object passed in had following details: {@Exception}", song);
-                return View(song);
-            }
+            if (!ModelState.IsValid) return View(song);
 
             if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
 
-            var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
-            song.EditedBy = loggedInUser.Id;
+            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
+            song.EditedBy = loggedInUser!.Id;
             song.QueryDate = DateTime.Now;
 
             await _db.UpdateSongInDb(song);
             _cache.Remove(song.Id);
 
-            _logger.LogInformation("Song edited: {@Song}", song);
-
-            try
-            {
-                song = await _songRetriever.RetrieveSongContentsAsync(song); // TODO: try catch block not necessary here, just add filter to return Error view?
-                await _db.UpdateSongInDb(song);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning("Could not retrieve lyrics for song: {@Song}. Exception: \"{@Exception}\"", song, ex.Message);
-                return View("Error", song);
-            }
+            song = await _songRetriever.RetrieveSongContentsAsync(song);
+            await _db.UpdateSongInDb(song);
 
             return RedirectToAction("Index", "SongContents", new { id = song.Id });
         }
@@ -248,7 +218,7 @@ namespace LyricsFinder.NET.Controllers
             // TODO: replace try-catch with filter?
             try
             {
-                var loggedInUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+                var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
                 var song = await _db.GetDbSongByIdAsync(id);
 
@@ -256,13 +226,10 @@ namespace LyricsFinder.NET.Controllers
 
                 await _db.DeleteSongFromDb(song);
 
-                _logger.LogInformation("Song deleted: {@DeletedSong} by user {@User}", song, loggedInUser);
-
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError("Error when attempting to delete song: {@Exception}", ex.Message);
                 return StatusCode(500);
             }
         }

@@ -17,18 +17,15 @@ namespace LyricsFinder.NET.ControllersAPI
         private readonly UserManager<CustomAppUserData> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
-        private readonly ILogger<AuthenticationAPIController> _logger;
 
         public AuthenticationAPIController(
             UserManager<CustomAppUserData> userManager, 
             RoleManager<IdentityRole> roleManager, 
-            IConfiguration configuration, 
-            ILogger<AuthenticationAPIController> logger)
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
-            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -38,8 +35,6 @@ namespace LyricsFinder.NET.ControllersAPI
 
             if (user != null && await _userManager.CheckPasswordAsync(user, login.Password))
             {
-                _logger.LogInformation("API authetication request received. User info: {@User}", user);
-
                 var userRoles = await _userManager.GetRolesAsync(user);
 
                 var authClaims = new List<Claim>

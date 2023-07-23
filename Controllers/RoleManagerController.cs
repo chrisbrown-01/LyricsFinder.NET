@@ -11,15 +11,12 @@ namespace LyricsFinder.NET.Controllers
     {
         private readonly UserManager<CustomAppUserData> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ILogger<SongManagerController> _logger;
         public RoleManagerController(
             UserManager<CustomAppUserData> userManager,
-            RoleManager<IdentityRole> roleManager,
-            ILogger<SongManagerController> logger)
+            RoleManager<IdentityRole> roleManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
-            _logger = logger;
         }
 
         public IActionResult Index()
@@ -86,7 +83,7 @@ namespace LyricsFinder.NET.Controllers
                     RoleName = role.Name,
                 };
 
-                if (await _userManager.IsInRoleAsync(user, role.Name))
+                if (await _userManager.IsInRoleAsync(user, role.Name!))
                     userRolesViewModel.Selected = true;
                 else 
                     userRolesViewModel.Selected = false;
@@ -108,7 +105,7 @@ namespace LyricsFinder.NET.Controllers
         public async Task<IActionResult> Manage(List<ManageUserRolesView> model, string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            var admin = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var admin = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
             if (user == null || admin == null) return View();
           
@@ -123,14 +120,13 @@ namespace LyricsFinder.NET.Controllers
                 if (model.Where(x => x.Selected).Count() == 1)
                 {
                     await _userManager.RemoveFromRolesAsync(user, roles);
-                    _logger.LogInformation("Admin {@Admin} edited their own role privileges via role manager.", admin);
                     return RedirectToAction("DisplayUsers");
                 }
 
                 // if Admin still has admin role checked in selection page, remove it from model so it doesn't cause error in AddToRolesAsync method below
                 if (model.Where(x => x.Selected).Select(y => y.RoleName).Contains("Admin"))
                 {
-                    model.RemoveAll(x => x.RoleName.Equals("Admin"));
+                    model.RemoveAll(x => x.RoleName!.Equals("Admin"));
                 }
             }
 
@@ -145,20 +141,17 @@ namespace LyricsFinder.NET.Controllers
                     return View(model);
                 }
 
-                result = await _userManager.AddToRolesAsync(user, model.Where(x => x.Selected).Select(y => y.RoleName));
+                result = await _userManager.AddToRolesAsync(user, model.Where(x => x.Selected).Select(y => y.RoleName)!);
 
                 if (!result.Succeeded)
                 {
                     ModelState.AddModelError("", "Cannot add selected roles to user.");
                     return View(model);
                 }
-
-                _logger.LogInformation("Admin {@Admin} edited role privileges for user {@User} via role manager.", admin, user);
             }
             else
             {
                 ModelState.AddModelError("", "User must be assigned atleast one role.");
-                _logger.LogInformation("Admin {@Admin} attempted to remove all role privileges for user {@User} via role manager.", admin, user);
                 return View(model);
             }
 
@@ -169,12 +162,11 @@ namespace LyricsFinder.NET.Controllers
         public async Task<IActionResult> DeleteUser(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            var admin = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var admin = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
             if (user == null || admin == null) return NotFound();
 
             await _userManager.DeleteAsync(user);
-            _logger.LogInformation("Admin {@Admin} deleted user {@User} via role manager.", admin, user);
 
             return RedirectToAction("DisplayUsers");
         }

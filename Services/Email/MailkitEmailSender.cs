@@ -56,7 +56,7 @@ namespace LyricsFinder.NET.Services
             }
             catch
             {
-                // TODO: proper logger message
+                // Would normally have a proper logger error message here.
                 Console.WriteLine("Error sending email.");
             }
         }

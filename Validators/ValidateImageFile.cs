@@ -7,16 +7,17 @@ namespace LyricsFinder.NET.Validators
     /// </summary>
     public class ValidateImageFile : ValidationAttribute
     {
-        // TODO: rewrite with proper cybersecurity checks
         private const string PNG = "png";
         private const string JPG = "jpg";
         private const string JPEG = "jpeg";
 
+#pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+#pragma warning restore CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
         {
             if (value != null)
             {
-                string imageUrl = value.ToString();
+                string imageUrl = value.ToString()!;
 
                 if (imageUrl.Length < 4) return new ValidationResult("Image link is not for a png/jpg/jpeg image.");
 
@@ -25,11 +26,11 @@ namespace LyricsFinder.NET.Validators
 
                 if (imageUrlSuffixShort.Equals(PNG) || imageUrlSuffixShort.Equals(JPG))
                 {
-                    return ValidationResult.Success;
+                    return ValidationResult.Success!;
                 }
                 else if (imageUrlSuffixLong.Equals(JPEG))
                 {
-                    return ValidationResult.Success;
+                    return ValidationResult.Success!;
                 }
                 else
                 {
@@ -37,7 +38,7 @@ namespace LyricsFinder.NET.Validators
                 }
             }
 
-            return ValidationResult.Success;
+            return ValidationResult.Success!;
         }
     }
 }

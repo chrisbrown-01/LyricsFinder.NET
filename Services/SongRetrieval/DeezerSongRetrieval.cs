@@ -58,7 +58,6 @@ namespace LyricsFinder.NET.Services.SongRetrieval
             }
             catch  // TODO: better null handling from chatgpt?
             {
-                // TODO: logger message
                 return new DeezerSongInfo();
             }
         }
@@ -95,7 +94,7 @@ namespace LyricsFinder.NET.Services.SongRetrieval
             }
             catch
             {
-                return "Error - lyrics could not be found."; // TODO: logger error message
+                return "Error - lyrics could not be found."; 
             }
         }
     }
