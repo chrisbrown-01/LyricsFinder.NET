@@ -46,14 +46,16 @@ namespace LyricsFinder.NET.Services.SongRetrieval
                 var httpClient = _httpClientFactory.CreateClient();
                 var response = await httpClient.GetStringAsync($"https://api.deezer.com/search?q=artist:'{artist}' track:'{songName}'&limit=1");
                 var responseObject = JsonSerializer.Deserialize<DeezerApiSongContents.DeezerApiResponse>(response);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 var responseData = responseObject.data[0];
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                 return new DeezerSongInfo()
                 {
                     Id = responseData.id,
                     SongDuration = responseData.duration,
-                    ArtistArtLink = responseData.artist.picture_xl,
-                    AlbumArtLink = responseData.album.cover_xl
+                    ArtistArtLink = responseData!.artist!.picture_xl,
+                    AlbumArtLink = responseData!.album!.cover_xl
                 };
             }
             catch  // TODO: better null handling from chatgpt?

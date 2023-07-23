@@ -40,15 +40,17 @@ namespace LyricsFinder.NET.Controllers
             var userRolesViewModel = new List<UserRolesView>();
             foreach (CustomAppUserData user in users)
             {
-                var thisViewModel = new UserRolesView();
-                thisViewModel.Id = user.Id;
-                thisViewModel.Name = user.Name;
-                thisViewModel.DOB = user.DOB;
-                thisViewModel.UserName = user.UserName;
-                thisViewModel.Email = user.Email;
-                thisViewModel.EmailConfirmed = user.EmailConfirmed;
-                thisViewModel.PhoneNumber = user.PhoneNumber;
-                thisViewModel.Roles = await GetUserRolesAsync(user);
+                var thisViewModel = new UserRolesView
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    DOB = user.DOB,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    EmailConfirmed = user.EmailConfirmed,
+                    PhoneNumber = user.PhoneNumber,
+                    Roles = await GetUserRolesAsync(user)
+                };
                 userRolesViewModel.Add(thisViewModel);
             }
             return View(userRolesViewModel);
@@ -131,6 +133,7 @@ namespace LyricsFinder.NET.Controllers
             }
 
             // Only add/remove user roles if atleast one was selected by admin
+#pragma warning disable CA1827 // Do not use Count() or LongCount() when Any() can be used
             if (model.Where(x => x.Selected).Count() >= 1)
             {
                 var result = await _userManager.RemoveFromRolesAsync(user, roles);
@@ -154,6 +157,7 @@ namespace LyricsFinder.NET.Controllers
                 ModelState.AddModelError("", "User must be assigned atleast one role.");
                 return View(model);
             }
+#pragma warning restore CA1827 // Do not use Count() or LongCount() when Any() can be used
 
             return RedirectToAction("DisplayUsers");
         }

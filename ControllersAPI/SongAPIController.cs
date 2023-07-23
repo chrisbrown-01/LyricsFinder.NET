@@ -139,7 +139,7 @@ namespace LyricsFinder.NET.ControllersAPI
             song.Name = editSongDTO.Name;
             song.Artist = editSongDTO.Artist;
             song.QueryDate = DateTime.Now;
-            song.EditedBy = loggedInUser.Id;
+            song.EditedBy = loggedInUser!.Id;
 
             await _db.UpdateSongInDb(song);
 

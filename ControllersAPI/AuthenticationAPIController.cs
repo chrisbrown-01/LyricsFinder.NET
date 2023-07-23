@@ -15,16 +15,13 @@ namespace LyricsFinder.NET.ControllersAPI
     public class AuthenticationAPIController : ControllerBase
     {
         private readonly UserManager<CustomAppUserData> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
 
         public AuthenticationAPIController(
             UserManager<CustomAppUserData> userManager, 
-            RoleManager<IdentityRole> roleManager, 
             IConfiguration configuration)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
             _configuration = configuration;
         }
 

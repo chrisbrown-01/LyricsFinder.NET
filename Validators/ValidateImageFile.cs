@@ -12,6 +12,7 @@ namespace LyricsFinder.NET.Validators
         private const string JPEG = "jpeg";
 
 #pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0057:Use range operator", Justification = "<Pending>")]
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
 #pragma warning restore CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
         {

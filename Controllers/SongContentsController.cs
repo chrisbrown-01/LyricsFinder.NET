@@ -39,9 +39,7 @@ namespace LyricsFinder.NET.Controllers
 
         public async Task<ActionResult> Index(int id)
         {
-            Song? song;
-
-            if (!_cache.TryGetValue(id, out song))
+            if (!_cache.TryGetValue(id, out Song? song))
             {
                 song = await _db.GetDbSongByIdAsync(id);
 
