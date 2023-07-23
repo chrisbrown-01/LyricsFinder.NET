@@ -12,6 +12,9 @@ using System.Configuration;
 using System.Text;
 using LyricsFinder.NET.ControllersAPI;
 using LyricsFinder.NET.Utility;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 namespace LyricsFinder.NET
 {
@@ -25,6 +28,7 @@ namespace LyricsFinder.NET
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
@@ -48,7 +52,7 @@ namespace LyricsFinder.NET
                 // Lockout settings.
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.AllowedForNewUsers = false;
 
                 // User settings.
                 options.User.AllowedUserNameCharacters =
@@ -58,25 +62,32 @@ namespace LyricsFinder.NET
                 options.SignIn.RequireConfirmedEmail = true;
             });
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromDays(1);
+                options.SlidingExpiration = true;
+            });
+
             builder.Services.AddAuthentication()
                 .AddGoogle(options =>
                 {
                     IConfigurationSection googleAuthNSection =
                         Configuration.GetSection("Authentication:Google");
 
-                    options.ClientId = googleAuthNSection["ClientId"];
-                    options.ClientSecret = googleAuthNSection["ClientSecret"];
+                    options.ClientId = googleAuthNSection["ClientId"]!;
+                    options.ClientSecret = googleAuthNSection["ClientSecret"]!;
                 })
                 .AddFacebook(facebookOptions =>
                 {
-                    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
-                    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"]!;
+                    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"]!;
                     facebookOptions.AccessDeniedPath = "/AccessDeniedPathInfo";
                 })
                 .AddMicrosoftAccount(microsoftOptions =>
                 {
-                    microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
-                    microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+                    microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"]!;
+                    microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"]!;
                 })
                 .AddJwtBearer(options =>
                 {
@@ -88,13 +99,9 @@ namespace LyricsFinder.NET
                         ValidateAudience = true,
                         ValidAudience = Configuration["JWT:ValidAudience"],
                         ValidIssuer = Configuration["JWT:ValidIssuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]!))
                     };
                 });
-
-            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-            builder.Services.AddHttpClient();
 
             builder.Services.AddControllersWithViews(options =>
             {
@@ -109,7 +116,49 @@ namespace LyricsFinder.NET
 
             builder.Services.AddSingleton<ISongRetrieval, DeezerSongRetrieval>(); // TODO: chatgpt use singleton or scoped?
 
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddHttpClient();
+
+            builder.Services.AddRateLimiter(_ => _
+                .AddConcurrencyLimiter(policyName: "concurrency", options =>
+                {
+                    options.PermitLimit = 20;
+                    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    options.QueueLimit = 50;
+                }));
+
+            builder.Services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+            });
+
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                        {
+                            {
+                                new OpenApiSecurityScheme
+                                {
+                                    Reference = new OpenApiReference
+                                    {
+                                        Type = ReferenceType.SecurityScheme,
+                                        Id = "Bearer"
+                                    }
+                                },
+                                new string[] {}
+                             }
+                        });
+            });
 
             var app = builder.Build();
 
@@ -126,15 +175,19 @@ namespace LyricsFinder.NET
             }
 
             app.UseHttpsRedirection();
+
+            app.UseResponseCompression();
+            app.UseRateLimiter();
             app.UseStaticFiles();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}/{slug?}");
 
             app.MapRazorPages();
 

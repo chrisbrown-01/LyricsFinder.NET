@@ -14,7 +14,7 @@ namespace LyricsFinder.NET.ControllersAPI
 {
     [Route("api/songs")]
     [ApiController]
-    //[ResponseCache(CacheProfileName = "60SecondsDuration")]
+    [ResponseCache(Duration = 60)]
     public class SongAPIController : ControllerBase
     {
         private readonly ISongDbRepo _db;
@@ -38,7 +38,6 @@ namespace LyricsFinder.NET.ControllersAPI
         }
 
         [HttpGet]
-        //[ResponseCache(Duration = 60)]
         public ActionResult<IEnumerable<SongReadDTO>> GetAllSongs()
         {
             _logger.LogInformation("All songs info requested via API");
@@ -86,7 +85,6 @@ namespace LyricsFinder.NET.ControllersAPI
         /// <param name="songName"></param>
         /// <param name="artistName"></param>
         /// <returns></returns>
-        // GET api/songs/songNameArtistName/{songName}/{artistName}
         [HttpGet("songNameArtistName/{songName}/{artistName}")]
         public ActionResult<IEnumerable<SongReadDTO>> GetSongsBySongArtist(string songName, string artistName)
         {
@@ -97,7 +95,7 @@ namespace LyricsFinder.NET.ControllersAPI
             return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
         }
 
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("create")]
         public async Task<ActionResult<SongReadDTO>> CreateSongAsync(SongCreateDTO createSongDTO)
         {
@@ -145,7 +143,7 @@ namespace LyricsFinder.NET.ControllersAPI
         /// </summary>
         /// <param name="editSongDTO"></param>
         /// <returns></returns>
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("edit")]
         public async Task<ActionResult<SongReadDTO>> EditSongAsync(SongEditDTO editSongDTO)
         {
@@ -215,7 +213,7 @@ namespace LyricsFinder.NET.ControllersAPI
         /// <param name="id">Database song id</param>
         /// <param name="patchDoc">Json patch document with "op, path, value" parameters specified</param>
         /// <returns></returns>
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPatch("update/{id}")]
         public async Task<ActionResult<SongReadDTO>> PartialUpdateSongInfoAsync(
             int id,
@@ -257,7 +255,7 @@ namespace LyricsFinder.NET.ControllersAPI
             return Ok(songDTO);
         }
 
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteSongAsync(int id)
         {
