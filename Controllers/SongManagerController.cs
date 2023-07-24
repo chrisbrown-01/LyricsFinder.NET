@@ -142,7 +142,7 @@ namespace LyricsFinder.NET.Controllers
             newSong = await _songRetriever.RetrieveSongContentsAsync(newSong); // TODO: try catch block not necessary here, just add filter to return Error view? return View("Error", song);
             await _db.AddSongToDb(newSong);
 
-            return RedirectToAction("Index", "SongContents", new { id = newSong.Id });
+            return RedirectToAction("Index", "SongContents", new { id = newSong.Id }); // TODO: how will EF Core handle this?
         }
 
 

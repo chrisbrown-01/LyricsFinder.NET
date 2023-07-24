@@ -31,9 +31,9 @@ namespace LyricsFinder.NET.Controllers
         /// <returns></returns>
         public ActionResult ExportToExcel(string sortOrder, string currentFilter)
         {
-            var spotifySearchList = _db.GetAllSongsInDb();
+            var songList = _db.GetAllSongsInDb();
 
-            return GenerateExcelFile(sortOrder, currentFilter, spotifySearchList, isExportForFavourites: false);
+            return GenerateExcelFile(sortOrder, currentFilter, songList, isExportForFavourites: false);
         }
 
         private FileContentResult GenerateExcelFile(string sortOrder, string currentFilter, IEnumerable<Song> songList, bool isExportForFavourites)
@@ -102,9 +102,9 @@ namespace LyricsFinder.NET.Controllers
         {
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            var spotifySearchList = _db.GetUserFavSongs(loggedInUser!.Id);
+            var favSongList = _db.GetUserFavSongs(loggedInUser!.Id);
 
-            return GenerateExcelFile(sortOrder, currentFilter, spotifySearchList, isExportForFavourites: true);
+            return GenerateExcelFile(sortOrder, currentFilter, favSongList, isExportForFavourites: true);
         }
     }
 }
