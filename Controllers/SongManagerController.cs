@@ -14,7 +14,6 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace LyricsFinder.NET.Controllers
 {
-    // SpotifyUserInputController
     public class SongManagerController : Controller
     {
         private readonly ISongDbRepo _db;
@@ -48,9 +47,9 @@ namespace LyricsFinder.NET.Controllers
             string searchString,
             int? pageNumber)
         {
-            var spotifySearchList = _db.GetAllSongsInDb();
+            var songList = _db.GetAllSongsInDb();
 
-            PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, spotifySearchList);
+            PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, songList);
 
             return View(paginatedList);
         }
@@ -72,9 +71,9 @@ namespace LyricsFinder.NET.Controllers
         {
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            var spotifySearchListFavs = _db.GetUserFavSongs(loggedInUser!.Id);
+            var favSongList = _db.GetUserFavSongs(loggedInUser!.Id);
 
-            PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, spotifySearchListFavs);
+            PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, favSongList);
 
             return View(paginatedList);
         }
@@ -84,7 +83,7 @@ namespace LyricsFinder.NET.Controllers
             string currentFilter,
             string searchString,
             int? pageNumber,
-            IEnumerable<Song> spotifySearchList)
+            IEnumerable<Song> songList)
         {
             if (searchString != null) pageNumber = 1;
             else searchString = currentFilter;
@@ -97,11 +96,11 @@ namespace LyricsFinder.NET.Controllers
             ViewBag.ArtistSortParm = sortOrder == "artist_asc" ? "artist_desc" : "artist_asc";
             ViewBag.DateSortParm = sortOrder == "date_asc" ? "date_desc" : "date_asc";
 
-            spotifySearchList = SortingHelpers.SortSongsList(spotifySearchList, searchString, sortOrder);
+            var sortedSongList = SortingHelpers.SortSongsList(songList, searchString, sortOrder);
 
             int pageSize = 10;
 
-            var paginatedList = PaginatedList<Song>.Create(spotifySearchList, pageNumber ?? 1, pageSize);
+            var paginatedList = PaginatedList<Song>.Create(sortedSongList, pageNumber ?? 1, pageSize);
             return paginatedList;
         }
 

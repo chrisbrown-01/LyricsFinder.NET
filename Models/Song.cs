@@ -10,10 +10,10 @@ namespace LyricsFinder.NET.Models
         public int Id { get; set; } // TODO: change to init? or get only?
 
         [Required]
-        public string Name { get; set; } // TODO: how to handle non-null validity?
+        public required string Name { get; set; } 
 
         [Required]
-        public string Artist { get; set; }
+        public required string Artist { get; set; }
 
         [DisplayName("Query Date")]
         public DateTime QueryDate { get; set; }

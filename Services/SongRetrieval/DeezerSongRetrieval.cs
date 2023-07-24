@@ -70,7 +70,7 @@ namespace LyricsFinder.NET.Services.SongRetrieval
         private async Task<string> GetLyricsAsync(string songName, string artist)
         {
             string pattern = "https://songmeanings.com/songs/view/\\d+";
-            using var httpClient = _httpClientFactory.CreateClient(); // TODO: ensure using for all http
+            using var httpClient = _httpClientFactory.CreateClient(); 
 
             try
             {
