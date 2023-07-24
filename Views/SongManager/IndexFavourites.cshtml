@@ -119,8 +119,6 @@
                 <p>Jump to page: @Html.TextBox("pageNumber", "",  new {type="number", min="1", max=@Model.TotalPages, placeholder=@Model.TotalPages}) <input type="submit" value="Go" /></p>
             }
 
-
-
             <div class="float-right">
 
                 @if (SignInManager.IsSignedIn(User))

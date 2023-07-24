@@ -8,11 +8,9 @@
 
     <div class="card">
         <div class="card-header">
-
             <h2>Manage User Roles</h2>
 
             Add/Remove Roles for user: <strong><i>@ViewBag.UserName</i></strong>
-
         </div>
 
         <div class="card-body">
@@ -30,7 +28,6 @@
             <div asp-validation-summary="All" class="text-danger"></div>
         </div>
         <div class="card-footer">
-
             <input type="submit" value="Update" class="btn btn-primary"
                    style="width:auto" />
 
@@ -39,13 +36,9 @@
         </div>
     </div>
 </form>
-
 <br />
 <br />
-
 <div class="btn-block text-center">
-
     <a href='javascript:history.go(-1)' class="btn btn-outline-dark text-dark">Previous Page</a>
     <a asp-controller="SongManager" asp-action="Index" class="btn btn-secondary">Back To Main Menu</a>
-
 </div>

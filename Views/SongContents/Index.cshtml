@@ -11,11 +11,11 @@
 }
 
 <div>
-    <center>
+    <div style="text-align: center;">
         <h1>
             <b>@Model.Name.ToUpper() - <i>@Model.Artist.ToUpper()</i></b>
         </h1>
-    </center>
+    </div>
 
     @if (@Model.DeezerId != null)
     {
@@ -99,41 +99,30 @@
     </div>
 
     <div id="collapseSongInfo">
-        <center>
+        <div style="text-align: center;">
             <span style="white-space:pre-line">@Model.Lyrics</span>
-
             <br />
             <br />
-
             <b>Song duration: @Model.SongDuration seconds</b>
-
             <br />
             <br />
-        </center>
-
-        <div id="images">
-            <center>
-                <img class="mr-5" data-toggle="modal" data-target="#expandArtistImage"
-                     src=@Model.ArtistArtLink alt="Artist Art" width="200" height="200">
-
-                <img class="ml-5" data-toggle="modal" data-target="#expandAlbumImage"
-                     src=@Model.AlbumArtLink alt="Album Art" width="200" height="200">
-            </center>
         </div>
 
+        <div id="images" style="text-align: center;">
+            <img class="mr-5" data-toggle="modal" data-target="#expandArtistImage"
+                 src=@Model.ArtistArtLink alt="Artist Art" width="200" height="200">
+
+            <img class="ml-5" data-toggle="modal" data-target="#expandAlbumImage"
+                 src=@Model.AlbumArtLink alt="Album Art" width="200" height="200">
+        </div>
     </div>
-
-
-
 </div>
 
 <br />
 
 <div class="btn-block text-center">
-
     <a href='javascript:history.go(-1)' class="btn btn-outline-dark text-dark">Previous Page</a>
     <a asp-controller="SongManager" asp-action="Index" class="btn btn-secondary">Back To Main Menu</a>
-
 </div>
 
 <br />
@@ -199,7 +188,6 @@
         </div>
     </div>
 </div>
-
 <br />
 
 
