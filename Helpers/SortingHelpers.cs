@@ -18,37 +18,18 @@ namespace LyricsFinder.NET.Helpers
                     s.Artist.Contains(filter, StringComparison.CurrentCultureIgnoreCase));
             }
 
-            switch (sortOrder)
+            modifiedList = sortOrder switch
             {
-                case "id_desc":
-                    modifiedList = modifiedList.OrderByDescending(s => s.Id);
-                    break;
-                case "id_asc":
-                    modifiedList = modifiedList.OrderBy(s => s.Id);
-                    break;
-                case "name_desc":
-                    modifiedList = modifiedList.OrderByDescending(s => s.Name);
-                    break;
-                case "name_asc":
-                    modifiedList = modifiedList.OrderBy(s => s.Name);
-                    break;
-                case "artist_desc":
-                    modifiedList = modifiedList.OrderByDescending(s => s.Artist);
-                    break;
-                case "artist_asc":
-                    modifiedList = modifiedList.OrderBy(s => s.Artist);
-                    break;
-                case "date_desc":
-                    modifiedList = modifiedList.OrderByDescending(s => s.QueryDate);
-                    break;
-                case "date_asc":
-                    modifiedList = modifiedList.OrderBy(s => s.QueryDate);
-                    break;
-                default:
-                    modifiedList = modifiedList.OrderBy(s => s.Id);
-                    break;
-            }
-
+                "id_desc" => modifiedList.OrderByDescending(s => s.Id),
+                "id_asc" => modifiedList.OrderBy(s => s.Id),
+                "name_desc" => modifiedList.OrderByDescending(s => s.Name),
+                "name_asc" => modifiedList.OrderBy(s => s.Name),
+                "artist_desc" => modifiedList.OrderByDescending(s => s.Artist),
+                "artist_asc" => modifiedList.OrderBy(s => s.Artist),
+                "date_desc" => modifiedList.OrderByDescending(s => s.QueryDate),
+                "date_asc" => modifiedList.OrderBy(s => s.QueryDate),
+                _ => modifiedList.OrderBy(s => s.Id),
+            };
             return modifiedList;
         }
     }

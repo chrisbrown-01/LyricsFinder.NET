@@ -23,9 +23,9 @@ namespace LyricsFinder.NET.Data
             base.OnModelCreating(builder);
 
             // source: https://www.c-sharpcorner.com/article/seed-data-in-net-core-identity/
-            this.SeedRoles(builder);
-            this.SeedAdmin(builder);
-            this.SeedModerator(builder);
+            SeedRoles(builder);
+            SeedAdmin(builder);
+            SeedModerator(builder);
         }
 
         private const string AdminRoleId = "fab4fac1-c546-41de-aebc-a14da6895711";
@@ -35,7 +35,7 @@ namespace LyricsFinder.NET.Data
         private const string AdminUserId = "aab9c560-3441-40d1-b479-9bb75990ac08";
         private const string ModeratorUserId = "00023983-9f16-4a6c-91b8-940283954fc6";
 
-        private void SeedAdmin(ModelBuilder builder)
+        private static void SeedAdmin(ModelBuilder builder)
         {
             // Create default admin user
             var admin = new CustomAppUserData()
@@ -66,7 +66,7 @@ namespace LyricsFinder.NET.Data
                 );
         }
 
-        private void SeedModerator(ModelBuilder builder)
+        private static void SeedModerator(ModelBuilder builder)
         {
             // create default moderator
             var moderator = new CustomAppUserData()
@@ -98,7 +98,7 @@ namespace LyricsFinder.NET.Data
                 );
         }
 
-        private void SeedRoles(ModelBuilder builder)
+        private static void SeedRoles(ModelBuilder builder)
         {
             builder.Entity<IdentityRole>().HasData(
                 new IdentityRole() { Id = AdminRoleId, Name = "Admin", ConcurrencyStamp = "1", NormalizedName = "ADMIN" },

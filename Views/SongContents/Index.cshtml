@@ -27,7 +27,7 @@
     @if (TempData.ContainsKey("SongAddedToFavourites"))
     {
         <br />
-        var resetTempData = TempData["SongAddedToFavourites"].ToString();
+        var resetTempData = TempData["SongAddedToFavourites"]!.ToString();
 
         <div class="alert alert-success alert-dismissible" role="alert">
             Song added to favourites list!
@@ -40,7 +40,7 @@
     @if (TempData.ContainsKey("SongRemovedFromFavourites"))
     {
         <br />
-        var resetTempData = TempData["SongRemovedFromFavourites"].ToString();
+        var resetTempData = TempData["SongRemovedFromFavourites"]!.ToString();
 
         <div class="alert alert-danger alert-dismissible" role="alert">
             Song removed from favourites list!
@@ -53,7 +53,7 @@
     @if (TempData.ContainsKey("WrongSongInfoReported"))
     {
         <br />
-        var resetTempData = TempData["WrongSongInfoReported"].ToString();
+        var resetTempData = TempData["WrongSongInfoReported"]!.ToString();
 
         <div class="alert alert-success alert-dismissible" role="alert" id="emailSuccessAlert">
             Wrong info successfully reported to site admin - email has been sent!
@@ -66,7 +66,7 @@
     @if (TempData.ContainsKey("EmailNotificationServiceFailed"))
     {
         <br />
-        var resetTempData = TempData["EmailNotificationServiceFailed"].ToString();
+        var resetTempData = TempData["EmailNotificationServiceFailed"]!.ToString();
 
         <div class="alert alert-danger alert-dismissible" role="alert">
             Wrong song info notification email failed to send.
