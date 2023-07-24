@@ -123,7 +123,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Song song)
+        public async Task<ActionResult> Create(Song song) // TODO: try catch block not necessary here, just add filter to return Error view? return View("Error", song);
         {
             if (!ModelState.IsValid) return View(song);
 
@@ -139,7 +139,7 @@ namespace LyricsFinder.NET.Controllers
                 CreatedBy = loggedInUser!.Id,
             };
 
-            newSong = await _songRetriever.RetrieveSongContentsAsync(newSong); // TODO: try catch block not necessary here, just add filter to return Error view? return View("Error", song);
+            newSong = await _songRetriever.RetrieveSongContentsAsync(newSong);
             await _db.AddSongToDb(newSong);
 
             return RedirectToAction("Index", "SongContents", new { id = newSong.Id }); // TODO: how will EF Core handle this?
