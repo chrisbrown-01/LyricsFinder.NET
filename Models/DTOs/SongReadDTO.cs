@@ -2,12 +2,11 @@
 {
     public class SongReadDTO
     {
+        public int Id { get; set; }
         public string? AlbumArtLink { get; set; }
         public required string Artist { get; set; }
         public string? ArtistArtLink { get; set; }
         public int? DeezerId { get; set; }
-        public int Id { get; set; }
-
         public string? Lyrics { get; set; }
         public required string Name { get; set; }
         public DateTime QueryDate { get; set; }

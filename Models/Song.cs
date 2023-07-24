@@ -6,13 +6,19 @@ namespace LyricsFinder.NET.Models
 {
     public class Song
     {
+        [Key]
+        public int Id { get; set; } // TODO: change to init? or get only?
+
+        [Required]
+        public required string Name { get; set; }
+
+        [Required]
+        public required string Artist { get; set; }
+
         [Url]
         [ValidateImageFile]
         [DisplayName("Album Art")]
         public string? AlbumArtLink { get; set; }
-
-        [Required]
-        public required string Artist { get; set; }
 
         [Url]
         [ValidateImageFile]
@@ -28,15 +34,9 @@ namespace LyricsFinder.NET.Models
         [DisplayName("Edited By (UserId)")]
         public string? EditedBy { get; set; }
 
-        [Key]
-        public int Id { get; set; } // TODO: change to init? or get only?
-
         public string? Lyrics { get; set; }
 
         public bool? LyricsSet { get; set; }
-
-        [Required]
-        public required string Name { get; set; }
 
         [DisplayName("Query Date")]
         public DateTime QueryDate { get; set; }
