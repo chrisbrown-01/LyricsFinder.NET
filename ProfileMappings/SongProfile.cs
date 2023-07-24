@@ -10,9 +10,7 @@ namespace LyricsFinder.NET.ProfileMappings
         {
             CreateMap<Song, SongReadDTO>();
 
-            CreateMap<SongCreateDTO, Song>();
-
-            CreateMap<SongEditDTO, Song>();
+            CreateMap<SongCreateOrEditDTO, Song>();
 
             CreateMap<SongUpdateDTO, Song>();
 

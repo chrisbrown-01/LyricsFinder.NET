@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data.Repositories;
 using LyricsFinder.NET.Models;
@@ -85,34 +86,30 @@ namespace LyricsFinder.NET.ControllersAPI
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("create")]
-        public async Task<ActionResult<SongReadDTO>> CreateSongAsync(SongCreateDTO createSongDTO)
+        public async Task<ActionResult<SongReadDTO>> CreateSongAsync(SongCreateOrEditDTO createSongDTO)
         {
-            var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
-            if (email == null) return StatusCode(500, "Authenticated user could not be identified");
-            var loggedInUser = await _userManager.FindByEmailAsync(email);
-
             var song = _mapper.Map<Song>(createSongDTO);
 
             if (_db.IsSongDuplicate(song)) return BadRequest("Song already exists in database.");
 
-            song.QueryDate = DateTime.Now;
-            song.CreatedBy = loggedInUser!.Id;
+            // TODO: replace all try catches in this controller with filter
+            var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
+            if (email == null) return StatusCode(500, "Authenticated user could not be identified");
 
-            // TODO: *****consolidate CRUD actions with normal controller and leave all exception handling for filters?
-            await _db.AddSongToDb(song);
+            var loggedInUser = await _userManager.FindByEmailAsync(email);
 
-
-            try
+            var newSong = new Song()
             {
-                song = await _songRetriever.RetrieveSongContentsAsync(song);
-                await _db.UpdateSongInDb(song);
-            }
-            catch (Exception) // TODO: replace all try catches in this controller with filter
-            {
-                return StatusCode(500);
-            }
+                Name = song.Name,
+                Artist = song.Artist,
+                QueryDate = DateTime.Now,
+                CreatedBy = loggedInUser!.Id,
+            };
 
-            var songDto = _mapper.Map<SongReadDTO>(song);
+            newSong = await _songRetriever.RetrieveSongContentsAsync(newSong);
+            await _db.AddSongToDb(newSong);
+
+            var songDto = _mapper.Map<SongReadDTO>(newSong);
 
             return CreatedAtRoute(nameof(GetSongById), new { songDto.Id }, songDto);
         }
@@ -123,39 +120,33 @@ namespace LyricsFinder.NET.ControllersAPI
         /// <param name="editSongDTO"></param>
         /// <returns></returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("edit")]
-        public async Task<ActionResult<SongReadDTO>> EditSongAsync(SongEditDTO editSongDTO)
+        [HttpPost("edit/{id}")]
+        public async Task<ActionResult<SongReadDTO>> EditSongAsync(int id, SongCreateOrEditDTO editSongDTO)
         {
-            var song = _db.GetSongById(editSongDTO.Id);
+            if (id <= 0) return BadRequest(); // TODO: global filter?
 
-            if (song == null) return NotFound();
+            var editedSong = _db.GetSongById(id);
+
+            if (editedSong == null) return NotFound();
 
             if (_db.IsSongDuplicate(_mapper.Map<Song>(editSongDTO))) return BadRequest("Song already exists in database.");
 
             var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
             if (email == null) return StatusCode(500, "Authenticated user could not be identified");
+            
             var loggedInUser = await _userManager.FindByEmailAsync(email);
 
-            song.Name = editSongDTO.Name;
-            song.Artist = editSongDTO.Artist;
-            song.QueryDate = DateTime.Now;
-            song.EditedBy = loggedInUser!.Id;
+            editedSong.Name = editSongDTO.Name;
+            editedSong.Artist = editSongDTO.Artist;
+            editedSong.QueryDate = DateTime.Now;
+            editedSong.EditedBy = loggedInUser!.Id;
 
-            await _db.UpdateSongInDb(song);
+            editedSong = await _songRetriever.RetrieveSongContentsAsync(editedSong);
+            await _db.UpdateSongInDb(editedSong);
 
-            try
-            {
-                song = await _songRetriever.RetrieveSongContentsAsync(song);
-                await _db.UpdateSongInDb(song);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            var responseSongDto = _mapper.Map<SongReadDTO>(editedSong);
 
-            var editedSongDTO = _mapper.Map<SongReadDTO>(song);
-
-            return CreatedAtRoute(nameof(GetSongById), new { editedSongDTO.Id }, editedSongDTO);
+            return Ok(responseSongDto);
         }
 
 

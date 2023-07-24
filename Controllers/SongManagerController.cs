@@ -78,6 +78,15 @@ namespace LyricsFinder.NET.Controllers
             return View(paginatedList);
         }
 
+        /// <summary>
+        /// Created paginated list used for displaying songs.
+        /// </summary>
+        /// <param name="sortOrder"></param>
+        /// <param name="currentFilter"></param>
+        /// <param name="searchString"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="songList"></param>
+        /// <returns></returns>
         private PaginatedList<Song> CreatePaginatedList(
             string sortOrder,
             string currentFilter,
@@ -154,7 +163,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         public async Task<ActionResult> Edit(int id)
         {
-            if (id <= 0) return BadRequest();
+            if (id <= 0) return BadRequest(); // TODO: global filter for checking this?
 
             var song = await _db.GetDbSongByIdAsync(id);
 
@@ -227,8 +236,6 @@ namespace LyricsFinder.NET.Controllers
             // TODO: replace try-catch with filter?
             try
             {
-                var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
-
                 var song = await _db.GetDbSongByIdAsync(id);
 
                 if (song == null) return NotFound();

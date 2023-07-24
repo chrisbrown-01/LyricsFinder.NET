@@ -38,7 +38,7 @@ namespace LyricsFinder.NET.Data
         private void SeedAdmin(ModelBuilder builder)
         {
             // Create default admin user
-            CustomAppUserData admin = new CustomAppUserData()
+            var admin = new CustomAppUserData()
             {
                 Id = AdminUserId,
                 UserName = "admin@admin.com",
@@ -54,7 +54,7 @@ namespace LyricsFinder.NET.Data
                 ProfilePicture = null
             };
 
-            PasswordHasher<CustomAppUserData> passwordHasher = new PasswordHasher<CustomAppUserData>();
+            var passwordHasher = new PasswordHasher<CustomAppUserData>();
             admin.PasswordHash = passwordHasher.HashPassword(admin, "Admin123!");
 
             // Seed admin in Users table
@@ -69,7 +69,7 @@ namespace LyricsFinder.NET.Data
         private void SeedModerator(ModelBuilder builder)
         {
             // create default moderator
-            CustomAppUserData moderator = new CustomAppUserData()
+            var moderator = new CustomAppUserData()
             {
                 Id = ModeratorUserId,
                 UserName = "moderator@mod.com",
@@ -86,7 +86,7 @@ namespace LyricsFinder.NET.Data
             };
 
 
-            PasswordHasher<CustomAppUserData> passwordHasher = new PasswordHasher<CustomAppUserData>();
+            var passwordHasher = new PasswordHasher<CustomAppUserData>();
             moderator.PasswordHash = passwordHasher.HashPassword(moderator, "Moderator123!");
 
             // seed moderator in Users table
