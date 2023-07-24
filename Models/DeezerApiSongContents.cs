@@ -13,9 +13,8 @@
         {
             public int? Id { get; set; }
             public int? SongDuration { get; set; }
-            public string? ArtistArtLink { get; set; } 
+            public string? ArtistArtLink { get; set; }
             public string? AlbumArtLink { get; set; }
-
         }
 
         public class AllDeezerSongInfo
@@ -65,6 +64,5 @@
             public string? tracklist { get; set; }
             public string? type { get; set; }
         }
-
     }
 }

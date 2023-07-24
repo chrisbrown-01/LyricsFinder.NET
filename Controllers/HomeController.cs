@@ -8,8 +8,8 @@ namespace LyricsFinder.NET.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ISongDbRepo _db;
         private readonly IMemoryCache _cache;
+        private readonly ISongDbRepo _db;
 
         public HomeController(ISongDbRepo db,
                               IMemoryCache memoryCache)
@@ -18,24 +18,10 @@ namespace LyricsFinder.NET.Controllers
             _cache = memoryCache;
         }
 
-        public async Task<IActionResult> IndexAsync()
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
         {
-            ViewBag.randomSongId = await GetRandomSongAsync();
-
-            ViewBag.mostPopularSongId = await GetMostPopularSong();
-
-            return View();
-        }
-
-        /// <summary>
-        /// Selects and returns random song database id
-        /// </summary>
-        /// <returns></returns>
-        public async Task<int> GetRandomSongAsync()
-        {
-            var songList = await _db.GetAllSongsAsync();
-            var songListSize = songList.Count();
-            return Random.Shared.Next(1, songListSize);
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         /// <summary>
@@ -50,7 +36,6 @@ namespace LyricsFinder.NET.Controllers
 
             //if (!_cache.TryGetValue("mostPopularSongId", out mostPopularSongId))
             //{
-
             //    mostPopularSongId = _db.GetAllFavouriteSongs()
             //                           .GroupBy(i => i.SongId)
             //                           .OrderByDescending(grp => grp.Count())
@@ -71,11 +56,24 @@ namespace LyricsFinder.NET.Controllers
             //return mostPopularSongId;
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        /// <summary>
+        /// Selects and returns random song database id
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> GetRandomSongAsync()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var songList = await _db.GetAllSongsAsync();
+            var songListSize = songList.Count();
+            return Random.Shared.Next(1, songListSize);
+        }
+
+        public async Task<IActionResult> IndexAsync()
+        {
+            ViewBag.randomSongId = await GetRandomSongAsync();
+
+            ViewBag.mostPopularSongId = await GetMostPopularSong();
+
+            return View();
         }
     }
-
 }

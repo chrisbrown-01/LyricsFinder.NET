@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-using LyricsFinder.NET.Areas.Identity.Models;
+﻿using LyricsFinder.NET.Areas.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 
 namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
 {

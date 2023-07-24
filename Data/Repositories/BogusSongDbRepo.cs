@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,11 +6,11 @@ namespace LyricsFinder.NET.Data.Repositories
 {
     public class BogusSongDbRepo : ISongDbRepo
     {
+        private static int _favouritesTableIdCounter;
+        private static int _songsTableIdCounter;
+        private readonly List<UserFavouriteSongs> _favouritesTable;
         private readonly Faker<Song> _songFaker;
         private readonly List<Song> _songsTable;
-        private readonly List<UserFavouriteSongs> _favouritesTable;
-        private static int _songsTableIdCounter;
-        private static int _favouritesTableIdCounter;
 
         public BogusSongDbRepo()
         {
@@ -39,43 +37,6 @@ namespace LyricsFinder.NET.Data.Repositories
             _favouritesTableIdCounter = 0;
         }
 
-        public bool IsSongDuplicate(Song song)
-        {
-            if (_songsTable.Any(
-                s =>
-                s.Name.ToLower() == song.Name.ToLower() &&
-                s.Artist.ToLower() == song.Artist.ToLower()))
-                return true;
-
-            return false;
-        }
-
-        public async Task AddSongAsync(Song song)
-        {
-            song.Id = ++_songsTableIdCounter;
-            _songsTable.Add(song);
-            await Task.CompletedTask;
-        }
-
-        public async Task DeleteSongAsync(Song song)
-        {
-            _songsTable.Remove(song);
-            await Task.CompletedTask;
-        }
-
-        public Task<Song?> GetSongByIdAsync(int songId)
-        {
-            var song = _songsTable.FirstOrDefault(s => s.Id == songId);
-            return Task.FromResult(song);
-        }
-
-        public async Task UpdateSongAsync(Song song)
-        {
-            var songIndex = _songsTable.FindIndex(s => s.Id == song.Id);
-            _songsTable[songIndex] = song;
-            await Task.CompletedTask;
-        }
-
         public async Task AddFavSongAsync(int songId, string userId)
         {
             if (_favouritesTable.Any(s => s.SongId == songId && s.UserId == userId)) return;
@@ -91,9 +52,16 @@ namespace LyricsFinder.NET.Data.Repositories
             await Task.CompletedTask;
         }
 
-        public async Task RemoveFavSongAsync(int songId, string userId)
+        public async Task AddSongAsync(Song song)
         {
-            _favouritesTable.RemoveAll(x => x.SongId == songId && x.UserId == userId);
+            song.Id = ++_songsTableIdCounter;
+            _songsTable.Add(song);
+            await Task.CompletedTask;
+        }
+
+        public async Task DeleteSongAsync(Song song)
+        {
+            _songsTable.Remove(song);
             await Task.CompletedTask;
         }
 
@@ -110,10 +78,10 @@ namespace LyricsFinder.NET.Data.Repositories
                 _songsTable.Where(s => userFavSongIds.Contains(s.Id)));
         }
 
-        public Task<IEnumerable<Song>> GetSongsByNameAsync(string songName)
+        public Task<Song?> GetSongByIdAsync(int songId)
         {
-            return Task.FromResult(
-                _songsTable.Where(s => s.Name.ToLower() == songName.ToLower()));
+            var song = _songsTable.FirstOrDefault(s => s.Id == songId);
+            return Task.FromResult(song);
         }
 
         public Task<IEnumerable<Song>> GetSongsByArtistAsync(string artistName)
@@ -122,12 +90,42 @@ namespace LyricsFinder.NET.Data.Repositories
                 _songsTable.Where(s => s.Artist.ToLower() == artistName.ToLower()));
         }
 
+        public Task<IEnumerable<Song>> GetSongsByNameAsync(string songName)
+        {
+            return Task.FromResult(
+                _songsTable.Where(s => s.Name.ToLower() == songName.ToLower()));
+        }
+
         public Task<IEnumerable<Song>> GetSongsBySongNameArtistAsync(string songName, string artistName)
         {
             return Task.FromResult(
                 _songsTable.Where(s =>
                     s.Name.ToLower() == songName.ToLower() &&
                     s.Artist.ToLower() == artistName.ToLower()));
+        }
+
+        public bool IsSongDuplicate(Song song)
+        {
+            if (_songsTable.Any(
+                s =>
+                s.Name.ToLower() == song.Name.ToLower() &&
+                s.Artist.ToLower() == song.Artist.ToLower()))
+                return true;
+
+            return false;
+        }
+
+        public async Task RemoveFavSongAsync(int songId, string userId)
+        {
+            _favouritesTable.RemoveAll(x => x.SongId == songId && x.UserId == userId);
+            await Task.CompletedTask;
+        }
+
+        public async Task UpdateSongAsync(Song song)
+        {
+            var songIndex = _songsTable.FindIndex(s => s.Id == song.Id);
+            _songsTable[songIndex] = song;
+            await Task.CompletedTask;
         }
     }
 }

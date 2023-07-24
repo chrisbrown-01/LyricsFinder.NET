@@ -9,12 +9,13 @@ namespace LyricsFinder.NET.Services.SongRetrieval
     public class DeezerSongRetrieval : ISongRetrieval
     {
         private readonly IHttpClientFactory _httpClientFactory;
+
         public DeezerSongRetrieval(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<Song> RetrieveSongContentsAsync(Song song) 
+        public async Task<Song> RetrieveSongContentsAsync(Song song)
         {
             var getSongInfoTask = GetDeezerSongInfoAsync(song.Name, song.Artist);
             var getLyricsTask = GetLyricsAsync(song.Name, song.Artist);
@@ -41,7 +42,7 @@ namespace LyricsFinder.NET.Services.SongRetrieval
             };
         }
 
-        private async Task<DeezerSongInfo> GetDeezerSongInfoAsync(string songName, string artist) 
+        private async Task<DeezerSongInfo> GetDeezerSongInfoAsync(string songName, string artist)
         {
             try
             {
@@ -61,7 +62,7 @@ namespace LyricsFinder.NET.Services.SongRetrieval
                     AlbumArtLink = responseData!.album!.cover_xl
                 };
             }
-            catch  
+            catch
             {
                 return new DeezerSongInfo();
             }
@@ -70,7 +71,7 @@ namespace LyricsFinder.NET.Services.SongRetrieval
         private async Task<string> GetLyricsAsync(string songName, string artist)
         {
             string pattern = "https://songmeanings.com/songs/view/\\d+";
-            using var httpClient = _httpClientFactory.CreateClient(); 
+            using var httpClient = _httpClientFactory.CreateClient();
 
             try
             {
@@ -84,7 +85,7 @@ namespace LyricsFinder.NET.Services.SongRetrieval
 
                 // if (songLinkResponse.StatusCode != System.Net.HttpStatusCode.MovedPermanently) return errorResponse; // songmeanings.com always forced a redirect to the actual song link
 
-                var songLyricsResponse = await httpClient.GetStringAsync(songLinkResponse.Headers.Location); 
+                var songLyricsResponse = await httpClient.GetStringAsync(songLinkResponse.Headers.Location);
 
                 var htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(songLyricsResponse);
@@ -99,7 +100,7 @@ namespace LyricsFinder.NET.Services.SongRetrieval
             }
             catch
             {
-                return "Error - lyrics could not be found."; 
+                return "Error - lyrics could not be found.";
             }
         }
     }

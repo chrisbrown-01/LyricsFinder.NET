@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace LyricsFinder.NET.Models
 {
@@ -7,8 +6,9 @@ namespace LyricsFinder.NET.Models
     {
         [Key]
         public int Id { get; set; }
-        public required string UserId { get; set; } 
 
-        public required int SongId { get; set; }
+        public string UserId { get; set; }
+
+        public int SongId { get; set; }
     }
 }

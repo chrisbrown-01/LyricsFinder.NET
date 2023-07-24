@@ -2,11 +2,11 @@
 {
     public class SongReadDTO
     {
-        public required int Id { get; set; }
+        public int Id { get; set; }
 
-        public required string Name { get; set; }
+        public string Name { get; set; }
 
-        public required string Artist { get; set; }
+        public string Artist { get; set; }
 
         public DateTime QueryDate { get; set; }
 

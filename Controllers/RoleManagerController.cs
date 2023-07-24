@@ -9,8 +9,9 @@ namespace LyricsFinder.NET.Controllers
     [Authorize(Roles = "Moderator, Admin")]
     public class RoleManagerController : Controller
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<CustomAppUserData> _userManager;
+
         public RoleManagerController(
             UserManager<CustomAppUserData> userManager,
             RoleManager<IdentityRole> roleManager)
@@ -19,15 +20,17 @@ namespace LyricsFinder.NET.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser(string userId)
         {
-            return View();
-        }
+            var user = await _userManager.FindByIdAsync(userId);
+            var admin = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-        public async Task<IActionResult> RoleIdDescription()
-        {
-            var roles = await _roleManager.Roles.ToListAsync();
-            return View(roles);
+            if (user == null || admin == null) return NotFound();
+
+            await _userManager.DeleteAsync(user);
+
+            return RedirectToAction("DisplayUsers");
         }
 
         /// <summary>
@@ -55,9 +58,10 @@ namespace LyricsFinder.NET.Controllers
             }
             return View(userRolesViewModel);
         }
-        private async Task<List<string>> GetUserRolesAsync(CustomAppUserData user)
+
+        public IActionResult Index()
         {
-            return new List<string>(await _userManager.GetRolesAsync(user));
+            return View();
         }
 
         /// <summary>
@@ -87,7 +91,7 @@ namespace LyricsFinder.NET.Controllers
 
                 if (await _userManager.IsInRoleAsync(user, role.Name!))
                     userRolesViewModel.Selected = true;
-                else 
+                else
                     userRolesViewModel.Selected = false;
 
                 model.Add(userRolesViewModel);
@@ -110,7 +114,7 @@ namespace LyricsFinder.NET.Controllers
             var admin = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
             if (user == null || admin == null) return View();
-          
+
             var roles = await _userManager.GetRolesAsync(user);
 
             // Prevent admin from removing their own admin status
@@ -133,7 +137,6 @@ namespace LyricsFinder.NET.Controllers
             }
 
             // Only add/remove user roles if atleast one was selected by admin
-#pragma warning disable CA1827 // Do not use Count() or LongCount() when Any() can be used
             if (model.Where(x => x.Selected).Count() >= 1)
             {
                 var result = await _userManager.RemoveFromRolesAsync(user, roles);
@@ -157,22 +160,19 @@ namespace LyricsFinder.NET.Controllers
                 ModelState.AddModelError("", "User must be assigned atleast one role.");
                 return View(model);
             }
-#pragma warning restore CA1827 // Do not use Count() or LongCount() when Any() can be used
 
             return RedirectToAction("DisplayUsers");
         }
 
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteUser(string userId)
+        public async Task<IActionResult> RoleIdDescription()
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            var admin = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
+            var roles = await _roleManager.Roles.ToListAsync();
+            return View(roles);
+        }
 
-            if (user == null || admin == null) return NotFound();
-
-            await _userManager.DeleteAsync(user);
-
-            return RedirectToAction("DisplayUsers");
+        private async Task<List<string>> GetUserRolesAsync(CustomAppUserData user)
+        {
+            return new List<string>(await _userManager.GetRolesAsync(user));
         }
     }
 }

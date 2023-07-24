@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LyricsFinder.NET.Areas.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
-using LyricsFinder.NET.Areas.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace LyricsFinder.NET.Areas.Identity.Pages.Account
 {

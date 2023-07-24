@@ -1,6 +1,5 @@
 ﻿using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -14,11 +13,11 @@ namespace LyricsFinder.NET.ControllersAPI
     [ApiController]
     public class AuthenticationAPIController : ControllerBase
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public AuthenticationAPIController(
-            UserManager<CustomAppUserData> userManager, 
+            UserManager<CustomAppUserData> userManager,
             IConfiguration configuration)
         {
             _userManager = userManager;

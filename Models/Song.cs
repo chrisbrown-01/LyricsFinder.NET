@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LyricsFinder.NET.Validators;
 using System.ComponentModel;
-using LyricsFinder.NET.Validators;
+using System.ComponentModel.DataAnnotations;
 
 namespace LyricsFinder.NET.Models
 {
@@ -10,10 +10,10 @@ namespace LyricsFinder.NET.Models
         public int Id { get; set; } // TODO: change to init? or get only?
 
         [Required]
-        public required string Name { get; set; } 
+        public string Name { get; set; }
 
         [Required]
-        public required string Artist { get; set; }
+        public string Artist { get; set; }
 
         [DisplayName("Query Date")]
         public DateTime QueryDate { get; set; }

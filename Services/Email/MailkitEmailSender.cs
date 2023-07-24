@@ -1,6 +1,5 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
-using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MimeKit;
 using MimeKit.Text;
@@ -10,8 +9,8 @@ namespace LyricsFinder.NET.Services
     public class MailkitEmailSender : IEmailSender, IDisposable
     {
         private readonly IConfiguration _config;
-        private readonly SmtpClient _smtpClient;
         private readonly string _emailSender;
+        private readonly SmtpClient _smtpClient;
 
         public MailkitEmailSender(IConfiguration configuration)
         {

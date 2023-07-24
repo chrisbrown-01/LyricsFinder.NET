@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data.Repositories;
 using LyricsFinder.NET.Models;
@@ -7,7 +6,6 @@ using LyricsFinder.NET.Models.DTOs;
 using LyricsFinder.NET.Services.SongRetrieval;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +18,8 @@ namespace LyricsFinder.NET.ControllersAPI
     public class SongAPIController : ControllerBase
     {
         private readonly ISongDbRepo _db;
-        private readonly ISongRetrieval _songRetriever;
         private readonly IMapper _mapper;
+        private readonly ISongRetrieval _songRetriever;
         private readonly UserManager<CustomAppUserData> _userManager;
 
         public SongAPIController(
@@ -34,54 +32,6 @@ namespace LyricsFinder.NET.ControllersAPI
             _songRetriever = songRetriever;
             _mapper = mapper;
             _userManager = userManager;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetAllSongsAsync()
-        {
-            var songs = await _db.GetAllSongsAsync();
-
-            return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
-        }
-
-        [HttpGet("{id}", Name = "GetSongByIdAsync")]
-        public async Task<ActionResult<SongReadDTO>> GetSongByIdAsync(int id)
-        {
-            var song = await _db.GetSongByIdAsync(id);
-
-            if (song == null) return NotFound();
-
-            return Ok(_mapper.Map<SongReadDTO>(song));
-        }
-
-        [HttpGet("songName/{songName}")]
-        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetSongsBySongNameAsync(string songName)
-        {
-            var songs = await _db.GetSongsByNameAsync(songName);
-
-            return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
-        }
-
-        [HttpGet("artistName/{artistName}")]
-        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetSongsByArtistAsync(string artistName)
-        {
-            var songs = await _db.GetSongsByArtistAsync(artistName);
-
-            return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
-        }
-
-        /// <summary>
-        /// Query database by song name AND artist name, return result via API
-        /// </summary>
-        /// <param name="songName"></param>
-        /// <param name="artistName"></param>
-        /// <returns></returns>
-        [HttpGet("songNameArtistName/{songName}/{artistName}")]
-        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetSongsBySongArtistAsync(string songName, string artistName)
-        {
-            var songs = await _db.GetSongsBySongNameArtistAsync(songName, artistName);
-
-            return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -114,6 +64,19 @@ namespace LyricsFinder.NET.ControllersAPI
             return CreatedAtRoute(nameof(GetSongByIdAsync), new { songDto.Id }, songDto);
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteSongAsync(int id)
+        {
+            var song = await _db.GetSongByIdAsync(id);
+
+            if (song == null) return NotFound();
+
+            await _db.DeleteSongAsync(song);
+
+            return NoContent();
+        }
+
         /// <summary>
         /// Edit existing database song object and retrieve song info & lyrics again. Return edited song via API.
         /// </summary>
@@ -133,7 +96,7 @@ namespace LyricsFinder.NET.ControllersAPI
 
             var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
             if (email == null) return StatusCode(500, "Authenticated user could not be identified");
-            
+
             var loggedInUser = await _userManager.FindByEmailAsync(email);
 
             editedSong.Name = editSongDTO.Name;
@@ -149,6 +112,60 @@ namespace LyricsFinder.NET.ControllersAPI
             return Ok(responseSongDto);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetAllSongsAsync()
+        {
+            var songs = await _db.GetAllSongsAsync();
+
+            return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
+        }
+
+        [HttpOptions]
+        public IActionResult GetApiOptions()
+        {
+            Response.Headers.Add("Allow", "GET, POST, PATCH, DELETE");
+            return NoContent();
+        }
+
+        [HttpGet("{id}", Name = "GetSongByIdAsync")]
+        public async Task<ActionResult<SongReadDTO>> GetSongByIdAsync(int id)
+        {
+            var song = await _db.GetSongByIdAsync(id);
+
+            if (song == null) return NotFound();
+
+            return Ok(_mapper.Map<SongReadDTO>(song));
+        }
+
+        [HttpGet("artistName/{artistName}")]
+        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetSongsByArtistAsync(string artistName)
+        {
+            var songs = await _db.GetSongsByArtistAsync(artistName);
+
+            return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
+        }
+
+        /// <summary>
+        /// Query database by song name AND artist name, return result via API
+        /// </summary>
+        /// <param name="songName"></param>
+        /// <param name="artistName"></param>
+        /// <returns></returns>
+        [HttpGet("songNameArtistName/{songName}/{artistName}")]
+        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetSongsBySongArtistAsync(string songName, string artistName)
+        {
+            var songs = await _db.GetSongsBySongNameArtistAsync(songName, artistName);
+
+            return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
+        }
+
+        [HttpGet("songName/{songName}")]
+        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetSongsBySongNameAsync(string songName)
+        {
+            var songs = await _db.GetSongsByNameAsync(songName);
+
+            return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
+        }
 
         /* Sample patch request body:
          [{
@@ -167,8 +184,9 @@ namespace LyricsFinder.NET.ControllersAPI
          "value":"abc123"
       }]
         */
+
         /// <summary>
-        /// Update song details and lyrics via patch document. 
+        /// Update song details and lyrics via patch document.
         /// </summary>
         /// <param name="id">Database song id</param>
         /// <param name="patchDoc">Json patch document with "op, path, value" parameters specified</param>
@@ -203,26 +221,6 @@ namespace LyricsFinder.NET.ControllersAPI
             var songDTO = _mapper.Map<SongReadDTO>(song);
 
             return Ok(songDTO);
-        }
-
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteSongAsync(int id)
-        {
-            var song = await _db.GetSongByIdAsync(id);
-
-            if (song == null) return NotFound();
-
-            await _db.DeleteSongAsync(song);
-
-            return NoContent();
-        }
-
-        [HttpOptions]
-        public IActionResult GetApiOptions()
-        {
-            Response.Headers.Add("Allow", "GET, POST, PATCH, DELETE");
-            return NoContent();
         }
     }
 }

@@ -3,20 +3,29 @@ using LyricsFinder.NET.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
 
 namespace LyricsFinder.NET.Data
 {
     // ***Secrets/key vaults should be used in practice but will simply hard-code credentials for demonstration.***
     public class ApplicationDbContext : IdentityDbContext<CustomAppUserData>
     {
+        private const string AdminRoleId = "fab4fac1-c546-41de-aebc-a14da6895711";
+
+        private const string AdminUserId = "aab9c560-3441-40d1-b479-9bb75990ac08";
+
+        private const string BasicRoleId = "c7d013f0-5201-4317-abd8-c846f91b9946";
+
+        private const string ModeratorRoleId = "c7b013f0-5201-4317-abd8-c211f91b7330";
+
+        private const string ModeratorUserId = "00023983-9f16-4a6c-91b8-940283954fc6";
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
 
         public DbSet<Song> SongDatabase { get; set; }
 
-        public DbSet<UserFavouriteSongs> UserFavouriteSongs { get; set; } 
+        public DbSet<UserFavouriteSongs> UserFavouriteSongs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -27,13 +36,6 @@ namespace LyricsFinder.NET.Data
             SeedAdmin(builder);
             SeedModerator(builder);
         }
-
-        private const string AdminRoleId = "fab4fac1-c546-41de-aebc-a14da6895711";
-        private const string ModeratorRoleId = "c7b013f0-5201-4317-abd8-c211f91b7330";
-        private const string BasicRoleId = "c7d013f0-5201-4317-abd8-c846f91b9946";
-        
-        private const string AdminUserId = "aab9c560-3441-40d1-b479-9bb75990ac08";
-        private const string ModeratorUserId = "00023983-9f16-4a6c-91b8-940283954fc6";
 
         private static void SeedAdmin(ModelBuilder builder)
         {
@@ -84,7 +86,6 @@ namespace LyricsFinder.NET.Data
                 PhoneNumberConfirmed = true,
                 ProfilePicture = null
             };
-
 
             var passwordHasher = new PasswordHasher<CustomAppUserData>();
             moderator.PasswordHash = passwordHasher.HashPassword(moderator, "Moderator123!");

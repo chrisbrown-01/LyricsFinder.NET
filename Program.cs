@@ -1,19 +1,16 @@
 ﻿using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data;
 using LyricsFinder.NET.Data.Repositories;
-using LyricsFinder.NET.Services;
 using LyricsFinder.NET.Services.Email;
 using LyricsFinder.NET.Services.SongRetrieval;
+using LyricsFinder.NET.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Configuration;
-using System.Text;
-using LyricsFinder.NET.ControllersAPI;
-using LyricsFinder.NET.Utility;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.RateLimiting;
+using System.Text;
 using System.Threading.RateLimiting;
 
 namespace LyricsFinder.NET
@@ -28,7 +25,7 @@ namespace LyricsFinder.NET
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
@@ -114,7 +111,7 @@ namespace LyricsFinder.NET
             //builder.Services.AddSingleton<IEmailSender, MailkitEmailSender>();
             builder.Services.AddSingleton<IEmailSender, FakeEmailSender>();
 
-            builder.Services.AddSingleton<ISongRetrieval, DeezerSongRetrieval>(); 
+            builder.Services.AddSingleton<ISongRetrieval, DeezerSongRetrieval>();
 
             builder.Services.AddHttpClient();
 

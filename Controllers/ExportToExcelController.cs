@@ -6,7 +6,6 @@ using LyricsFinder.NET.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LyricsFinder.NET.Controllers
 {
@@ -16,11 +15,27 @@ namespace LyricsFinder.NET.Controllers
         private readonly UserManager<CustomAppUserData> _userManager;
 
         public ExportToExcelController(
-            ISongDbRepo db, 
+            ISongDbRepo db,
             UserManager<CustomAppUserData> userManager)
         {
             _db = db;
             _userManager = userManager;
+        }
+
+        /// <summary>
+        /// Exports user's favourited song list database to Excel file according to search/sort parameters
+        /// </summary>
+        /// <param name="sortOrder"></param>
+        /// <param name="currentFilter"></param>
+        /// <returns></returns>
+        [Authorize]
+        public async Task<ActionResult> ExportFavouritesToExcelAsync(string sortOrder, string currentFilter)
+        {
+            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
+
+            var favSongList = await _db.GetFavSongsAsync(loggedInUser!.Id);
+
+            return GenerateExcelFile(sortOrder, currentFilter, favSongList, isExportForFavourites: true);
         }
 
         /// <summary>
@@ -40,7 +55,7 @@ namespace LyricsFinder.NET.Controllers
         {
             string worksheetName;
             string fileName;
-            
+
             if (isExportForFavourites)
             {
                 worksheetName = "Favourites";
@@ -89,22 +104,6 @@ namespace LyricsFinder.NET.Controllers
                 content,
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 fileName);
-        }
-
-        /// <summary>
-        /// Exports user's favourited song list database to Excel file according to search/sort parameters
-        /// </summary>
-        /// <param name="sortOrder"></param>
-        /// <param name="currentFilter"></param>
-        /// <returns></returns>
-        [Authorize]
-        public async Task<ActionResult> ExportFavouritesToExcelAsync(string sortOrder, string currentFilter)
-        {
-            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
-
-            var favSongList = await _db.GetFavSongsAsync(loggedInUser!.Id);
-
-            return GenerateExcelFile(sortOrder, currentFilter, favSongList, isExportForFavourites: true);
         }
     }
 }

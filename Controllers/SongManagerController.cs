@@ -1,25 +1,22 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using LyricsFinder.NET.Areas.Identity.Models;
+﻿using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data.Repositories;
 using LyricsFinder.NET.Helpers;
 using LyricsFinder.NET.Models;
-using LyricsFinder.NET.Services;
 using LyricsFinder.NET.Services.SongRetrieval;
 using LyricsFinder.NET.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace LyricsFinder.NET.Controllers
 {
     public class SongManagerController : Controller
     {
+        private readonly IMemoryCache _cache;
         private readonly ISongDbRepo _db;
         private readonly ISongRetrieval _songRetriever;
         private readonly UserManager<CustomAppUserData> _userManager;
-        private readonly IMemoryCache _cache;
 
         public SongManagerController(
             ISongDbRepo db,
@@ -31,6 +28,140 @@ namespace LyricsFinder.NET.Controllers
             _songRetriever = songRetriever;
             _userManager = userManager;
             _cache = memoryCache;
+        }
+
+        /// <summary>
+        /// Create song object and add to database
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Create song object and add to database
+        /// </summary>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken] // TODO: rename methods to async
+        public async Task<ActionResult> Create(Song song) // TODO: try catch block not necessary here, just add filter to return Error view? return View("Error", song);
+        {
+            if (!ModelState.IsValid) return View(song);
+
+            if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
+
+            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
+
+            var newSong = new Song()
+            {
+                Name = song.Name,
+                Artist = song.Artist,
+                QueryDate = DateTime.Now,
+                CreatedBy = loggedInUser!.Id,
+            };
+
+            newSong = await _songRetriever.RetrieveSongContentsAsync(newSong);
+            await _db.AddSongAsync(newSong);
+
+            return RedirectToAction("Index", "SongContents", new { id = newSong.Id }); // TODO: how will EF Core handle this?
+        }
+
+        /// <summary>
+        /// Delete song from database
+        /// </summary>
+        /// <param name="id">Database song id</param>
+        /// <returns></returns>
+        [Authorize]
+        public async Task<ActionResult> Delete(int id)
+        {
+            if (id <= 0) return BadRequest();
+
+            var song = await _db.GetSongByIdAsync(id);
+
+            if (song == null) return NotFound();
+
+            return View(song);
+        }
+
+        /// <summary>
+        /// Delete song from database
+        /// </summary>
+        /// <param name="id">Database song id</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeletePost(int id)
+        {
+            // TODO: replace try-catch with filter?
+            try
+            {
+                var song = await _db.GetSongByIdAsync(id);
+
+                if (song == null) return NotFound();
+
+                await _db.DeleteSongAsync(song);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        /// <summary>
+        /// Edit existing database song object and retrieve song info & lyrics again
+        /// </summary>
+        /// <param name="id">Database song id</param>
+        /// <returns></returns>
+        [Authorize]
+        public async Task<ActionResult> Edit(int id)
+        {
+            if (id <= 0) return BadRequest(); // TODO: global filter for checking this?
+
+            var song = await _db.GetSongByIdAsync(id);
+
+            if (song == null) return NotFound();
+
+            return View(song);
+        }
+
+        /// <summary>
+        /// Edit existing database song object and retrieve song info & lyrics again
+        /// </summary>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(Song song)
+        {
+            if (!ModelState.IsValid) return View(song);
+
+            if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
+
+            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
+
+            var editedSong = new Song()
+            {
+                Id = song.Id,
+                Name = song.Name,
+                Artist = song.Artist,
+                QueryDate = DateTime.Now,
+                CreatedBy = song.CreatedBy,
+                EditedBy = loggedInUser!.Id
+            };
+
+            editedSong = await _songRetriever.RetrieveSongContentsAsync(editedSong);
+            await _db.UpdateSongAsync(editedSong);
+            _cache.Remove(song.Id);
+
+            return RedirectToAction("Index", "SongContents", new { id = song.Id });
         }
 
         /// <summary>
@@ -111,143 +242,6 @@ namespace LyricsFinder.NET.Controllers
 
             var paginatedList = PaginatedList<Song>.Create(sortedSongList, pageNumber ?? 1, pageSize);
             return paginatedList;
-        }
-
-
-        /// <summary>
-        /// Create song object and add to database
-        /// </summary>
-        /// <returns></returns>
-        [Authorize]
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// Create song object and add to database
-        /// </summary>
-        /// <param name="song"></param>
-        /// <returns></returns>
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Song song) // TODO: try catch block not necessary here, just add filter to return Error view? return View("Error", song);
-        {
-            if (!ModelState.IsValid) return View(song);
-
-            if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
-
-            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
-
-            var newSong = new Song()
-            {
-                Name = song.Name,
-                Artist = song.Artist,
-                QueryDate = DateTime.Now,
-                CreatedBy = loggedInUser!.Id,
-            };
-
-            newSong = await _songRetriever.RetrieveSongContentsAsync(newSong);
-            await _db.AddSongAsync(newSong);
-
-            return RedirectToAction("Index", "SongContents", new { id = newSong.Id }); // TODO: how will EF Core handle this?
-        }
-
-
-        /// <summary>
-        /// Edit existing database song object and retrieve song info & lyrics again
-        /// </summary>
-        /// <param name="id">Database song id</param>
-        /// <returns></returns>
-        [Authorize]
-        public async Task<ActionResult> Edit(int id)
-        {
-            if (id <= 0) return BadRequest(); // TODO: global filter for checking this?
-
-            var song = await _db.GetSongByIdAsync(id);
-
-            if (song == null) return NotFound();
-
-            return View(song);
-        }
-
-        /// <summary>
-        /// Edit existing database song object and retrieve song info & lyrics again
-        /// </summary>
-        /// <param name="song"></param>
-        /// <returns></returns>
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(Song song)
-        {
-            if (!ModelState.IsValid) return View(song);
-
-            if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
-
-            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
-
-            var editedSong = new Song()
-            {
-                Id = song.Id,
-                Name = song.Name,
-                Artist = song.Artist,
-                QueryDate = DateTime.Now,
-                CreatedBy = song.CreatedBy,
-                EditedBy = loggedInUser!.Id
-            };
-
-            editedSong = await _songRetriever.RetrieveSongContentsAsync(editedSong);
-            await _db.UpdateSongAsync(editedSong);
-            _cache.Remove(song.Id);
-
-            return RedirectToAction("Index", "SongContents", new { id = song.Id });
-        }
-
-
-        /// <summary>
-        /// Delete song from database
-        /// </summary>
-        /// <param name="id">Database song id</param>
-        /// <returns></returns>
-        [Authorize]
-        public async Task<ActionResult> Delete(int id)
-        {
-            if (id <= 0) return BadRequest();
-
-            var song = await _db.GetSongByIdAsync(id);
-
-            if (song == null) return NotFound();
-
-            return View(song);
-        }
-
-        /// <summary>
-        /// Delete song from database
-        /// </summary>
-        /// <param name="id">Database song id</param>
-        /// <returns></returns>
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeletePost(int id)
-        {
-            // TODO: replace try-catch with filter?
-            try
-            {
-                var song = await _db.GetSongByIdAsync(id);
-
-                if (song == null) return NotFound();
-
-                await _db.DeleteSongAsync(song);
-
-                return RedirectToAction("Index");
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
         }
     }
 }

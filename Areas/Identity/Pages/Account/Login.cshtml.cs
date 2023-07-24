@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using LyricsFinder.NET.Areas.Identity.Models;
+﻿using LyricsFinder.NET.Areas.Identity.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations;
 
 namespace LyricsFinder.NET.Areas.Identity.Pages.Account
 {
@@ -22,7 +15,7 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
         private readonly SignInManager<CustomAppUserData> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<CustomAppUserData> signInManager, 
+        public LoginModel(SignInManager<CustomAppUserData> signInManager,
             ILogger<LoginModel> logger,
             UserManager<CustomAppUserData> userManager)
         {
@@ -77,7 +70,7 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
             returnUrl ??= Url.Content("~/");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        
+
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
