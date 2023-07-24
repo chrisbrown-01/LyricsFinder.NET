@@ -143,7 +143,6 @@ namespace LyricsFinder.NET.ControllersAPI
 
             await _db.UpdateSongInDb(song);
 
-
             try
             {
                 song = await _songRetriever.RetrieveSongContentsAsync(song);

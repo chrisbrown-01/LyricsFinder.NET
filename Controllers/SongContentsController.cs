@@ -81,17 +81,29 @@ namespace LyricsFinder.NET.Controllers
             {
                 if (!ModelState.IsValid) return View(song);
 
-                song.QueryDate = DateTime.Now;
-                song.LyricsSet = true;
-
                 var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
-                song.EditedBy = loggedInUser!.Id;
 
-                await _db.UpdateSongInDb(song);
+                var updatedSong = new Song()
+                {
+                    Id = song.Id,
+                    Name = song.Name,
+                    Artist = song.Artist,
+                    QueryDate = DateTime.Now,
+                    DeezerId = song.DeezerId,
+                    SongDuration = song.SongDuration,
+                    ArtistArtLink = song.ArtistArtLink,
+                    AlbumArtLink = song.AlbumArtLink,
+                    Lyrics = song.Lyrics,
+                    LyricsSet = true,
+                    CreatedBy = song.CreatedBy,
+                    EditedBy = loggedInUser!.Id
+                };
+
+                await _db.UpdateSongInDb(updatedSong);
 
                 _cache.Remove(song.Id);
 
-                return View("Index", song);
+                return View("Index", updatedSong);
             }
             catch (Exception)
             {

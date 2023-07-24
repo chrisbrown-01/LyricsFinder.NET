@@ -14,7 +14,7 @@ namespace LyricsFinder.NET.Services.SongRetrieval
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<Song> RetrieveSongContentsAsync(Song song) // TODO: check if any other methods are directly modifying the object that was passed in
+        public async Task<Song> RetrieveSongContentsAsync(Song song) 
         {
             var getSongInfoTask = GetDeezerSongInfoAsync(song.Name, song.Artist);
             var getLyricsTask = GetLyricsAsync(song.Name, song.Artist);
@@ -70,7 +70,7 @@ namespace LyricsFinder.NET.Services.SongRetrieval
         private async Task<string> GetLyricsAsync(string songName, string artist)
         {
             string pattern = "https://songmeanings.com/songs/view/\\d+";
-            var httpClient = _httpClientFactory.CreateClient();
+            using var httpClient = _httpClientFactory.CreateClient(); // TODO: ensure using for all http
 
             try
             {

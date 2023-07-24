@@ -36,7 +36,7 @@ namespace LyricsFinder.NET.Controllers
             return GenerateExcelFile(sortOrder, currentFilter, spotifySearchList, isExportForFavourites: false);
         }
 
-        private FileContentResult GenerateExcelFile(string sortOrder, string currentFilter, IEnumerable<Song> spotifySearchList, bool isExportForFavourites)
+        private FileContentResult GenerateExcelFile(string sortOrder, string currentFilter, IEnumerable<Song> spotifySearchList, bool isExportForFavourites) // TODO: rename all variables with spotify in name
         {
             string worksheetName;
             string fileName;
@@ -52,7 +52,7 @@ namespace LyricsFinder.NET.Controllers
                 fileName = "song_database.xlsx";
             }
 
-            spotifySearchList = SortingHelpers.SortSongsList(spotifySearchList, currentFilter, sortOrder);
+            var songList = SortingHelpers.SortSongsList(spotifySearchList, currentFilter, sortOrder);
 
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add(worksheetName);
@@ -67,7 +67,7 @@ namespace LyricsFinder.NET.Controllers
             worksheet.Cell(currentRow, 8).Value = "Album Art";
             worksheet.Cell(currentRow, 9).Value = "Lyrics";
 
-            foreach (var song in spotifySearchList)
+            foreach (var song in songList)
             {
                 currentRow++;
                 worksheet.Cell(currentRow, 1).Value = song.Id;
