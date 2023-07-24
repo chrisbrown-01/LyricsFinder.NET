@@ -6,19 +6,27 @@
     <h3 class="text-center">LyricsFinder.NET</h3>
 
     <div class="text-center">
-        <a asp-controller="SongManager" asp-action="Index">View all songs in the song database!</a>
+        <p>
+            <a asp-controller="SongManager" asp-action="Index">View all songs in the song database!</a>
+        </p>
     </div>
 
     <div class="text-center">
-        <a asp-controller="SongContents" asp-action="Index" asp-route-Id=@ViewBag.randomSongId>Click here to check out a random song!</a>
+        <p>
+            <a asp-controller="SongContents" asp-action="Index" asp-route-Id=@ViewBag.randomSongId>Click here to check out a random song!</a>
+        </p>
     </div>
 
     <div class="text-center">
-        <a asp-controller="SongContents" asp-action="Index" asp-route-Id=@ViewBag.mostPopularSongId>Click here to check out the most popular song amongst our users!</a>
+        <p>
+            <a asp-controller="SongContents" asp-action="Index" asp-route-Id=@ViewBag.mostPopularSongId>Click here to check out the most popular song amongst our users!</a>
+        </p>
     </div>
 
     <div class="text-center">
-        <a href="/swagger">Swagger API link</a>
+        <p>
+            <a href="/swagger">Swagger API link</a>
+        </p>
     </div>
 </div>
 
