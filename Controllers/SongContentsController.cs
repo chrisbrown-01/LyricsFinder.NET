@@ -41,7 +41,7 @@ namespace LyricsFinder.NET.Controllers
         {
             if (!_cache.TryGetValue(id, out Song? song))
             {
-                song = await _db.GetDbSongByIdAsync(id);
+                song = await _db.GetSongByIdAsync(id);
 
                 if (song == null) return NotFound();
 
@@ -59,7 +59,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         public async Task<ActionResult> UpdateWrongSongInfo(int id)
         {
-            var song = await _db.GetDbSongByIdAsync(id);
+            var song = await _db.GetSongByIdAsync(id);
 
             if (song == null) return NotFound();
 
@@ -99,7 +99,7 @@ namespace LyricsFinder.NET.Controllers
                     EditedBy = loggedInUser!.Id
                 };
 
-                await _db.UpdateSongInDb(updatedSong);
+                await _db.UpdateSongAsync(updatedSong);
 
                 _cache.Remove(song.Id);
 
@@ -124,7 +124,7 @@ namespace LyricsFinder.NET.Controllers
 
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            await _db.AddFavSongToDb(id, loggedInUser!.Id);
+            await _db.AddFavSongAsync(id, loggedInUser!.Id);
 
             TempData["SongAddedToFavourites"] = "Favourite song added";
 
@@ -144,7 +144,7 @@ namespace LyricsFinder.NET.Controllers
 
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            await _db.RemoveFavSongFromDb(id, loggedInUser!.Id);
+            await _db.RemoveFavSongAsync(id, loggedInUser!.Id);
 
             TempData["SongRemovedFromFavourites"] = "Favourite song removed";
 

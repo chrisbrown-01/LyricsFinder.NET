@@ -18,11 +18,11 @@ namespace LyricsFinder.NET.Controllers
             _cache = memoryCache;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            ViewBag.randomSongId = GetRandomSong();
+            ViewBag.randomSongId = await GetRandomSongAsync();
 
-            ViewBag.mostPopularSongId = GetMostPopularSong();
+            ViewBag.mostPopularSongId = await GetMostPopularSong();
 
             return View();
         }
@@ -31,16 +31,18 @@ namespace LyricsFinder.NET.Controllers
         /// Selects and returns random song database id
         /// </summary>
         /// <returns></returns>
-        public int GetRandomSong()
+        public async Task<int> GetRandomSongAsync()
         {
-            return Random.Shared.Next(1, _db.GetAllSongsInDb().Count());
+            var songList = await _db.GetAllSongsAsync();
+            var songListSize = songList.Count();
+            return Random.Shared.Next(1, songListSize);
         }
 
         /// <summary>
         /// Queries favourited song database and returns song id of the most favourited song
         /// </summary>
         /// <returns></returns>
-        public int GetMostPopularSong()
+        public async Task<int> GetMostPopularSong()
         {
             return 1;
             // TODO: seed favourited songs in test database

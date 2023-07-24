@@ -9,6 +9,6 @@ namespace LyricsFinder.NET.Models
         public int Id { get; set; }
         public required string UserId { get; set; } 
 
-        public int SongId { get; set; }
+        public required int SongId { get; set; }
     }
 }

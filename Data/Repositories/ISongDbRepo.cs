@@ -6,40 +6,24 @@ namespace LyricsFinder.NET.Data.Repositories
 {
     public interface ISongDbRepo
     {
-        IEnumerable<Song> GetAllSongsInDb();
-        IEnumerable<Song> GetUserFavSongs(string userId);
-        Task AddSongToDb(Song song); // TODO: rename to async
+        Task<IEnumerable<Song>> GetAllSongsAsync();
+        Task<IEnumerable<Song>> GetFavSongsAsync(string userId);
+        Task AddSongAsync(Song song); 
 
-        Task UpdateSongInDb(Song song);
+        Task UpdateSongAsync(Song song);
 
-        Task DeleteSongFromDb(Song song);
+        Task DeleteSongAsync(Song song);
 
-        Task<Song?> GetDbSongByIdAsync(int id);
+        Task<Song?> GetSongByIdAsync(int id);
 
-
-
-        // UserFavouriteSongs table methods
-        IEnumerable<UserFavouriteSongs> GetAllFavouriteSongs(); // TODO: convert to async, or even necessary?
-
-        IEnumerable<UserFavouriteSongs> GetUserFavouriteSongsIds(CustomAppUserData loggedInUser);
-
-        void AddFavSongToDb(UserFavouriteSongs obj);
-
-        void RemoveFavSongFromDb(UserFavouriteSongs obj);
-
-
-
-        // API methods
         bool IsSongDuplicate(Song song);
 
-        Song? GetSongById(int id);
+        Task<IEnumerable<Song>> GetSongsByNameAsync(string songName);
 
-        IEnumerable<Song> GetSongsByName(string songName);
+        Task<IEnumerable<Song>> GetSongsByArtistAsync(string artistName);
 
-        IEnumerable<Song> GetSongsByArtist(string artistName);
-
-        IEnumerable<Song> GetSongsBySongNameArtist(string songName, string artistName);
-        Task RemoveFavSongFromDb(int songId, string userId);
-        Task AddFavSongToDb(int songId, string userId);
+        Task<IEnumerable<Song>> GetSongsBySongNameArtistAsync(string songName, string artistName);
+        Task RemoveFavSongAsync(int songId, string userId);
+        Task AddFavSongAsync(int songId, string userId);
     }
 }

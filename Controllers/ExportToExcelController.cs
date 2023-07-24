@@ -29,9 +29,9 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="sortOrder"></param>
         /// <param name="currentFilter"></param>
         /// <returns></returns>
-        public ActionResult ExportToExcel(string sortOrder, string currentFilter)
+        public async Task<ActionResult> ExportToExcelAsync(string sortOrder, string currentFilter)
         {
-            var songList = _db.GetAllSongsInDb();
+            var songList = await _db.GetAllSongsAsync();
 
             return GenerateExcelFile(sortOrder, currentFilter, songList, isExportForFavourites: false);
         }
@@ -102,7 +102,7 @@ namespace LyricsFinder.NET.Controllers
         {
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            var favSongList = _db.GetUserFavSongs(loggedInUser!.Id);
+            var favSongList = await _db.GetFavSongsAsync(loggedInUser!.Id);
 
             return GenerateExcelFile(sortOrder, currentFilter, favSongList, isExportForFavourites: true);
         }

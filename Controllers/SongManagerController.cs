@@ -41,13 +41,13 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="searchString"></param>
         /// <param name="pageNumber"></param>
         /// <returns></returns>
-        public ActionResult Index(
+        public async Task<ActionResult> IndexAsync(
             string sortOrder,
             string currentFilter,
             string searchString,
             int? pageNumber)
         {
-            var songList = _db.GetAllSongsInDb();
+            var songList = await _db.GetAllSongsAsync();
 
             PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, songList);
 
@@ -63,7 +63,7 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [Authorize]
-        public async Task<ActionResult> IndexFavourites(
+        public async Task<ActionResult> IndexFavouritesAsync(
             string sortOrder,
             string currentFilter,
             string searchString,
@@ -71,7 +71,7 @@ namespace LyricsFinder.NET.Controllers
         {
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            var favSongList = _db.GetUserFavSongs(loggedInUser!.Id);
+            var favSongList = await _db.GetFavSongsAsync(loggedInUser!.Id);
 
             PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, favSongList);
 
@@ -149,7 +149,7 @@ namespace LyricsFinder.NET.Controllers
             };
 
             newSong = await _songRetriever.RetrieveSongContentsAsync(newSong);
-            await _db.AddSongToDb(newSong);
+            await _db.AddSongAsync(newSong);
 
             return RedirectToAction("Index", "SongContents", new { id = newSong.Id }); // TODO: how will EF Core handle this?
         }
@@ -165,7 +165,7 @@ namespace LyricsFinder.NET.Controllers
         {
             if (id <= 0) return BadRequest(); // TODO: global filter for checking this?
 
-            var song = await _db.GetDbSongByIdAsync(id);
+            var song = await _db.GetSongByIdAsync(id);
 
             if (song == null) return NotFound();
 
@@ -199,7 +199,7 @@ namespace LyricsFinder.NET.Controllers
             };
 
             editedSong = await _songRetriever.RetrieveSongContentsAsync(editedSong);
-            await _db.UpdateSongInDb(editedSong);
+            await _db.UpdateSongAsync(editedSong);
             _cache.Remove(song.Id);
 
             return RedirectToAction("Index", "SongContents", new { id = song.Id });
@@ -216,7 +216,7 @@ namespace LyricsFinder.NET.Controllers
         {
             if (id <= 0) return BadRequest();
 
-            var song = await _db.GetDbSongByIdAsync(id);
+            var song = await _db.GetSongByIdAsync(id);
 
             if (song == null) return NotFound();
 
@@ -236,11 +236,11 @@ namespace LyricsFinder.NET.Controllers
             // TODO: replace try-catch with filter?
             try
             {
-                var song = await _db.GetDbSongByIdAsync(id);
+                var song = await _db.GetSongByIdAsync(id);
 
                 if (song == null) return NotFound();
 
-                await _db.DeleteSongFromDb(song);
+                await _db.DeleteSongAsync(song);
 
                 return RedirectToAction("Index");
             }

@@ -37,17 +37,17 @@ namespace LyricsFinder.NET.ControllersAPI
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<SongReadDTO>> GetAllSongs()
+        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetAllSongsAsync()
         {
-            var songs = _db.GetAllSongsInDb();
+            var songs = await _db.GetAllSongsAsync();
 
             return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
         }
 
-        [HttpGet("{id}", Name = "GetSongById")]
-        public ActionResult<SongReadDTO> GetSongById(int id)
+        [HttpGet("{id}", Name = "GetSongByIdAsync")]
+        public async Task<ActionResult<SongReadDTO>> GetSongByIdAsync(int id)
         {
-            var song = _db.GetSongById(id);
+            var song = await _db.GetSongByIdAsync(id);
 
             if (song == null) return NotFound();
 
@@ -55,17 +55,17 @@ namespace LyricsFinder.NET.ControllersAPI
         }
 
         [HttpGet("songName/{songName}")]
-        public ActionResult<IEnumerable<SongReadDTO>> GetSongsBySongName(string songName)
+        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetSongsBySongNameAsync(string songName)
         {
-            var songs = _db.GetSongsByName(songName);
+            var songs = await _db.GetSongsByNameAsync(songName);
 
             return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
         }
 
         [HttpGet("artistName/{artistName}")]
-        public ActionResult<IEnumerable<SongReadDTO>> GetSongsByArtist(string artistName)
+        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetSongsByArtistAsync(string artistName)
         {
-            var songs = _db.GetSongsByArtist(artistName);
+            var songs = await _db.GetSongsByArtistAsync(artistName);
 
             return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
         }
@@ -77,9 +77,9 @@ namespace LyricsFinder.NET.ControllersAPI
         /// <param name="artistName"></param>
         /// <returns></returns>
         [HttpGet("songNameArtistName/{songName}/{artistName}")]
-        public ActionResult<IEnumerable<SongReadDTO>> GetSongsBySongArtist(string songName, string artistName)
+        public async Task<ActionResult<IEnumerable<SongReadDTO>>> GetSongsBySongArtistAsync(string songName, string artistName)
         {
-            var songs = _db.GetSongsBySongNameArtist(songName, artistName);
+            var songs = await _db.GetSongsBySongNameArtistAsync(songName, artistName);
 
             return Ok(_mapper.Map<IEnumerable<SongReadDTO>>(songs));
         }
@@ -107,11 +107,11 @@ namespace LyricsFinder.NET.ControllersAPI
             };
 
             newSong = await _songRetriever.RetrieveSongContentsAsync(newSong);
-            await _db.AddSongToDb(newSong);
+            await _db.AddSongAsync(newSong);
 
             var songDto = _mapper.Map<SongReadDTO>(newSong);
 
-            return CreatedAtRoute(nameof(GetSongById), new { songDto.Id }, songDto);
+            return CreatedAtRoute(nameof(GetSongByIdAsync), new { songDto.Id }, songDto);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace LyricsFinder.NET.ControllersAPI
         {
             if (id <= 0) return BadRequest(); // TODO: global filter?
 
-            var editedSong = _db.GetSongById(id);
+            var editedSong = await _db.GetSongByIdAsync(id);
 
             if (editedSong == null) return NotFound();
 
@@ -142,7 +142,7 @@ namespace LyricsFinder.NET.ControllersAPI
             editedSong.EditedBy = loggedInUser!.Id;
 
             editedSong = await _songRetriever.RetrieveSongContentsAsync(editedSong);
-            await _db.UpdateSongInDb(editedSong);
+            await _db.UpdateSongAsync(editedSong);
 
             var responseSongDto = _mapper.Map<SongReadDTO>(editedSong);
 
@@ -179,7 +179,7 @@ namespace LyricsFinder.NET.ControllersAPI
             int id,
             [FromBody] JsonPatchDocument<SongUpdateDTO> patchDoc)
         {
-            var song = _db.GetSongById(id);
+            var song = await _db.GetSongByIdAsync(id);
 
             if (song == null) return NotFound();
 
@@ -198,7 +198,7 @@ namespace LyricsFinder.NET.ControllersAPI
             song.QueryDate = DateTime.Now;
             song.EditedBy = loggedInUser!.Id;
 
-            await _db.UpdateSongInDb(song);
+            await _db.UpdateSongAsync(song);
 
             var songDTO = _mapper.Map<SongReadDTO>(song);
 
@@ -209,11 +209,11 @@ namespace LyricsFinder.NET.ControllersAPI
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteSongAsync(int id)
         {
-            var song = _db.GetSongById(id);
+            var song = await _db.GetSongByIdAsync(id);
 
             if (song == null) return NotFound();
 
-            await _db.DeleteSongFromDb(song);
+            await _db.DeleteSongAsync(song);
 
             return NoContent();
         }

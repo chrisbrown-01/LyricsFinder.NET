@@ -14,17 +14,17 @@
 //            _db = db;
 //        }
 
-//        //public void AddFavSongToDb(UserFavouriteSongs obj)
+//        //public void AddFavSongAsync(UserFavouriteSongs obj)
 //        //{
 //        //    _db.UserFavouriteSongs.Add(obj);
 //        //}
 
-//        public void AddSongToDb(Song obj)
+//        public void AddSongAsync(Song obj)
 //        {
 //            _db.SongDatabase.Add(obj);
 //        }
 
-//        public void DeleteSongFromDb(Song obj)
+//        public void DeleteSongAsync(Song obj)
 //        {
 //            _db.SongDatabase.Remove(obj);
 //        }
@@ -34,12 +34,12 @@
 //        //    return _db.UserFavouriteSongs;
 //        //}
 
-//        public IEnumerable<Song> GetAllSongsInDb()
+//        public IEnumerable<Song> GetAllSongsAsync()
 //        {
 //            return _db.SongDatabase;
 //        }
 
-//        public async Task<Song> GetDbSongByIdAsync(int id)
+//        public async Task<Song> GetSongByIdAsync(int id)
 //        {
 //            return await _db.SongDatabase.FindAsync(id);
 //        }
@@ -59,17 +59,17 @@
 //            return _db.SongDatabase;
 //        }
 
-//        public IEnumerable<Song> GetSongsByArtist(string artistName)
+//        public IEnumerable<Song> GetSongsByArtistAsync(string artistName)
 //        {
 //            return _db.SongDatabase.Where(s => s.Artist == artistName);
 //        }
 
-//        public IEnumerable<Song> GetSongsByName(string songName)
+//        public IEnumerable<Song> GetSongsByNameAsync(string songName)
 //        {
 //            return _db.SongDatabase.Where(s => s.Name == songName);
 //        }
 
-//        public IEnumerable<Song> GetSongsBySongNameArtist(string songName, string artistName)
+//        public IEnumerable<Song> GetSongsBySongNameArtistAsync(string songName, string artistName)
 //        {
 //            return _db.SongDatabase.Where(s => s.Name == songName && s.Artist == artistName);
 //        }
@@ -79,7 +79,7 @@
 //        //    return _db.UserFavouriteSongs.Where(x => x.UserId == loggedInUser.Id);
 //        //}
 
-//        //public void RemoveFavSongFromDb(UserFavouriteSongs obj)
+//        //public void RemoveFavSongAsync(UserFavouriteSongs obj)
 //        //{
 //        //    _db.UserFavouriteSongs.Remove(obj);
 //        //}
@@ -90,7 +90,7 @@
 //        }
 
 //        // TODO: investigate tracking requirements for DB
-//        public void UpdateSongInDb(Song obj)
+//        public void UpdateSongAsync(Song obj)
 //        {
 //            _db.SongDatabase.Update(obj);
 //        }
