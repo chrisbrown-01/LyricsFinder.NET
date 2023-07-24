@@ -19,8 +19,10 @@ namespace LyricsFinder.NET.Services.SongRetrieval
             var getSongInfoTask = GetDeezerSongInfoAsync(song.Name, song.Artist);
             var getLyricsTask = GetLyricsAsync(song.Name, song.Artist);
 
-            var songInfo = await getSongInfoTask; // TODO: change to async task upon all
-            var lyrics = await getLyricsTask;
+            await Task.WhenAll(getSongInfoTask, getLyricsTask);
+
+            var songInfo = getSongInfoTask.Result;
+            var lyrics = getLyricsTask.Result;
 
             return new Song()
             {
@@ -30,7 +32,7 @@ namespace LyricsFinder.NET.Services.SongRetrieval
                 QueryDate = song.QueryDate,
                 DeezerId = songInfo.Id,
                 SongDuration = songInfo.SongDuration,
-                ArtistArtLink = songInfo.ArtistArtLink, // TODO: safe to place image links in page?
+                ArtistArtLink = songInfo.ArtistArtLink,
                 AlbumArtLink = songInfo.AlbumArtLink,
                 Lyrics = lyrics,
                 LyricsSet = true,
@@ -39,16 +41,17 @@ namespace LyricsFinder.NET.Services.SongRetrieval
             };
         }
 
-        private async Task<DeezerSongInfo> GetDeezerSongInfoAsync(string songName, string artist) // TODO: check for null and return null?
+        private async Task<DeezerSongInfo> GetDeezerSongInfoAsync(string songName, string artist) 
         {
             try
             {
-                var httpClient = _httpClientFactory.CreateClient();
+                using var httpClient = _httpClientFactory.CreateClient();
                 var response = await httpClient.GetStringAsync($"https://api.deezer.com/search?q=artist:'{artist}' track:'{songName}'&limit=1");
                 var responseObject = JsonSerializer.Deserialize<DeezerApiSongContents.DeezerApiResponse>(response);
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
+                if (responseObject?.data == null || responseObject.data.Length == 0) throw new Exception("Deezer API did not return any data.");
+
                 var responseData = responseObject.data[0];
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                 return new DeezerSongInfo()
                 {
@@ -58,13 +61,13 @@ namespace LyricsFinder.NET.Services.SongRetrieval
                     AlbumArtLink = responseData!.album!.cover_xl
                 };
             }
-            catch  // TODO: better null handling from chatgpt?
+            catch  
             {
                 return new DeezerSongInfo();
             }
         }
 
-        private async Task<string> GetLyricsAsync(string songName, string artist) // TODO: implement string interpolation
+        private async Task<string> GetLyricsAsync(string songName, string artist)
         {
             string pattern = "https://songmeanings.com/songs/view/\\d+";
             var httpClient = _httpClientFactory.CreateClient();
