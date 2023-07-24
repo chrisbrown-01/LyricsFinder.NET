@@ -1,25 +1,24 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
-    // TODO: remove center html tags, rework all pages to use proper html and css convention
 }
 
 <div>
-    <center><h3>LyricsFinder.NET</h3></center>
+    <h3 class="text-center">LyricsFinder.NET</h3>
 
-    <br />
+    <div class="text-center">
+        <a asp-controller="SongManager" asp-action="Index">View all songs in the song database!</a>
+    </div>
 
-    <center><a asp-controller="SongManager" asp-action="Index">View all songs in the song database!</a></center>
+    <div class="text-center">
+        <a asp-controller="SongContents" asp-action="Index" asp-route-Id=@ViewBag.randomSongId>Click here to check out a random song!</a>
+    </div>
 
-    <br />
+    <div class="text-center">
+        <a asp-controller="SongContents" asp-action="Index" asp-route-Id=@ViewBag.mostPopularSongId>Click here to check out the most popular song amongst our users!</a>
+    </div>
 
-    <center><a asp-controller="SongContents" asp-action="Index" asp-route-Id=@ViewBag.randomSongId>Click here to check out a random song!</a></center>
-
-    <br />
-
-    <center><a asp-controller="SongContents" asp-action="Index" asp-route-Id=@ViewBag.mostPopularSongId>Click here to check out the most popular song amongst our users!</a></center>
-
-    <br />
-
-    <center><a href="/swagger">Swagger API link</a></center>
+    <div class="text-center">
+        <a href="/swagger">Swagger API link</a>
+    </div>
 </div>
 
