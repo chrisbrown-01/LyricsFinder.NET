@@ -130,15 +130,19 @@ namespace LyricsFinder.NET.Controllers
             if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
 
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
-            song.CreatedBy = loggedInUser!.Id;
-            song.QueryDate = DateTime.Now;
 
-            await _db.AddSongToDb(song); // TODO: reformat so that song is added to db after all methods have run, rather than updating song that was just added to db
+            var newSong = new Song()
+            {
+                Name = song.Name,
+                Artist = song.Artist,
+                QueryDate = DateTime.Now,
+                CreatedBy = loggedInUser!.Id,
+            };
 
-            song = await _songRetriever.RetrieveSongContentsAsync(song); // TODO: try catch block not necessary here, just add filter to return Error view? return View("Error", song);
-            await _db.UpdateSongInDb(song);
+            newSong = await _songRetriever.RetrieveSongContentsAsync(newSong); // TODO: try catch block not necessary here, just add filter to return Error view? return View("Error", song);
+            await _db.AddSongToDb(newSong);
 
-            return RedirectToAction("Index", "SongContents", new { id = song.Id });
+            return RedirectToAction("Index", "SongContents", new { id = newSong.Id });
         }
 
 
@@ -174,14 +178,20 @@ namespace LyricsFinder.NET.Controllers
             if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
 
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
-            song.EditedBy = loggedInUser!.Id;
-            song.QueryDate = DateTime.Now;
 
-            await _db.UpdateSongInDb(song);
+            var editedSong = new Song()
+            {
+                Id = song.Id,
+                Name = song.Name,
+                Artist = song.Artist,
+                QueryDate = DateTime.Now,
+                CreatedBy = song.CreatedBy,
+                EditedBy = loggedInUser!.Id
+            };
+
+            editedSong = await _songRetriever.RetrieveSongContentsAsync(editedSong);
+            await _db.UpdateSongInDb(editedSong);
             _cache.Remove(song.Id);
-
-            song = await _songRetriever.RetrieveSongContentsAsync(song);
-            await _db.UpdateSongInDb(song);
 
             return RedirectToAction("Index", "SongContents", new { id = song.Id });
         }

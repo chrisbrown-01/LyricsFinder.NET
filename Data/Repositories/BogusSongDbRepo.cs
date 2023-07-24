@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Models;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ namespace LyricsFinder.NET.Data.Repositories
         private readonly Faker<Song> _songFaker;
         private readonly List<Song> _songsTable;
         private readonly List<UserFavouriteSongs> _favouritesTable;
+        private static int _songsTableIdCounter;
         private static int _favouritesTableIdCounter;
 
         public BogusSongDbRepo()
@@ -31,9 +33,9 @@ namespace LyricsFinder.NET.Data.Repositories
                 .RuleFor(s => s.EditedBy, f => f.Random.Uuid().ToString());
 
             _songsTable = _songFaker.Generate(16);
+            _songsTableIdCounter = _songsTable.Count();
 
             _favouritesTable = new();
-
             _favouritesTableIdCounter = 0;
         }
 
@@ -50,7 +52,7 @@ namespace LyricsFinder.NET.Data.Repositories
 
         public async Task AddSongToDb(Song song)
         {
-            song.Id = _songsTable.Count() + 1;
+            song.Id = ++_songsTableIdCounter;
             _songsTable.Add(song);
             await Task.CompletedTask;
         }
