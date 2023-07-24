@@ -8,8 +8,8 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
 {
     public class DownloadPersonalDataModel : PageModel
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
         private readonly ILogger<DownloadPersonalDataModel> _logger;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public DownloadPersonalDataModel(
             UserManager<CustomAppUserData> userManager,

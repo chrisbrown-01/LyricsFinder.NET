@@ -12,9 +12,9 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
 {
     public partial class EmailModel : PageModel
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
-        private readonly SignInManager<CustomAppUserData> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly SignInManager<CustomAppUserData> _signInManager;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public EmailModel(
             UserManager<CustomAppUserData> userManager,
@@ -26,38 +26,17 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
             _emailSender = emailSender;
         }
 
-        public string Username { get; set; }
-
         public string Email { get; set; }
+
+        [BindProperty]
+        public InputModel Input { get; set; }
 
         public bool IsEmailConfirmed { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }
 
-        [BindProperty]
-        public InputModel Input { get; set; }
-
-        public class InputModel
-        {
-            [Required]
-            [EmailAddress]
-            [Display(Name = "New email")]
-            public string NewEmail { get; set; }
-        }
-
-        private async Task LoadAsync(CustomAppUserData user)
-        {
-            var email = await _userManager.GetEmailAsync(user);
-            Email = email;
-
-            Input = new InputModel
-            {
-                NewEmail = email,
-            };
-
-            IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
-        }
+        public string Username { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -139,6 +118,27 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
 
             StatusMessage = "Verification email sent. Please check your email.";
             return RedirectToPage();
+        }
+
+        private async Task LoadAsync(CustomAppUserData user)
+        {
+            var email = await _userManager.GetEmailAsync(user);
+            Email = email;
+
+            Input = new InputModel
+            {
+                NewEmail = email,
+            };
+
+            IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+        }
+
+        public class InputModel
+        {
+            [Required]
+            [EmailAddress]
+            [Display(Name = "New email")]
+            public string NewEmail { get; set; }
         }
     }
 }

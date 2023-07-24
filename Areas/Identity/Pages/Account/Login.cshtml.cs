@@ -11,9 +11,9 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
-        private readonly SignInManager<CustomAppUserData> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly SignInManager<CustomAppUserData> _signInManager;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public LoginModel(SignInManager<CustomAppUserData> signInManager,
             ILogger<LoginModel> logger,
@@ -24,29 +24,15 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
             _logger = logger;
         }
 
-        [BindProperty]
-        public InputModel Input { get; set; }
-
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
-
-        public string ReturnUrl { get; set; }
-
         [TempData]
         public string ErrorMessage { get; set; }
 
-        public class InputModel
-        {
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+        public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-            [Required]
-            [DataType(DataType.Password)]
-            public string Password { get; set; }
+        [BindProperty]
+        public InputModel Input { get; set; }
 
-            [Display(Name = "Remember me?")]
-            public bool RememberMe { get; set; }
-        }
+        public string ReturnUrl { get; set; }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
@@ -99,6 +85,20 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        public class InputModel
+        {
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
+
+            [Display(Name = "Remember me?")]
+            public bool RememberMe { get; set; }
         }
     }
 }

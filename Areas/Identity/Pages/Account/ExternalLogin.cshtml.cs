@@ -15,10 +15,10 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
-        private readonly SignInManager<CustomAppUserData> _signInManager;
-        private readonly UserManager<CustomAppUserData> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly SignInManager<CustomAppUserData> _signInManager;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public ExternalLoginModel(
             SignInManager<CustomAppUserData> signInManager,
@@ -32,6 +32,9 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
             _emailSender = emailSender;
         }
 
+        [TempData]
+        public string ErrorMessage { get; set; }
+
         [BindProperty]
         public InputModel Input { get; set; }
 
@@ -39,27 +42,9 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
 
         public string ReturnUrl { get; set; }
 
-        [TempData]
-        public string ErrorMessage { get; set; }
-
-        public class InputModel
-        {
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; }
-        }
-
         public IActionResult OnGetAsync()
         {
             return RedirectToPage("./Login");
-        }
-
-        public IActionResult OnPost(string provider, string returnUrl = null)
-        {
-            // Request a redirect to the external login provider.
-            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            return new ChallengeResult(provider, properties);
         }
 
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
@@ -102,6 +87,14 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
                 }
                 return Page();
             }
+        }
+
+        public IActionResult OnPost(string provider, string returnUrl = null)
+        {
+            // Request a redirect to the external login provider.
+            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return new ChallengeResult(provider, properties);
         }
 
         public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
@@ -159,6 +152,13 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
             ProviderDisplayName = info.ProviderDisplayName;
             ReturnUrl = returnUrl;
             return Page();
+        }
+
+        public class InputModel
+        {
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; }
         }
     }
 }

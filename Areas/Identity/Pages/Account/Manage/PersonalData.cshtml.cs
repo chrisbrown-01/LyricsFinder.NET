@@ -7,8 +7,8 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
 {
     public class PersonalDataModel : PageModel
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
         private readonly ILogger<PersonalDataModel> _logger;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public PersonalDataModel(
             UserManager<CustomAppUserData> userManager,

@@ -12,8 +12,8 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterConfirmationModel : PageModel
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
         private readonly IEmailSender _sender;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public RegisterConfirmationModel(UserManager<CustomAppUserData> userManager, IEmailSender sender)
         {
@@ -21,10 +21,8 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
             _sender = sender;
         }
 
-        public string Email { get; set; }
-
         public bool DisplayConfirmAccountLink { get; set; }
-
+        public string Email { get; set; }
         public string EmailConfirmationUrl { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string email, string returnUrl = null)

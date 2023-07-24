@@ -31,7 +31,7 @@ namespace LyricsFinder.NET.Data.Repositories
                 .RuleFor(s => s.EditedBy, f => f.Random.Uuid().ToString());
 
             _songsTable = _songFaker.Generate(16);
-            _songsTableIdCounter = _songsTable.Count();
+            _songsTableIdCounter = _songsTable.Count;
 
             _favouritesTable = new();
             _favouritesTableIdCounter = 0;

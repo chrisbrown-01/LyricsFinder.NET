@@ -8,8 +8,8 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
 {
     public class ExternalLoginsModel : PageModel
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
         private readonly SignInManager<CustomAppUserData> _signInManager;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public ExternalLoginsModel(
             UserManager<CustomAppUserData> userManager,
@@ -44,37 +44,6 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
-        public async Task<IActionResult> OnPostRemoveLoginAsync(string loginProvider, string providerKey)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID 'user.Id'.");
-            }
-
-            var result = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
-            if (!result.Succeeded)
-            {
-                StatusMessage = "The external login was not removed.";
-                return RedirectToPage();
-            }
-
-            await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "The external login was removed.";
-            return RedirectToPage();
-        }
-
-        public async Task<IActionResult> OnPostLinkLoginAsync(string provider)
-        {
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-            // Request a redirect to the external login provider to link a login for the current user
-            var redirectUrl = Url.Page("./ExternalLogins", pageHandler: "LinkLoginCallback");
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User));
-            return new ChallengeResult(provider, properties);
-        }
-
         public async Task<IActionResult> OnGetLinkLoginCallbackAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -95,6 +64,37 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             StatusMessage = "The external login was added.";
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostLinkLoginAsync(string provider)
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+            // Request a redirect to the external login provider to link a login for the current user
+            var redirectUrl = Url.Page("./ExternalLogins", pageHandler: "LinkLoginCallback");
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User));
+            return new ChallengeResult(provider, properties);
+        }
+
+        public async Task<IActionResult> OnPostRemoveLoginAsync(string loginProvider, string providerKey)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID 'user.Id'.");
+            }
+
+            var result = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
+            if (!result.Succeeded)
+            {
+                StatusMessage = "The external login was not removed.";
+                return RedirectToPage();
+            }
+
+            await _signInManager.RefreshSignInAsync(user);
+            StatusMessage = "The external login was removed.";
             return RedirectToPage();
         }
     }

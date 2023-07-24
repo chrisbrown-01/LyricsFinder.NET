@@ -8,9 +8,9 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
 {
     public class DeletePersonalDataModel : PageModel
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
-        private readonly SignInManager<CustomAppUserData> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
+        private readonly SignInManager<CustomAppUserData> _signInManager;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public DeletePersonalDataModel(
             UserManager<CustomAppUserData> userManager,
@@ -24,13 +24,6 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
 
         [BindProperty]
         public InputModel Input { get; set; }
-
-        public class InputModel
-        {
-            [Required]
-            [DataType(DataType.Password)]
-            public string Password { get; set; }
-        }
 
         public bool RequirePassword { get; set; }
 
@@ -76,6 +69,13 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
             _logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
 
             return Redirect("~/");
+        }
+
+        public class InputModel
+        {
+            [Required]
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
         }
     }
 }

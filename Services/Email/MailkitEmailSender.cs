@@ -30,6 +30,7 @@ namespace LyricsFinder.NET.Services
         {
             _smtpClient.Disconnect(true);
             _smtpClient.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

@@ -9,8 +9,8 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LogoutModel : PageModel
     {
-        private readonly SignInManager<CustomAppUserData> _signInManager;
         private readonly ILogger<LogoutModel> _logger;
+        private readonly SignInManager<CustomAppUserData> _signInManager;
 
         public LogoutModel(SignInManager<CustomAppUserData> signInManager, ILogger<LogoutModel> logger)
         {

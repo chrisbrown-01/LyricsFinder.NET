@@ -11,8 +11,8 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ConfirmEmailChangeModel : PageModel
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
         private readonly SignInManager<CustomAppUserData> _signInManager;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public ConfirmEmailChangeModel(UserManager<CustomAppUserData> userManager, SignInManager<CustomAppUserData> signInManager)
         {

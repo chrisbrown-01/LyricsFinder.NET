@@ -14,8 +14,8 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ForgotPasswordModel : PageModel
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public ForgotPasswordModel(UserManager<CustomAppUserData> userManager, IEmailSender emailSender)
         {
@@ -25,13 +25,6 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
 
         [BindProperty]
         public InputModel Input { get; set; }
-
-        public class InputModel
-        {
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; }
-        }
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -63,6 +56,13 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account
             }
 
             return Page();
+        }
+
+        public class InputModel
+        {
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; }
         }
     }
 }

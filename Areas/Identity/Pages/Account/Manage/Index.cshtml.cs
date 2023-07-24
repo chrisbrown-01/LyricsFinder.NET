@@ -8,8 +8,8 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {
-        private readonly UserManager<CustomAppUserData> _userManager;
         private readonly SignInManager<CustomAppUserData> _signInManager;
+        private readonly UserManager<CustomAppUserData> _userManager;
 
         public IndexModel(
             UserManager<CustomAppUserData> userManager,
@@ -19,50 +19,13 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
             _signInManager = signInManager;
         }
 
-        public string Username { get; set; }
+        [BindProperty]
+        public InputModel Input { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }
 
-        [BindProperty]
-        public InputModel Input { get; set; }
-
-        public class InputModel
-        {
-            [Required]
-            [DataType(DataType.Text)]
-            [Display(Name = "Full name")]
-            public string Name { get; set; }
-
-            [Required]
-            [Display(Name = "Birth Date")]
-            [DataType(DataType.Date)]
-            public DateTime DOB { get; set; }
-
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
-
-            [Display(Name = "Profile Picture")]
-            public byte[]? ProfilePicture { get; set; }
-        }
-
-        private async Task LoadAsync(CustomAppUserData user)
-        {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
-            Username = userName;
-            var profilePicture = user.ProfilePicture;
-
-            Input = new InputModel
-            {
-                Name = user.Name,
-                DOB = user.DOB,
-                PhoneNumber = phoneNumber,
-                ProfilePicture = profilePicture
-            };
-        }
+        public string Username { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -128,6 +91,43 @@ namespace LyricsFinder.NET.Areas.Identity.Pages.Account.Manage
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
+        }
+
+        private async Task LoadAsync(CustomAppUserData user)
+        {
+            var userName = await _userManager.GetUserNameAsync(user);
+            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+
+            Username = userName;
+            var profilePicture = user.ProfilePicture;
+
+            Input = new InputModel
+            {
+                Name = user.Name,
+                DOB = user.DOB,
+                PhoneNumber = phoneNumber,
+                ProfilePicture = profilePicture
+            };
+        }
+
+        public class InputModel
+        {
+            [Required]
+            [Display(Name = "Birth Date")]
+            [DataType(DataType.Date)]
+            public DateTime DOB { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Full name")]
+            public string Name { get; set; }
+
+            [Phone]
+            [Display(Name = "Phone number")]
+            public string PhoneNumber { get; set; }
+
+            [Display(Name = "Profile Picture")]
+            public byte[]? ProfilePicture { get; set; }
         }
     }
 }
