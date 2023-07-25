@@ -44,7 +44,6 @@ namespace LyricsFinder.NET.ControllersAPI
 
             if (_db.IsSongDuplicate(song)) return BadRequest("Song already exists in database.");
 
-            // TODO: replace all try catches in this controller with filter
             var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
             if (email == null) return StatusCode(500, "Authenticated user could not be identified");
 

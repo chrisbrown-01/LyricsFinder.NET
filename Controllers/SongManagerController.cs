@@ -12,6 +12,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace LyricsFinder.NET.Controllers
 {
+    //[TypeFilter(typeof(GeneralExceptionFilter))]
     [ServiceFilter(typeof(CheckSongIdFilter))]
     public class SongManagerController : Controller
     {
@@ -52,7 +53,7 @@ namespace LyricsFinder.NET.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAsync(Song song)
         {
-            if (!ModelState.IsValid) return View(song);
+            if (!ModelState.IsValid) return View(song); // TODO: remove model state validations
 
             if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
 
@@ -91,7 +92,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeletePostAsync(int id) // TODO: global exception filters
+        public async Task<IActionResult> DeletePostAsync(int id)
         {
             var song = await _db.GetSongByIdAsync(id);
             await _db.DeleteSongAsync(song!);

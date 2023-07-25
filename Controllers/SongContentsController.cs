@@ -130,39 +130,31 @@ namespace LyricsFinder.NET.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateWrongSongInfoAsync([FromForm] Song song)
         {
-            // TODO: replace try-catch with filter
-            try
+            if (!ModelState.IsValid) return View(song);
+
+            var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
+
+            var updatedSong = new Song()
             {
-                if (!ModelState.IsValid) return View(song);
+                Id = song.Id,
+                Name = song.Name,
+                Artist = song.Artist,
+                QueryDate = DateTime.Now,
+                DeezerId = song.DeezerId,
+                SongDuration = song.SongDuration,
+                ArtistArtLink = song.ArtistArtLink,
+                AlbumArtLink = song.AlbumArtLink,
+                Lyrics = song.Lyrics,
+                LyricsSet = true,
+                CreatedBy = song.CreatedBy,
+                EditedBy = loggedInUser!.Id
+            };
 
-                var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
+            await _db.UpdateSongAsync(updatedSong);
 
-                var updatedSong = new Song()
-                {
-                    Id = song.Id,
-                    Name = song.Name,
-                    Artist = song.Artist,
-                    QueryDate = DateTime.Now,
-                    DeezerId = song.DeezerId,
-                    SongDuration = song.SongDuration,
-                    ArtistArtLink = song.ArtistArtLink,
-                    AlbumArtLink = song.AlbumArtLink,
-                    Lyrics = song.Lyrics,
-                    LyricsSet = true,
-                    CreatedBy = song.CreatedBy,
-                    EditedBy = loggedInUser!.Id
-                };
+            _cache.Remove(song.Id);
 
-                await _db.UpdateSongAsync(updatedSong);
-
-                _cache.Remove(song.Id);
-
-                return View("Index", updatedSong);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return View("Index", updatedSong);
         }
     }
 }
