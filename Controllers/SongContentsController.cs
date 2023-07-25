@@ -43,7 +43,7 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="redirectUrl">Redirect user back to SongContents index page via url</param>
         /// <returns></returns>
         [Authorize]
-        public async Task<IActionResult> AddToFavourites(int id, string redirectUrl)
+        public async Task<IActionResult> AddToFavouritesAsync(int id, string redirectUrl)
         {
             if (id <= 0) return BadRequest();
 
@@ -56,7 +56,7 @@ namespace LyricsFinder.NET.Controllers
             return Redirect(redirectUrl);
         }
 
-        public async Task<ActionResult> Index(int id)
+        public async Task<ActionResult> IndexAsync(int id)
         {
             if (!_cache.TryGetValue(id, out Song? song))
             {
@@ -110,7 +110,7 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="redirectUrl">Redirect user back to SongContents index page via url</param>
         /// <returns></returns>
         [Authorize]
-        public async Task<IActionResult> RemoveFromFavourites(int id, string redirectUrl)
+        public async Task<IActionResult> RemoveFromFavouritesAsync(int id, string redirectUrl)
         {
             if (id <= 0) return BadRequest();
 
@@ -129,7 +129,7 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Authorize]
-        public async Task<ActionResult> UpdateWrongSongInfo(int id)
+        public async Task<IActionResult> UpdateWrongSongInfoAsync(int id)
         {
             var song = await _db.GetSongByIdAsync(id);
 
@@ -146,7 +146,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateWrongSongInfo([FromForm] Song song)
+        public async Task<IActionResult> UpdateWrongSongInfoAsync([FromForm] Song song)
         {
             // TODO: replace try-catch with filter
             try

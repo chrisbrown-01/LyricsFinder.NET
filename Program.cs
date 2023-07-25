@@ -21,7 +21,7 @@ namespace LyricsFinder.NET
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var Configuration = builder.Configuration;
+            var configuration = builder.Configuration;
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -70,21 +70,21 @@ namespace LyricsFinder.NET
                 .AddGoogle(options =>
                 {
                     IConfigurationSection googleAuthNSection =
-                        Configuration.GetSection("Authentication:Google");
+                        configuration.GetSection("Authentication:Google");
 
                     options.ClientId = googleAuthNSection["ClientId"]!;
                     options.ClientSecret = googleAuthNSection["ClientSecret"]!;
                 })
                 .AddFacebook(facebookOptions =>
                 {
-                    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"]!;
-                    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"]!;
+                    facebookOptions.AppId = configuration["Authentication:Facebook:AppId"]!;
+                    facebookOptions.AppSecret = configuration["Authentication:Facebook:AppSecret"]!;
                     facebookOptions.AccessDeniedPath = "/AccessDeniedPathInfo";
                 })
                 .AddMicrosoftAccount(microsoftOptions =>
                 {
-                    microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"]!;
-                    microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"]!;
+                    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"]!;
+                    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"]!;
                 })
                 .AddJwtBearer(options =>
                 {
@@ -94,9 +94,9 @@ namespace LyricsFinder.NET
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,
-                        ValidAudience = Configuration["JWT:ValidAudience"],
-                        ValidIssuer = Configuration["JWT:ValidIssuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]!))
+                        ValidAudience = configuration["JWT:ValidAudience"],
+                        ValidIssuer = configuration["JWT:ValidIssuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]!))
                     };
                 });
 
@@ -170,6 +170,8 @@ namespace LyricsFinder.NET
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            //app.UseStatusCodePages();
 
             app.UseHttpsRedirection();
 

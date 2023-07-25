@@ -21,7 +21,7 @@ namespace LyricsFinder.NET.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteUser(string userId)
+        public async Task<IActionResult> DeleteUserAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             var admin = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
@@ -37,7 +37,7 @@ namespace LyricsFinder.NET.Controllers
         /// Displays all users and associated info in table
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> DisplayUsers()
+        public async Task<IActionResult> DisplayUsersAsync()
         {
             var users = await _userManager.Users.ToListAsync();
             var userRolesViewModel = new List<UserRolesView>();
@@ -70,7 +70,7 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Manage(string userId)
+        public async Task<IActionResult> ManageAsync(string userId)
         {
             ViewBag.userId = userId;
             var user = await _userManager.FindByIdAsync(userId);
@@ -108,7 +108,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Manage(List<ManageUserRolesView> model, string userId)
+        public async Task<IActionResult> ManageAsync(List<ManageUserRolesView> model, string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             var admin = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
@@ -164,7 +164,7 @@ namespace LyricsFinder.NET.Controllers
             return RedirectToAction("DisplayUsers");
         }
 
-        public async Task<IActionResult> RoleIdDescription()
+        public async Task<IActionResult> RoleIdDescriptionAsync()
         {
             var roles = await _roleManager.Roles.ToListAsync();
             return View(roles);

@@ -35,8 +35,9 @@ namespace LyricsFinder.NET.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        public ActionResult Create()
+        public IActionResult Create()
         {
+            //throw new Exception();
             return View();
         }
 
@@ -47,8 +48,8 @@ namespace LyricsFinder.NET.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPost]
-        [ValidateAntiForgeryToken] // TODO: rename methods to async
-        public async Task<ActionResult> Create(Song song) // TODO: try catch block not necessary here, just add filter to return Error view? return View("Error", song);
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAsync(Song song)
         {
             if (!ModelState.IsValid) return View(song);
 
@@ -76,7 +77,7 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="id">Database song id</param>
         /// <returns></returns>
         [Authorize]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             if (id <= 0) return BadRequest();
 
@@ -95,7 +96,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeletePost(int id)
+        public async Task<IActionResult> DeletePostAsync(int id)
         {
             // TODO: replace try-catch with filter?
             try
@@ -120,7 +121,7 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="id">Database song id</param>
         /// <returns></returns>
         [Authorize]
-        public async Task<ActionResult> Edit(int id)
+        public async Task<IActionResult> EditAsync(int id)
         {
             if (id <= 0) return BadRequest(); // TODO: global filter for checking this?
 
@@ -139,7 +140,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(Song song)
+        public async Task<IActionResult> EditAsync(Song song)
         {
             if (!ModelState.IsValid) return View(song);
 
@@ -172,7 +173,7 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="searchString"></param>
         /// <param name="pageNumber"></param>
         /// <returns></returns>
-        public async Task<ActionResult> IndexAsync(
+        public async Task<IActionResult> IndexAsync(
             string sortOrder,
             string currentFilter,
             string searchString,
@@ -194,7 +195,7 @@ namespace LyricsFinder.NET.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [Authorize]
-        public async Task<ActionResult> IndexFavouritesAsync(
+        public async Task<IActionResult> IndexFavouritesAsync(
             string sortOrder,
             string currentFilter,
             string searchString,
