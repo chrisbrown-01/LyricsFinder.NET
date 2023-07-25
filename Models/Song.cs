@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LyricsFinder.NET.Models
 {
+    // In future, should have constructor and Id set property as private
     public class Song
     {
         [Key]
-        public int Id { get; set; } // TODO: change to init? or get only?
+        public int Id { get; set; }
 
         [Required]
         public required string Name { get; set; }

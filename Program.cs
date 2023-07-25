@@ -106,8 +106,8 @@ namespace LyricsFinder.NET
                 options.InputFormatters.Insert(0, MyJPIF.GetJsonPatchInputFormatter());
             });
 
-            builder.Services.AddSingleton<ISongDbRepo, BogusSongDbRepo>(); // Use singleton since this is basically static
-            //builder.Services.AddScoped<ISongDbRepo, SqlSongDbRepo>(); // Use scoped for EF Core / DbContext due to lack of thread-safety
+            //builder.Services.AddSingleton<ISongDbRepo, BogusSongDbRepo>(); // Use singleton since this is basically static
+            builder.Services.AddScoped<ISongDbRepo, SqlSongDbRepo>(); // Use scoped for EF Core / DbContext due to lack of thread-safety
 
             //builder.Services.AddSingleton<IEmailSender, MailkitEmailSender>();
             builder.Services.AddSingleton<IEmailSender, FakeEmailSender>();

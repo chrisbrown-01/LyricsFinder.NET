@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LyricsFinder.NET.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateIdentityAndSongTables : Migration
+    public partial class CreateTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -214,8 +214,8 @@ namespace LyricsFinder.NET.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DOB", "Email", "EmailConfirmed", "IsAdmin", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePicture", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "00023983-9f16-4a6c-91b8-940283954fc6", 0, "ac3f0505-b6eb-45be-91e0-613d29f6f863", new DateTime(2023, 7, 25, 0, 0, 0, 0, DateTimeKind.Local), "moderator@mod.com", true, false, false, null, "Moderator", "MODERATOR@MOD.COM", "MODERATOR@MOD.COM", "AQAAAAIAAYagAAAAEPhtTMsq4snfZAhLe3CjvJsb5nxcelSdA92BisDeleLqYi2fKX0v3YrzwxBfAbjcBg==", null, true, null, "4454ca1a-0eab-4903-920e-fc389b5878f7", false, "moderator@mod.com" },
-                    { "aab9c560-3441-40d1-b479-9bb75990ac08", 0, "a5489897-2b64-41ae-9396-57b1bbc967f0", new DateTime(2023, 7, 25, 0, 0, 0, 0, DateTimeKind.Local), "admin@admin.com", true, true, false, null, "Admin", "ADMIN@ADMIN.COM", "ADMIN@ADMIN.COM", "AQAAAAIAAYagAAAAEOzjJN2l9PfGTlJ7YsJYYiDVVgmP4jeT+VyabDJFweeYFXxpVdcrtlu2iDcj39IsKw==", null, true, null, "0155473f-1735-497e-9c9c-5fb7cee0409d", false, "admin@admin.com" }
+                    { "00023983-9f16-4a6c-91b8-940283954fc6", 0, "60852114-7fd1-4873-86eb-e59616ef45de", new DateTime(2023, 7, 25, 0, 0, 0, 0, DateTimeKind.Local), "moderator@mod.com", true, false, false, null, "Moderator", "MODERATOR@MOD.COM", "MODERATOR@MOD.COM", "AQAAAAIAAYagAAAAEOgzeoJjhVcAR4DAEFWSxjwDiLgBXNMwKPVSDDtDRHOAB5I3XW7/X6+q77BdDRX4dg==", null, true, null, "d9d1a4c4-74c4-4845-8c10-21109278d647", false, "moderator@mod.com" },
+                    { "aab9c560-3441-40d1-b479-9bb75990ac08", 0, "1a7d2975-c25b-4d06-b0d9-394a0ea81666", new DateTime(2023, 7, 25, 0, 0, 0, 0, DateTimeKind.Local), "admin@admin.com", true, true, false, null, "Admin", "ADMIN@ADMIN.COM", "ADMIN@ADMIN.COM", "AQAAAAIAAYagAAAAEEtuDofn3xhAxLf7tenXeBkIYenkw72Bb58wW4eqr2RRS9WGbGk4tlbETkgu7sj0kg==", null, true, null, "a518c936-d701-49b6-ae69-f28c3a48f41b", false, "admin@admin.com" }
                 });
 
             migrationBuilder.InsertData(

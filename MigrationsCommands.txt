@@ -1,0 +1,2 @@
+Add-Migration CreateTables
+Update-Database
