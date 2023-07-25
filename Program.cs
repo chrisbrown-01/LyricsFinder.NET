@@ -115,6 +115,7 @@ namespace LyricsFinder.NET
             builder.Services.AddSingleton<ISongRetrieval, DeezerSongRetrieval>();
 
             builder.Services.AddScoped<CheckSongIdFilter>();
+            builder.Services.AddScoped<CheckSongForDuplicateFilter>();
 
             builder.Services.AddHttpClient();
 

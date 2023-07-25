@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data.Repositories;
 using LyricsFinder.NET.Filters;
@@ -42,7 +43,7 @@ namespace LyricsFinder.NET.ControllersAPI
         {
             var song = _mapper.Map<Song>(createSongDTO);
 
-            if (_db.IsSongDuplicate(song)) return BadRequest("Song already exists in database.");
+            if (_db.IsSongDuplicate(_mapper.Map<Song>(createSongDTO))) return BadRequest("Song already exists in database.");
 
             var email = HttpContext.User.Claims.FirstOrDefault()?.Value;
             if (email == null) return StatusCode(500, "Authenticated user could not be identified");

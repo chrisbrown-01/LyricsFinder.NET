@@ -130,8 +130,6 @@ namespace LyricsFinder.NET.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateWrongSongInfoAsync([FromForm] Song song)
         {
-            if (!ModelState.IsValid) return View(song);
-
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
             var updatedSong = new Song()

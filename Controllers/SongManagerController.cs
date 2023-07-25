@@ -51,12 +51,9 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ServiceFilter(typeof(CheckSongForDuplicateFilter))]
         public async Task<IActionResult> CreateAsync(Song song)
         {
-            if (!ModelState.IsValid) return View(song); // TODO: remove model state validations
-
-            if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
-
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
             var newSong = new Song()
@@ -118,12 +115,9 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ServiceFilter(typeof(CheckSongForDuplicateFilter))]
         public async Task<IActionResult> EditAsync(Song song)
         {
-            if (!ModelState.IsValid) return View(song);
-
-            if (_db.IsSongDuplicate(song)) return View("DuplicateFound");
-
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
             var editedSong = new Song()
