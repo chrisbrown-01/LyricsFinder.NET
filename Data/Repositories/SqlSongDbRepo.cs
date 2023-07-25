@@ -40,16 +40,17 @@ namespace LyricsFinder.NET.Data.Repositories
 
         public async Task<IEnumerable<Song>> GetAllSongsAsync()
         {
-            var songs = await _db.Songs.ToListAsync();
+            var songs = await _db.Songs.AsNoTracking().ToListAsync();
             return songs;
         }
 
         public async Task<IEnumerable<Song>> GetFavSongsAsync(string userId)
         {
             var favSongs = await _db.FavouritedSongs
+                .AsNoTracking()
                 .Where(u => u.UserId == userId)
-                .Join(_db.Songs, fav => fav.SongId, song => song.Id, (fav, song) => song)
-                .ToListAsync(); // TODO: no tracking for all responses
+                .Join(_db.Songs.AsNoTracking(), fav => fav.SongId, song => song.Id, (fav, song) => song)
+                .ToListAsync();
 
             return favSongs;
         }
@@ -63,23 +64,33 @@ namespace LyricsFinder.NET.Data.Repositories
 
         public async Task<Song?> GetSongByIdAsync(int id)
         {
-            return await _db.Songs.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
+            return await _db.Songs
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public async Task<IEnumerable<Song>> GetSongsByArtistAsync(string artistName)
         {
-            return await _db.Songs.Where(s => s.Artist.ToLower() == artistName.ToLower()).ToListAsync();
+            return await _db.Songs
+                .AsNoTracking()
+                .Where(s => s.Artist.ToLower() == artistName.ToLower())
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Song>> GetSongsByNameAsync(string songName)
         {
-            return await _db.Songs.Where(s => s.Name.ToLower() == songName.ToLower()).ToListAsync();
+            return await _db.Songs
+                .AsNoTracking()
+                .Where(s =>
+                s.Name.ToLower() == songName.ToLower())
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Song>> GetSongsBySongNameArtistAsync(string songName, string artistName)
         {
-            return await _db.Songs.Where(
-                s =>
+            return await _db.Songs
+                .AsNoTracking()
+                .Where(s =>
                 s.Name.ToLower() == songName.ToLower() &&
                 s.Artist.ToLower() == artistName.ToLower())
                 .ToListAsync();

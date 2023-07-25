@@ -67,7 +67,7 @@ namespace LyricsFinder.NET.Controllers
             newSong = await _songRetriever.RetrieveSongContentsAsync(newSong);
             await _db.AddSongAsync(newSong);
 
-            return RedirectToAction("Index", "SongContents", new { id = newSong.Id }); // TODO: how will EF Core handle this?
+            return RedirectToAction("Index", "SongContents", new { id = newSong.Id });
         }
 
         /// <summary>
