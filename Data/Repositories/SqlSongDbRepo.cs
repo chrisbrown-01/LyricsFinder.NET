@@ -44,7 +44,7 @@ namespace LyricsFinder.NET.Data.Repositories
             return songs;
         }
 
-        public async Task<IEnumerable<Song>> GetFavSongsAsync(string userId)
+        public async Task<IEnumerable<Song>> GetUserFavSongsAsync(string userId)
         {
             var favSongs = await _db.FavouritedSongs
                 .AsNoTracking()
@@ -121,6 +121,12 @@ namespace LyricsFinder.NET.Data.Repositories
         {
             _db.Songs.Update(song);
             await _db.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<UserFavouriteSongs>> GetAllFavSongsAsync()
+        {
+            var favSongs = await _db.FavouritedSongs.AsNoTracking().ToListAsync();
+            return favSongs;
         }
     }
 }

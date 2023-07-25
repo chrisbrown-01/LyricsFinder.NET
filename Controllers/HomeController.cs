@@ -30,30 +30,30 @@ namespace LyricsFinder.NET.Controllers
         /// <returns></returns>
         public async Task<int> GetMostPopularSong()
         {
-            return 1;
-            // TODO: seed favourited songs in test database
-            //int mostPopularSongId;
+            int mostPopularSongId;
 
-            //if (!_cache.TryGetValue("mostPopularSongId", out mostPopularSongId))
-            //{
-            //    mostPopularSongId = _db.GetAllFavouriteSongs()
-            //                           .GroupBy(i => i.SongId)
-            //                           .OrderByDescending(grp => grp.Count())
-            //                           .Select(grp => grp.Key)
-            //                           .First();
+            if (!_cache.TryGetValue("mostPopularSongId", out mostPopularSongId))
+            {
+                var favSongList = await _db.GetAllFavSongsAsync();
 
-            //    var cacheEntryOptions = new MemoryCacheEntryOptions()
-            //    {
-            //        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1),
-            //        Size = 1
-            //    };
+                if (favSongList.Count() < 1) return 0;
 
-            //    _cache.Set("mostPopularSongId", mostPopularSongId, cacheEntryOptions);
+                mostPopularSongId = favSongList.GroupBy(song => song.SongId)
+                           .OrderByDescending(group => group.Count())
+                           .First().Key;
 
-            //    return mostPopularSongId;
-            //}
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1),
+                    Size = 1
+                };
 
-            //return mostPopularSongId;
+                _cache.Set("mostPopularSongId", mostPopularSongId, cacheEntryOptions);
+
+                return mostPopularSongId;
+            }
+
+            return mostPopularSongId;
         }
 
         /// <summary>
@@ -63,12 +63,13 @@ namespace LyricsFinder.NET.Controllers
         public async Task<int> GetRandomSongAsync()
         {
             var songList = await _db.GetAllSongsAsync();
-            if (songList.Count() < 1) return 0; // TODO: better handling
+            if (songList.Count() < 1) return 0;
             return Random.Shared.Next(1, songList.Count());
         }
 
         public async Task<IActionResult> IndexAsync()
         {
+            // Not a very good implementation but I want to keep this to demonstrate ViewBag
             ViewBag.randomSongId = await GetRandomSongAsync();
 
             ViewBag.mostPopularSongId = await GetMostPopularSong();

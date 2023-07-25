@@ -33,7 +33,7 @@ namespace LyricsFinder.NET.Controllers
         {
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            var favSongList = await _db.GetFavSongsAsync(loggedInUser!.Id);
+            var favSongList = await _db.GetUserFavSongsAsync(loggedInUser!.Id);
 
             return GenerateExcelFile(sortOrder, currentFilter, favSongList, isExportForFavourites: true);
         }

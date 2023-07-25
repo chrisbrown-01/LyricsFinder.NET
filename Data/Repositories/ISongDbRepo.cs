@@ -12,7 +12,9 @@ namespace LyricsFinder.NET.Data.Repositories
 
         Task<IEnumerable<Song>> GetAllSongsAsync();
 
-        Task<IEnumerable<Song>> GetFavSongsAsync(string userId);
+        Task<IEnumerable<UserFavouriteSongs>> GetAllFavSongsAsync();
+
+        Task<IEnumerable<Song>> GetUserFavSongsAsync(string userId);
 
         Task<Song?> GetSongByIdAsync(int id);
 

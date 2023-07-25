@@ -70,7 +70,7 @@ namespace LyricsFinder.NET.Data.Repositories
             return Task.FromResult(_songsTable.AsEnumerable());
         }
 
-        public Task<IEnumerable<Song>> GetFavSongsAsync(string userId)
+        public Task<IEnumerable<Song>> GetUserFavSongsAsync(string userId)
         {
             var userFavSongIds = _favouritesTable.Where(u => u.UserId == userId).Select(s => s.SongId);
 
@@ -126,6 +126,11 @@ namespace LyricsFinder.NET.Data.Repositories
             var songIndex = _songsTable.FindIndex(s => s.Id == song.Id);
             _songsTable[songIndex] = song;
             await Task.CompletedTask;
+        }
+
+        public Task<IEnumerable<UserFavouriteSongs>> GetAllFavSongsAsync()
+        {
+            return Task.FromResult(_favouritesTable.AsEnumerable());
         }
     }
 }

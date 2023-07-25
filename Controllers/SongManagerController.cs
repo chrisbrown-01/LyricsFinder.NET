@@ -175,7 +175,7 @@ namespace LyricsFinder.NET.Controllers
         {
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            var favSongList = await _db.GetFavSongsAsync(loggedInUser!.Id);
+            var favSongList = await _db.GetUserFavSongsAsync(loggedInUser!.Id);
 
             PaginatedList<Song> paginatedList = CreatePaginatedList(sortOrder, currentFilter, searchString, pageNumber, favSongList);
 
