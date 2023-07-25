@@ -1,6 +1,7 @@
 ﻿using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data;
 using LyricsFinder.NET.Data.Repositories;
+using LyricsFinder.NET.Filters;
 using LyricsFinder.NET.Services.Email;
 using LyricsFinder.NET.Services.SongRetrieval;
 using LyricsFinder.NET.Utility;
@@ -112,6 +113,8 @@ namespace LyricsFinder.NET
             builder.Services.AddSingleton<IEmailSender, FakeEmailSender>();
 
             builder.Services.AddSingleton<ISongRetrieval, DeezerSongRetrieval>();
+
+            builder.Services.AddScoped<CheckSongIdFilter>();
 
             builder.Services.AddHttpClient();
 

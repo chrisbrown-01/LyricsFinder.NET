@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data.Repositories;
+using LyricsFinder.NET.Filters;
 using LyricsFinder.NET.Models;
 using LyricsFinder.NET.Models.DTOs;
 using LyricsFinder.NET.Services.SongRetrieval;
@@ -15,6 +16,7 @@ namespace LyricsFinder.NET.ControllersAPI
     [Route("api/songs")]
     [ApiController]
     [ResponseCache(Duration = 60)]
+    [ServiceFilter(typeof(CheckSongIdFilter))]
     public class SongAPIController : ControllerBase
     {
         private readonly ISongDbRepo _db;
@@ -70,9 +72,7 @@ namespace LyricsFinder.NET.ControllersAPI
         {
             var song = await _db.GetSongByIdAsync(id);
 
-            if (song == null) return NotFound();
-
-            await _db.DeleteSongAsync(song);
+            await _db.DeleteSongAsync(song!);
 
             return NoContent();
         }
@@ -86,11 +86,7 @@ namespace LyricsFinder.NET.ControllersAPI
         [HttpPost("edit/{id}")]
         public async Task<ActionResult<SongReadDTO>> EditSongAsync(int id, SongCreateOrEditDTO editSongDTO)
         {
-            if (id <= 0) return BadRequest(); // TODO: global filter?
-
             var editedSong = await _db.GetSongByIdAsync(id);
-
-            if (editedSong == null) return NotFound();
 
             if (_db.IsSongDuplicate(_mapper.Map<Song>(editSongDTO))) return BadRequest("Song already exists in database.");
 
@@ -99,7 +95,7 @@ namespace LyricsFinder.NET.ControllersAPI
 
             var loggedInUser = await _userManager.FindByEmailAsync(email);
 
-            editedSong.Name = editSongDTO.Name;
+            editedSong!.Name = editSongDTO.Name;
             editedSong.Artist = editSongDTO.Artist;
             editedSong.QueryDate = DateTime.Now;
             editedSong.EditedBy = loggedInUser!.Id;
@@ -131,8 +127,6 @@ namespace LyricsFinder.NET.ControllersAPI
         public async Task<ActionResult<SongReadDTO>> GetSongByIdAsync(int id)
         {
             var song = await _db.GetSongByIdAsync(id);
-
-            if (song == null) return NotFound();
 
             return Ok(_mapper.Map<SongReadDTO>(song));
         }
@@ -199,8 +193,6 @@ namespace LyricsFinder.NET.ControllersAPI
         {
             var song = await _db.GetSongByIdAsync(id);
 
-            if (song == null) return NotFound();
-
             var songToUpdate = _mapper.Map<SongUpdateDTO>(song);
 
             patchDoc.ApplyTo(songToUpdate, ModelState);
@@ -213,7 +205,7 @@ namespace LyricsFinder.NET.ControllersAPI
             if (email == null) return StatusCode(500, "Authenticated user could not be identified");
             var loggedInUser = await _userManager.FindByEmailAsync(email);
 
-            song.QueryDate = DateTime.Now;
+            song!.QueryDate = DateTime.Now;
             song.EditedBy = loggedInUser!.Id;
 
             await _db.UpdateSongAsync(song);

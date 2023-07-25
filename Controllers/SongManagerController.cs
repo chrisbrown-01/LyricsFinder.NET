@@ -1,5 +1,6 @@
 ﻿using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data.Repositories;
+using LyricsFinder.NET.Filters;
 using LyricsFinder.NET.Helpers;
 using LyricsFinder.NET.Models;
 using LyricsFinder.NET.Services.SongRetrieval;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace LyricsFinder.NET.Controllers
 {
+    [ServiceFilter(typeof(CheckSongIdFilter))]
     public class SongManagerController : Controller
     {
         private readonly IMemoryCache _cache;
@@ -37,7 +39,6 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         public IActionResult Create()
         {
-            //throw new Exception();
             return View();
         }
 
@@ -79,13 +80,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            if (id <= 0) return BadRequest();
-
-            var song = await _db.GetSongByIdAsync(id);
-
-            if (song == null) return NotFound();
-
-            return View(song);
+            return View(await _db.GetSongByIdAsync(id));
         }
 
         /// <summary>
@@ -96,23 +91,11 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeletePostAsync(int id)
+        public async Task<IActionResult> DeletePostAsync(int id) // TODO: global exception filters
         {
-            // TODO: replace try-catch with filter?
-            try
-            {
-                var song = await _db.GetSongByIdAsync(id);
-
-                if (song == null) return NotFound();
-
-                await _db.DeleteSongAsync(song);
-
-                return RedirectToAction("Index");
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            var song = await _db.GetSongByIdAsync(id);
+            await _db.DeleteSongAsync(song!);
+            return RedirectToAction("Index");
         }
 
         /// <summary>
@@ -123,13 +106,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         public async Task<IActionResult> EditAsync(int id)
         {
-            if (id <= 0) return BadRequest(); // TODO: global filter for checking this?
-
-            var song = await _db.GetSongByIdAsync(id);
-
-            if (song == null) return NotFound();
-
-            return View(song);
+            return View(await _db.GetSongByIdAsync(id));
         }
 
         /// <summary>

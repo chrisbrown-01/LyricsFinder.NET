@@ -1,5 +1,6 @@
 ﻿using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data.Repositories;
+using LyricsFinder.NET.Filters;
 using LyricsFinder.NET.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace LyricsFinder.NET.Controllers
 {
+    [ServiceFilter(typeof(CheckSongIdFilter))]
     public class SongContentsController : Controller
     {
         private readonly IMemoryCache _cache;
@@ -45,8 +47,6 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         public async Task<IActionResult> AddToFavouritesAsync(int id, string redirectUrl)
         {
-            if (id <= 0) return BadRequest();
-
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
             await _db.AddFavSongAsync(id, loggedInUser!.Id);
@@ -61,8 +61,6 @@ namespace LyricsFinder.NET.Controllers
             if (!_cache.TryGetValue(id, out Song? song))
             {
                 song = await _db.GetSongByIdAsync(id);
-
-                if (song == null) return NotFound();
 
                 _cache.Set(id, song, _memoryCacheEntryOptions);
             }
@@ -79,24 +77,14 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         public async Task<IActionResult> NotifyWrongSongInfoViaEmailAsync(int id, string redirectUrl)
         {
-            if (id <= 0) return BadRequest();
-
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
-            try
-            {
-                await _emailSender.SendEmailAsync("NOTIFY_SITE_ADMIN",
-                                    "Wrong song info report",
-                                    $"Wrong song info reported by user with email: {loggedInUser!.Email} for song ID: {id}" +
-                                    $"<br>" +
-                                    $"<br>" +
-                                    $"<a href={redirectUrl}>Link to song info page</a>");
-            }
-            catch (Exception)
-            {
-                TempData["EmailNotificationServiceFailed"] = "Email notification service failed";
-                return Redirect(redirectUrl);
-            }
+            await _emailSender.SendEmailAsync("NOTIFY_SITE_ADMIN",
+                                "Wrong song info report",
+                                $"Wrong song info reported by user with email: {loggedInUser!.Email} for song ID: {id}" +
+                                $"<br>" +
+                                $"<br>" +
+                                $"<a href={redirectUrl}>Link to song info page</a>");
 
             TempData["WrongSongInfoReported"] = "Wrong song info reported";
 
@@ -112,8 +100,6 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         public async Task<IActionResult> RemoveFromFavouritesAsync(int id, string redirectUrl)
         {
-            if (id <= 0) return BadRequest();
-
             var loggedInUser = await _userManager.FindByEmailAsync(User!.Identity!.Name!);
 
             await _db.RemoveFavSongAsync(id, loggedInUser!.Id);
@@ -131,11 +117,7 @@ namespace LyricsFinder.NET.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateWrongSongInfoAsync(int id)
         {
-            var song = await _db.GetSongByIdAsync(id);
-
-            if (song == null) return NotFound();
-
-            return View(song);
+            return View(await _db.GetSongByIdAsync(id));
         }
 
         /// <summary>
