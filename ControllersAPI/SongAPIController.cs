@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using LyricsFinder.NET.Areas.Identity.Models;
 using LyricsFinder.NET.Data.Repositories;
 using LyricsFinder.NET.Filters;
