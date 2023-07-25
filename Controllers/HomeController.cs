@@ -63,6 +63,7 @@ namespace LyricsFinder.NET.Controllers
         public async Task<int> GetRandomSongAsync()
         {
             var songList = await _db.GetAllSongsAsync();
+            if (songList.Count() < 1) return 0; // TODO: better handling
             return Random.Shared.Next(1, songList.Count());
         }
 

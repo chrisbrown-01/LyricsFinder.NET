@@ -27,7 +27,7 @@ namespace LyricsFinder.NET.Services.SongRetrieval
 
             return new Song()
             {
-                Id = song.Id, // TODO: is this even passed in? how will this cope with EF Core
+                Id = song.Id,
                 Name = song.Name,
                 Artist = song.Artist,
                 QueryDate = song.QueryDate,

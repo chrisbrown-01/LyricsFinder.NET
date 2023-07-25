@@ -23,9 +23,9 @@ namespace LyricsFinder.NET.Data
         {
         }
 
-        public DbSet<Song> SongDatabase { get; set; }
+        public DbSet<Song> Songs { get; set; }
 
-        public DbSet<UserFavouriteSongs> UserFavouriteSongs { get; set; }
+        public DbSet<UserFavouriteSongs> FavouritedSongs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -1,97 +1,115 @@
-﻿//using LyricsFinder.NET.Models;
-//using Microsoft.EntityFrameworkCore;
+﻿using LyricsFinder.NET.Models;
+using Microsoft.EntityFrameworkCore;
 
-//namespace LyricsFinder.NET.Data.Repositories
-//{
-// TODO: add SaveChangesToDbAsync() call in each db call method
-//    public class SqlSongDbRepo : ISongDbRepo
-//    {
-//        private readonly ApplicationDbContext _db;
+namespace LyricsFinder.NET.Data.Repositories
+{
+    public class SqlSongDbRepo : ISongDbRepo
+    {
+        private readonly ApplicationDbContext _db;
 
-//        public SqlSongDbRepo(ApplicationDbContext db)
-//        {
-//            _db = db;
-//        }
+        public SqlSongDbRepo(ApplicationDbContext db)
+        {
+            _db = db;
+        }
 
-//        //public void AddFavSongAsync(UserFavouriteSongs obj)
-//        //{
-//        //    _db.UserFavouriteSongs.Add(obj);
-//        //}
+        public async Task AddFavSongAsync(int songId, string userId)
+        {
+            if (await _db.FavouritedSongs.AnyAsync(s => s.SongId == songId && s.UserId == userId)) return;
 
-//        public void AddSongAsync(Song obj)
-//        {
-//            _db.SongDatabase.Add(obj);
-//        }
+            var favSong = new UserFavouriteSongs()
+            {
+                UserId = userId,
+                SongId = songId
+            };
 
-//        public void DeleteSongAsync(Song obj)
-//        {
-//            _db.SongDatabase.Remove(obj);
-//        }
+            await _db.FavouritedSongs.AddAsync(favSong);
+            await _db.SaveChangesAsync();
+        }
 
-//        //public IEnumerable<UserFavouriteSongs> GetAllFavouriteSongs()
-//        //{
-//        //    return _db.UserFavouriteSongs;
-//        //}
+        public async Task AddSongAsync(Song song)
+        {
+            await _db.Songs.AddAsync(song);
+            await _db.SaveChangesAsync();
+        }
 
-//        public IEnumerable<Song> GetAllSongsAsync()
-//        {
-//            return _db.SongDatabase;
-//        }
+        public async Task DeleteSongAsync(Song song)
+        {
+            _db.Songs.Remove(song);
+            await _db.SaveChangesAsync();
+        }
 
-//        public async Task<Song> GetSongByIdAsync(int id)
-//        {
-//            return await _db.SongDatabase.FindAsync(id);
-//        }
+        public async Task<IEnumerable<Song>> GetAllSongsAsync()
+        {
+            var songs = await _db.Songs.ToListAsync();
+            return songs;
+        }
 
-//        //public DbSet<UserFavouriteSongs> GetFavouriteSongDb()
-//        //{
-//        //    return _db.UserFavouriteSongs;
-//        //}
+        public async Task<IEnumerable<Song>> GetFavSongsAsync(string userId)
+        {
+            var favSongs = await _db.FavouritedSongs
+                .Where(u => u.UserId == userId)
+                .Join(_db.Songs, fav => fav.SongId, song => song.Id, (fav, song) => song)
+                .ToListAsync(); // TODO: no tracking for all responses
 
-//        public Song GetSongById(int id)
-//        {
-//            return _db.SongDatabase.FirstOrDefault(s => s.Id == id);
-//        }
+            return favSongs;
+        }
 
-//        public DbSet<Song> GetSongDb()
-//        {
-//            return _db.SongDatabase;
-//        }
+        //public async Task<Song?> GetSongByIdAsync(int id)
+        //{
+        // Note this includes change tracking and will cause exceptions if a new
+        // Song object is created with the same Id (ie. anything with a Key attribute)
+        //    return await _db.Songs.FindAsync(id);
+        //}
 
-//        public IEnumerable<Song> GetSongsByArtistAsync(string artistName)
-//        {
-//            return _db.SongDatabase.Where(s => s.Artist == artistName);
-//        }
+        public async Task<Song?> GetSongByIdAsync(int id)
+        {
+            return await _db.Songs.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
+        }
 
-//        public IEnumerable<Song> GetSongsByNameAsync(string songName)
-//        {
-//            return _db.SongDatabase.Where(s => s.Name == songName);
-//        }
+        public async Task<IEnumerable<Song>> GetSongsByArtistAsync(string artistName)
+        {
+            return await _db.Songs.Where(s => s.Artist.ToLower() == artistName.ToLower()).ToListAsync();
+        }
 
-//        public IEnumerable<Song> GetSongsBySongNameArtistAsync(string songName, string artistName)
-//        {
-//            return _db.SongDatabase.Where(s => s.Name == songName && s.Artist == artistName);
-//        }
+        public async Task<IEnumerable<Song>> GetSongsByNameAsync(string songName)
+        {
+            return await _db.Songs.Where(s => s.Name.ToLower() == songName.ToLower()).ToListAsync();
+        }
 
-//        //public IEnumerable<UserFavouriteSongs> GetUserFavouriteSongs(CustomAppUserData loggedInUser)
-//        //{
-//        //    return _db.UserFavouriteSongs.Where(x => x.UserId == loggedInUser.Id);
-//        //}
+        public async Task<IEnumerable<Song>> GetSongsBySongNameArtistAsync(string songName, string artistName)
+        {
+            return await _db.Songs.Where(
+                s =>
+                s.Name.ToLower() == songName.ToLower() &&
+                s.Artist.ToLower() == artistName.ToLower())
+                .ToListAsync();
+        }
 
-//        //public void RemoveFavSongAsync(UserFavouriteSongs obj)
-//        //{
-//        //    _db.UserFavouriteSongs.Remove(obj);
-//        //}
+        public bool IsSongDuplicate(Song song)
+        {
+            if (_db.Songs.Any(
+                s =>
+                s.Name.ToLower() == song.Name.ToLower() &&
+                s.Artist.ToLower() == song.Artist.ToLower()))
+                return true;
 
-//        public async Task SaveChangesToDbAsync()
-//        {
-//            await _db.SaveChangesAsync();
-//        }
+            return false;
+        }
 
-//        // TODO: investigate tracking requirements for DB
-//        public void UpdateSongAsync(Song obj)
-//        {
-//            _db.SongDatabase.Update(obj);
-//        }
-//    }
-//}
+        public async Task RemoveFavSongAsync(int songId, string userId)
+        {
+            var favSongs = await _db.FavouritedSongs
+                .Where(x => x.SongId == songId && x.UserId == userId)
+                .ToListAsync();
+
+            _db.FavouritedSongs.RemoveRange(favSongs);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task UpdateSongAsync(Song song)
+        {
+            _db.Songs.Update(song);
+            await _db.SaveChangesAsync();
+        }
+    }
+}

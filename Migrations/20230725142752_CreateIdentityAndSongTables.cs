@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -31,9 +32,9 @@ namespace LyricsFinder.NET.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DOB = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsAdmin = table.Column<bool>(type: "bit", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProfilePicture = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -56,26 +57,40 @@ namespace LyricsFinder.NET.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SongDatabase",
+                name: "FavouritedSongs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SongId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FavouritedSongs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Songs",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Artist = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    QueryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeezerId = table.Column<int>(type: "int", nullable: true),
-                    SongDuration = table.Column<int>(type: "int", nullable: true),
-                    ArtistArtLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AlbumArtLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ArtistArtLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeezerId = table.Column<int>(type: "int", nullable: true),
+                    EditedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Lyrics = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LyricsSet = table.Column<bool>(type: "bit", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EditedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    QueryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SongDuration = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SongDatabase", x => x.Id);
+                    table.PrimaryKey("PK_Songs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -184,26 +199,6 @@ namespace LyricsFinder.NET.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "UserFavouriteSongs",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SongId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserFavouriteSongs", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserFavouriteSongs_SongDatabase_SongId",
-                        column: x => x.SongId,
-                        principalTable: "SongDatabase",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -219,8 +214,8 @@ namespace LyricsFinder.NET.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DOB", "Email", "EmailConfirmed", "IsAdmin", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePicture", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "00023983-9f16-4a6c-91b8-940283954fc6", 0, "ddaca77b-e770-4ac5-b5f3-37b1bf793ac9", new DateTime(2023, 7, 19, 0, 0, 0, 0, DateTimeKind.Local), "moderator@mod.com", true, false, false, null, "Moderator", "MODERATOR@MOD.COM", "MODERATOR@MOD.COM", "AQAAAAIAAYagAAAAENr/c8qMYqYeTNxQFX81yI8P1Rfzn5e3uEqtG3HOZMZndBfXq4SR4fySbaFi5lEgNA==", null, true, null, "8c341813-c8b0-468b-b171-d3e46afecaee", false, "moderator@mod.com" },
-                    { "aab9c560-3441-40d1-b479-9bb75990ac08", 0, "a099a126-7718-4063-8f12-5a80db4bf4be", new DateTime(2023, 7, 19, 0, 0, 0, 0, DateTimeKind.Local), "admin@admin.com", true, true, false, null, "Admin", "ADMIN@ADMIN.COM", "ADMIN@ADMIN.COM", "AQAAAAIAAYagAAAAEJFvkAw0lHaTl5s+V5KZoe8tq6MfzTQRdP8hb5RnqTz15a8LqzNRwAXxfKeuz7bjvQ==", null, true, null, "a7cafba4-73ba-482f-bf12-008e09ae2f4c", false, "admin@admin.com" }
+                    { "00023983-9f16-4a6c-91b8-940283954fc6", 0, "ac3f0505-b6eb-45be-91e0-613d29f6f863", new DateTime(2023, 7, 25, 0, 0, 0, 0, DateTimeKind.Local), "moderator@mod.com", true, false, false, null, "Moderator", "MODERATOR@MOD.COM", "MODERATOR@MOD.COM", "AQAAAAIAAYagAAAAEPhtTMsq4snfZAhLe3CjvJsb5nxcelSdA92BisDeleLqYi2fKX0v3YrzwxBfAbjcBg==", null, true, null, "4454ca1a-0eab-4903-920e-fc389b5878f7", false, "moderator@mod.com" },
+                    { "aab9c560-3441-40d1-b479-9bb75990ac08", 0, "a5489897-2b64-41ae-9396-57b1bbc967f0", new DateTime(2023, 7, 25, 0, 0, 0, 0, DateTimeKind.Local), "admin@admin.com", true, true, false, null, "Admin", "ADMIN@ADMIN.COM", "ADMIN@ADMIN.COM", "AQAAAAIAAYagAAAAEOzjJN2l9PfGTlJ7YsJYYiDVVgmP4jeT+VyabDJFweeYFXxpVdcrtlu2iDcj39IsKw==", null, true, null, "0155473f-1735-497e-9c9c-5fb7cee0409d", false, "admin@admin.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -270,11 +265,6 @@ namespace LyricsFinder.NET.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserFavouriteSongs_SongId",
-                table: "UserFavouriteSongs",
-                column: "SongId");
         }
 
         /// <inheritdoc />
@@ -296,16 +286,16 @@ namespace LyricsFinder.NET.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "UserFavouriteSongs");
+                name: "FavouritedSongs");
+
+            migrationBuilder.DropTable(
+                name: "Songs");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "SongDatabase");
         }
     }
 }

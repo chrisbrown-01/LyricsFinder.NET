@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LyricsFinder.NET.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230719170344_CreateIdentityAndSongTables")]
+    [Migration("20230725142752_CreateIdentityAndSongTables")]
     partial class CreateIdentityAndSongTables
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace LyricsFinder.NET.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -57,7 +57,6 @@ namespace LyricsFinder.NET.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
@@ -107,8 +106,8 @@ namespace LyricsFinder.NET.Migrations
                         {
                             Id = "aab9c560-3441-40d1-b479-9bb75990ac08",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a099a126-7718-4063-8f12-5a80db4bf4be",
-                            DOB = new DateTime(2023, 7, 19, 0, 0, 0, 0, DateTimeKind.Local),
+                            ConcurrencyStamp = "a5489897-2b64-41ae-9396-57b1bbc967f0",
+                            DOB = new DateTime(2023, 7, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             IsAdmin = true,
@@ -116,9 +115,9 @@ namespace LyricsFinder.NET.Migrations
                             Name = "Admin",
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJFvkAw0lHaTl5s+V5KZoe8tq6MfzTQRdP8hb5RnqTz15a8LqzNRwAXxfKeuz7bjvQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOzjJN2l9PfGTlJ7YsJYYiDVVgmP4jeT+VyabDJFweeYFXxpVdcrtlu2iDcj39IsKw==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "a7cafba4-73ba-482f-bf12-008e09ae2f4c",
+                            SecurityStamp = "0155473f-1735-497e-9c9c-5fb7cee0409d",
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.com"
                         },
@@ -126,8 +125,8 @@ namespace LyricsFinder.NET.Migrations
                         {
                             Id = "00023983-9f16-4a6c-91b8-940283954fc6",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ddaca77b-e770-4ac5-b5f3-37b1bf793ac9",
-                            DOB = new DateTime(2023, 7, 19, 0, 0, 0, 0, DateTimeKind.Local),
+                            ConcurrencyStamp = "ac3f0505-b6eb-45be-91e0-613d29f6f863",
+                            DOB = new DateTime(2023, 7, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "moderator@mod.com",
                             EmailConfirmed = true,
                             IsAdmin = false,
@@ -135,9 +134,9 @@ namespace LyricsFinder.NET.Migrations
                             Name = "Moderator",
                             NormalizedEmail = "MODERATOR@MOD.COM",
                             NormalizedUserName = "MODERATOR@MOD.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENr/c8qMYqYeTNxQFX81yI8P1Rfzn5e3uEqtG3HOZMZndBfXq4SR4fySbaFi5lEgNA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPhtTMsq4snfZAhLe3CjvJsb5nxcelSdA92BisDeleLqYi2fKX0v3YrzwxBfAbjcBg==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "8c341813-c8b0-468b-b171-d3e46afecaee",
+                            SecurityStamp = "4454ca1a-0eab-4903-920e-fc389b5878f7",
                             TwoFactorEnabled = false,
                             UserName = "moderator@mod.com"
                         });
@@ -188,7 +187,7 @@ namespace LyricsFinder.NET.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SongDatabase");
+                    b.ToTable("Songs");
                 });
 
             modelBuilder.Entity("LyricsFinder.NET.Models.UserFavouriteSongs", b =>
@@ -208,9 +207,7 @@ namespace LyricsFinder.NET.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SongId");
-
-                    b.ToTable("UserFavouriteSongs");
+                    b.ToTable("FavouritedSongs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -383,17 +380,6 @@ namespace LyricsFinder.NET.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("LyricsFinder.NET.Models.UserFavouriteSongs", b =>
-                {
-                    b.HasOne("LyricsFinder.NET.Models.Song", "SpotifyUserInput")
-                        .WithMany()
-                        .HasForeignKey("SongId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SpotifyUserInput");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
