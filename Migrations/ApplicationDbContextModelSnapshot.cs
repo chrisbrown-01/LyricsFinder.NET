@@ -103,7 +103,7 @@ namespace LyricsFinder.NET.Migrations
                         {
                             Id = "aab9c560-3441-40d1-b479-9bb75990ac08",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1a7d2975-c25b-4d06-b0d9-394a0ea81666",
+                            ConcurrencyStamp = "e7ec9014-046a-459d-a2b2-2271fe379b8c",
                             DOB = new DateTime(2023, 7, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
@@ -112,9 +112,9 @@ namespace LyricsFinder.NET.Migrations
                             Name = "Admin",
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEtuDofn3xhAxLf7tenXeBkIYenkw72Bb58wW4eqr2RRS9WGbGk4tlbETkgu7sj0kg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHAljTSknJjrOnE7A+jTr4p4dHE4Tn14G/zYVlrJkxmINNKAbK3sqwPigjwgwMR4Uw==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "a518c936-d701-49b6-ae69-f28c3a48f41b",
+                            SecurityStamp = "2133eee9-16d1-496b-9699-38b1cac80407",
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.com"
                         },
@@ -122,7 +122,7 @@ namespace LyricsFinder.NET.Migrations
                         {
                             Id = "00023983-9f16-4a6c-91b8-940283954fc6",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "60852114-7fd1-4873-86eb-e59616ef45de",
+                            ConcurrencyStamp = "3aaae154-27bb-49ba-9384-5c49b8bfd7ab",
                             DOB = new DateTime(2023, 7, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             Email = "moderator@mod.com",
                             EmailConfirmed = true,
@@ -131,9 +131,9 @@ namespace LyricsFinder.NET.Migrations
                             Name = "Moderator",
                             NormalizedEmail = "MODERATOR@MOD.COM",
                             NormalizedUserName = "MODERATOR@MOD.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOgzeoJjhVcAR4DAEFWSxjwDiLgBXNMwKPVSDDtDRHOAB5I3XW7/X6+q77BdDRX4dg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKgfEwOC7Q4sjlXeVtpEn3tSBRr+B5XlU5LkM3Otyl4r6iE0Ki9+XOnT5XvUPZW9Qw==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "d9d1a4c4-74c4-4845-8c10-21109278d647",
+                            SecurityStamp = "10a7065b-45a5-4962-8df5-a3c923b9c853",
                             TwoFactorEnabled = false,
                             UserName = "moderator@mod.com"
                         });
@@ -185,6 +185,50 @@ namespace LyricsFinder.NET.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Songs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AlbumArtLink = "https://e-cdns-images.dzcdn.net/images/cover/ba6c7c231c21930465a4f51a41e3d5a5/1000x1000-000000-80-0-0.jpg",
+                            Artist = "Pantera",
+                            ArtistArtLink = "https://e-cdns-images.dzcdn.net/images/artist/ff5cd034a5414120343b40977109c169/1000x1000-000000-80-0-0.jpg",
+                            CreatedBy = "aab9c560-3441-40d1-b479-9bb75990ac08",
+                            DeezerId = 662879,
+                            Lyrics = "Can't you see I'm easily bothered by persistence?\r\nOne step from lashing out at you\r\nYou want in, to get under my skin and call yourself a friend\r\nI've got more friends like you, what do I do?\r\n\r\nIs there no standard anymore?\r\nWhat it takes, who I am, where I've been, belong\r\nYou can't be something you're not\r\nBe yourself, by yourself, stay away from me\r\nA lesson learned in life\r\nKnown from the dawn of time\r\n\r\nRespect, walk, what did you say?\r\nRespect, walk\r\nAre you talkin' to me? Are you talkin' to me?\r\n\r\nRun your mouth when I'm not around, it's easy to achieve\r\nYou cry to weak friends that sympathize\r\nCan you hear the violins playing your song?\r\nThose same friends tell me your every word\r\n\r\nIs there no standard anymore?\r\nWhat it takes, who I am, where I've been, belong\r\nYou can't be something you're not\r\nBe yourself, by yourself, stay away from me\r\nA lesson learned in life\r\nKnown from the dawn of time\r\n\r\nRespect, walk, what did you say?\r\nRespect, walk, are you talkin' to me?\r\nRespect, walk, what did you say?\r\nRespect, walk\r\nAre you talkin' to me? Are you talkin' to me?\r\nNo way, punk\r\n\r\nRespect, walk, what did you say?\r\nRespect, walk, are you talkin' to me?\r\nRespect, walk, what did you say?\r\nRespect, walk\r\nAre you talkin' to me? Are you talkin' to me?\r\nWalk on home, boy",
+                            LyricsSet = true,
+                            Name = "Walk",
+                            QueryDate = new DateTime(2023, 7, 25, 17, 29, 47, 301, DateTimeKind.Local).AddTicks(836),
+                            SongDuration = 315
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AlbumArtLink = "https://e-cdns-images.dzcdn.net/images/cover/451129645169db3500114c5a15dfc19c/1000x1000-000000-80-0-0.jpg",
+                            Artist = "Megadeth",
+                            ArtistArtLink = "https://e-cdns-images.dzcdn.net/images/artist/cff12b4ef973a62d886d69bf056941ec/1000x1000-000000-80-0-0.jpg",
+                            CreatedBy = "aab9c560-3441-40d1-b479-9bb75990ac08",
+                            DeezerId = 12565751,
+                            Lyrics = "What do you mean, \"I don't believe in God\"?\r\nI talk to him everyday\r\nWhat do you mean, \"I don't support your system\"?\r\nI go to court when I have to\r\nWhat do you mean, \"I can't get to work on time\"?\r\nGot nothing better to do\r\nAnd, what do you mean, \"I don't pay my bills\"?\r\nWhy do you think I'm broke? Huh?\r\n\r\nIf there's a new way\r\nOh, I'll be the first in line\r\nBut it better work this time\r\n\r\nWhat do you mean, \"I hurt your feelings\"?\r\nI didn't know you had any feelings\r\nWhat do you mean, \"I ain't kind\"?\r\nJust not your kind\r\n\r\nWhat do you mean, \"I couldn't be the President\r\nOf the United States of America\"?\r\nTell me something, it's still \"We the people\" right?\r\n\r\nIf there's a new way\r\nOh, I'll be the first in line\r\nBut it better work this time\r\n\r\nCan you put a price on peace?\r\n\r\nPeace\r\nPeace sells\r\nPeace\r\nPeace sells\r\nPeace sells, but who's buying?\r\nPeace sells, but who's buying?\r\nPeace sells, but who's buying?\r\nPeace sells, but who's buying?\r\n(No, no no no no)\r\n(Peace sells)\r\n\r\n(Peace sells, aah)",
+                            LyricsSet = true,
+                            Name = "Peace Sells",
+                            QueryDate = new DateTime(2023, 7, 25, 17, 29, 47, 301, DateTimeKind.Local).AddTicks(940),
+                            SongDuration = 244
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AlbumArtLink = "https://e-cdns-images.dzcdn.net/images/cover/fad7de079aa103d60ec1e2d1582c2281/1000x1000-000000-80-0-0.jpg",
+                            Artist = "Lady Gaga",
+                            ArtistArtLink = "https://e-cdns-images.dzcdn.net/images/artist/83110025016968b8882a1c92a3284a6b/1000x1000-000000-80-0-0.jpg",
+                            CreatedBy = "aab9c560-3441-40d1-b479-9bb75990ac08",
+                            DeezerId = 734508762,
+                            Lyrics = "(Mum-mum-mum-mah)\r\n(Mum-mum-mum-mah)\r\n(Mum-mum-mum-mah)\r\n(Mum-mum-mum-mah)\r\n(Mum-mum-mum-mah)\r\n\r\nI wanna hold 'em like they do in Texas, please\r\nFold 'em, let 'em hit me, raise it, baby, stay with me (I love it)\r\nLove game intuition, play the cards with spades to start\r\nAnd after he's been hooked, I'll play the one that's on his heart\r\n\r\nOh, whoa, oh, oh\r\nOh, oh-oh\r\nI'll get him hot, show him what I got\r\nOh, whoa, oh, oh\r\nOh, oh-oh\r\nI'll get him hot, show him what I got\r\n\r\nCan't read my, can't read my\r\nNo, he can't read my poker face\r\n(She's got me like nobody)\r\nCan't read my, can't read my\r\nNo, he can't read my poker face\r\n(She's got me like nobody)\r\n\r\nP-p-p-poker face, f-f-fuck her face (mum-mum-mum-mah)\r\nP-p-p-poker face, f-f-fuck her face (mum-mum-mum-mah)\r\n\r\nI wanna roll with him, a hard pair we will be\r\nA little gamblin' is fun when you're with me (I love it)\r\nRussian roulette is not the same without a gun\r\nAnd baby, when it's love, if it's not rough, it isn't fun (fun)\r\n\r\nOh, whoa, oh, oh\r\nOh, oh-oh\r\nI'll get him hot, show him what I got\r\nOh, whoa, oh, oh\r\nOh, oh-oh\r\nI'll get him hot, show him what I got\r\n\r\nCan't read my, can't read my\r\nNo, he can't read my poker face\r\n(She's got me like nobody)\r\nCan't read my, can't read my\r\nNo, he can't read my poker face\r\n(She's got me like nobody)\r\n\r\nP-p-p-poker face, f-f-fuck her face (mum-mum-mum-mah)\r\nP-p-p-poker face, f-f-fuck her face (mum-mum-mum-mah)\r\n(Mum-mum-mum-mah)\r\n(Mum-mum-mum-mah)\r\n\r\nI won't tell you that I love you, kiss or hug you\r\n'Cause I'm bluffin' with my muffin\r\nI'm not lyin', I'm just stunnin' with my love-glue-gunnin'\r\nJust like a chick in the casino\r\nTake your bank before I pay you out\r\nI promise this, promise this\r\nCheck this hand 'cause I'm marvelous\r\n\r\nCan't read my, can't read my\r\nNo, he can't read my poker face\r\n(She's got me like nobody)\r\nCan't read my, can't read my\r\nNo, he can't read my poker face\r\n(She's got me like nobody)\r\nCan't read my, can't read my\r\nNo, he can't read my poker face\r\n(She's got me like nobody)\r\nCan't read my, can't read my\r\nNo, he can't read my poker face\r\n(She's got me like nobody)\r\nCan't read my, can't read my\r\nNo, he can't read my poker face\r\n(She's got me like nobody)\r\nCan't read my, can't read my\r\nNo, he can't read my poker face\r\n(She's got me like nobody)\r\n\r\nP-p-p-poker face, p-p-poker face\r\nP-p-p-poker face, f-f-fuck her face (she's got me like nobody)\r\nP-p-p-poker face, f-f-fuck her face (mum-mum-mum-mah)\r\nP-p-p-poker face, f-f-fuck her face (mum-mum-mum-mah)\r\nP-p-p-poker face, f-f-fuck her face (mum-mum-mum-mah)\r\nP-p-p-poker face, f-f-fuck her face (mum-mum-mum-mah)",
+                            LyricsSet = true,
+                            Name = "Poker Face",
+                            QueryDate = new DateTime(2023, 7, 25, 17, 29, 47, 301, DateTimeKind.Local).AddTicks(944),
+                            SongDuration = 237
+                        });
                 });
 
             modelBuilder.Entity("LyricsFinder.NET.Models.UserFavouriteSongs", b =>
@@ -205,6 +249,14 @@ namespace LyricsFinder.NET.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FavouritedSongs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            SongId = 1,
+                            UserId = "aab9c560-3441-40d1-b479-9bb75990ac08"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
