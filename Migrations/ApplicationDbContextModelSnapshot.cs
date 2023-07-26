@@ -184,7 +184,7 @@ namespace LyricsFinder.NET.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Songs");
+                    b.ToTable("Songs", (string)null);
 
                     b.HasData(
                         new
@@ -248,7 +248,7 @@ namespace LyricsFinder.NET.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FavouritedSongs");
+                    b.ToTable("FavouritedSongs", (string)null);
 
                     b.HasData(
                         new

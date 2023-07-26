@@ -1,0 +1,32 @@
+Create SQL Server container:
+
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=StrongPassword@1" -p 55555:1433 --name LyricsNET_MSSQL --hostname LyricsNET_MSSQL -d mcr.microsoft.com/mssql/server:2019-latest
+
+in Docker Desktop container terminal: 
+
+/bin/bash
+/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'StrongPassword@1'
+CREATE DATABASE LyricsNET
+GO
+
+Set ConnectionString in appsettings.json (ex. "Server=127.0.0.1,55555;Database=LyricsNET;User Id=SA;Password=StrongPassword@1;MultipleActiveResultSets=true;Encrypt=False")
+
+In Visual Studio, run migrations if haven't done so yet. Then run "Update-Database" for EF Core
+
+
+Create/Use preseeded SQL Server image:
+
+docker commit 3efb7e718fa9 conkythegreat/NAME-OF-IMAGE
+
+docker network create lyricsnet-network
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=StrongPassword@1" -p 55555:1433 --name lyricsnet-mssql --hostname lyricsnet-mssql --net lyricsnet-network -d conkythegreat/lyricsnet-mssql:latest
+
+
+
+
+Create LyricsFinder.NET image:
+
+docker build -t lyricsnet .
+docker run -p 8080:80 --net lyricsnet-network --name lyricsnet -d lyricsnet
+TODO: think issue exists with Release build, ask chatgpt how to build the development mode. Need to set environment variable "ASPNETCORE_ENVIRONMENT": "Development"
+TODO: push images to docker hub

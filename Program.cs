@@ -30,7 +30,7 @@ namespace LyricsFinder.NET
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter(); // TODO: comment out
+            //builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<CustomAppUserData>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
