@@ -67,26 +67,31 @@ namespace LyricsFinder.NET
                 options.SlidingExpiration = true;
             });
 
-            builder.Services.AddAuthentication()
-                .AddGoogle(options =>
-                {
-                    IConfigurationSection googleAuthNSection =
-                        configuration.GetSection("Authentication:Google");
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            {
+                builder.Services.AddAuthentication()
+                    .AddGoogle(options =>
+                    {
+                        IConfigurationSection googleAuthNSection =
+                            configuration.GetSection("Authentication:Google");
 
-                    options.ClientId = googleAuthNSection["ClientId"]!;
-                    options.ClientSecret = googleAuthNSection["ClientSecret"]!;
-                })
-                .AddFacebook(facebookOptions =>
-                {
-                    facebookOptions.AppId = configuration["Authentication:Facebook:AppId"]!;
-                    facebookOptions.AppSecret = configuration["Authentication:Facebook:AppSecret"]!;
-                    facebookOptions.AccessDeniedPath = "/AccessDeniedPathInfo";
-                })
-                .AddMicrosoftAccount(microsoftOptions =>
-                {
-                    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"]!;
-                    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"]!;
-                })
+                        options.ClientId = googleAuthNSection["ClientId"]!;
+                        options.ClientSecret = googleAuthNSection["ClientSecret"]!;
+                    })
+                    .AddFacebook(facebookOptions =>
+                    {
+                        facebookOptions.AppId = configuration["Authentication:Facebook:AppId"]!;
+                        facebookOptions.AppSecret = configuration["Authentication:Facebook:AppSecret"]!;
+                        facebookOptions.AccessDeniedPath = "/AccessDeniedPathInfo";
+                    })
+                    .AddMicrosoftAccount(microsoftOptions =>
+                    {
+                        microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"]!;
+                        microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"]!;
+                    });
+            }
+
+            builder.Services.AddAuthentication()
                 .AddJwtBearer(options =>
                 {
                     options.SaveToken = true;

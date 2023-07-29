@@ -55,8 +55,20 @@
                 {
                     <div>
                         <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
+                            External login feature is disabled when "ASPNETCORE_ENVIRONMENT" environment variable is not set to "Development". To enable this feature,
+                            set the environment variable to "Development" and update appsettings.json or secrets.json with credentials specified in Program.cs.
+                        </p>
+                        <p>
+                            Register as a new user or use these default credentials to login:
+                        </p>
+                        <ul>
+                            <li>Email: admin@admin.com --- Password: Admin123!</li>
+                            <li>Email: moderator@mod.com --- Password: Moderator123!</li>
+                        </ul>
+                        <p>
+                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                                article about setting up this ASP.NET application to support logging in via external services
+                            </a>.
                         </p>
                     </div>
                 }
