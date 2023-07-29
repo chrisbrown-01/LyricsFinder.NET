@@ -17,16 +17,22 @@ In Visual Studio, run migrations if haven't done so yet. Then run "Update-Databa
 Create/Use preseeded SQL Server image:
 
 docker commit 3efb7e718fa9 conkythegreat/NAME-OF-IMAGE
-
-docker network create lyricsnet-network
 docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=StrongPassword@1" -p 55555:1433 --name lyricsnet-mssql --hostname lyricsnet-mssql --net lyricsnet-network -d conkythegreat/lyricsnet-mssql:latest
-
-
 
 
 Create LyricsFinder.NET image:
 
 docker build -t lyricsnet .
-docker run -p 8080:80 --net lyricsnet-network --name lyricsnet -d lyricsnet
-TODO: think issue exists with Release build, ask chatgpt how to build the development mode. Need to set environment variable "ASPNETCORE_ENVIRONMENT": "Development"
-TODO: push images to docker hub
+
+
+
+Run all locally:
+
+docker network create lyricsnet-network
+docker run -p 8080:80 --net lyricsnet-network --name lyricsnet-mvc -d conkythegreat/lyricsnet-mvc:latest
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=StrongPassword@1" --name lyricsnet-mssql --hostname lyricsnet-mssql --net lyricsnet-network -d conkythegreat/lyricsnet-mssql:latest
+
+
+Run via docker compose:
+
+docker-compose up -d

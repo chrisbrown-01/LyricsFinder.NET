@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  lyricsnet-mvc:
+    image: conkythegreat/lyricsnet-mvc:latest
+    container_name: lyricsnet-mvc
+    ports:
+      - "8080:80"
+
+  lyricsnet-mssql:
+    image: conkythegreat/lyricsnet-mssql:latest
+    container_name: lyricsnet-mssql
+    hostname: lyricsnet-mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=StrongPassword@1
