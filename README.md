@@ -24,6 +24,7 @@ Ensure you have Docker Desktop installed on your computer. Download the [docker-
 
 ### Other Comments
 - This was a project I first completed in 2021 but reworked to use proper dependency injection and other best practices. The Views were designed before I knew any Javascript so at the time I completely relied on Bootstrap and page redirections. Therefore some of the page redirections and Bootstrap modals (for adding/removing songs to favourites, hiding song info, etc.) can act slightly odd
+- For a real production app I would implement much more stringent checks on the image links that can be updated to display the artist and album artwork. Or completely remove the feature. I left it in for demonstrative purposes but I am aware this can be a security concern
 - Originally the lyrics were retrieved using Selenium webscraper but I reworked this into a way quicker/reliable solution using HTTP requests and parsing of the HTML responses. Lyrics are retrieved from songmeanings.com
 - All other song information, images and previews are retrieved via API calls to the Deezer public API
 - The login/register pages can support OAuth logins to Google, Facebook or Microsoft if you change the environment variable to "Development" and include service credentials to appsettings.json or secrets.json
