@@ -16,7 +16,6 @@ namespace LyricsFinder.NET.Controllers
         private readonly IMemoryCache _cache;
         private readonly ISongDbRepo _db;
         private readonly IEmailSender _emailSender;
-        private readonly MemoryCacheEntryOptions _memoryCacheEntryOptions;
         private readonly UserManager<CustomAppUserData> _userManager;
 
         public SongContentsController(
@@ -29,13 +28,6 @@ namespace LyricsFinder.NET.Controllers
             _userManager = userManager;
             _emailSender = emailSender;
             _cache = memoryCache;
-
-            _memoryCacheEntryOptions = new MemoryCacheEntryOptions()
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
-                SlidingExpiration = TimeSpan.FromMinutes(1),
-                Size = 1
-            };
         }
 
         /// <summary>
@@ -62,7 +54,14 @@ namespace LyricsFinder.NET.Controllers
             {
                 song = await _db.GetSongByIdAsync(id);
 
-                _cache.Set(id, song, _memoryCacheEntryOptions);
+                var memoryCacheEntryOptions = new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
+                    SlidingExpiration = TimeSpan.FromMinutes(1),
+                    Size = 1
+                };
+
+                _cache.Set(id, song, memoryCacheEntryOptions);
             }
 
             return View(song);
